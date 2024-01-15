@@ -1,3 +1,13 @@
+<template>
+  <h1>Your tasks</h1>
+  <div v-for="task in taskStore.tasks" :key="task.guid">
+    <div class="task" @click="taskStore.deleteTask(task.guid)">
+      <p> {{ task.task_name }}</p>
+      <p> {{ task.subtask }}</p>
+    </div>
+  </div>
+</template>
+
 <script setup>
 import { onBeforeMount } from 'vue';
 import { useTaskStore } from '@/stores/task';
@@ -8,16 +18,6 @@ onBeforeMount(() => {
   taskStore.index()
 })
 </script>
-
-<template>
-  <h1>Your tasks</h1>
-  <div v-for="task in taskStore.tasks" :key="task.guid">
-    <div class="task" @click="taskStore.deleteTask(task.guid)">
-      <p> {{ task.task_name }}</p>
-      <p> {{ task.subtask }}</p>
-    </div>
-  </div>
-</template>
 
 <style>
 .task {
