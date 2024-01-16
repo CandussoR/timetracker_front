@@ -4,12 +4,15 @@ import axios from "../utils/apiRequester"
 
 export const useTaskStore = defineStore('tasks', () => {
     const tasks = ref([])
+    /** @type {Array<String>} */
+    const uniqueTasks = ref([])
 
-    /** Gets all the tasks at the creation of the App. */
+    /** Gets all the tasks from the API and set the tasks and uniqueTasks value. */
     async function index() {
-        const res = await axios.get('/tasks')
-        if (res.status == 200) {
+        if (tasks.value.length == 0 ) {
+            const res = await axios.get('/tasks')
             tasks.value = res.data
+            uniqueTasks.value = new Set(tasks.value.map(x => x.task_name))
         }
     }
 
@@ -24,5 +27,16 @@ export const useTaskStore = defineStore('tasks', () => {
         tasks.value = tasks.value.filter((task) => task.guid != guid)
     }
 
-    return {tasks, index, deleteTask}
+    /**
+     * Returns an array of the possible subtasks associated to this task name
+     * 
+     * @param {string} task_name 
+     * @returns {Array<String>}
+     */
+    function filterSubtask(task_name) {
+        const task_items = tasks.value.filter((task) => (task.task_name == task_name) && task.subtask )
+        return task_items.map(t => t.subtask)
+    }
+
+    return {tasks, uniqueTasks, index, deleteTask, filterSubtask}
 })
