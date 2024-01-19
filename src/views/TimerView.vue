@@ -21,13 +21,8 @@
                     </option>
                 </select>
 
-                <span class="material-symbols-outlined" v-if="!newTask" @click="newTask = !newTask">add</span> 
-                <!-- <div v-else>
-                    <h3>New Task</h3>
-                    <input type="text" placeholder="Task Name" v-model="taskName"/>
-                    <input type="text" placeholder="Subtask (optional)" v-model="subtask" />
-                    <button @click="createTask(taskName, subtask)">Create</button>
-                </div> -->
+                <!-- Using click.stop to prevent propagation of closeModal -->
+                <span class="material-symbols-outlined" v-if="!newTask" @click.stop="newTask = !newTask">add</span> 
             </fieldset>
             
             <fieldset id="tag__section">
@@ -41,12 +36,6 @@
                 </datalist>
 
                 <span class="material-symbols-outlined" v-if="!newTag" @click="newTag = !newTag">add</span>
-                <div v-else>
-                    <h3>New Tag</h3>
-                    <input type="text" placeholder="tag" v-model="tag"/>
-                    <button @click="createTag(tag)">Create</button>
-                    <button @click="newTag = !newTag">Forget it</button>
-                </div>
             </fieldset>
 
             <fieldset id="clock__section">
@@ -63,14 +52,16 @@
         </form>
     </div>
 
-    <NewTaskModal v-if="newTask"/>
+    <Modal content="newTask" v-if="newTask" v-on-click-outside="closeModal"/>
+    <Modal content="newTag" v-if="newTag" v-on-click-outside="closeModal"/>
 </template>
 
 <script setup>
-import NewTaskModal from '@/components/modals/NewTaskModal.vue';
+import { vOnClickOutside } from '@vueuse/components'
+import Modal from '@/components/modals/Modal.vue';
 import { useTaskStore } from '@/stores/task';
 import { useTagStore } from '@/stores/tag';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
 const taskStore = useTaskStore()
 taskStore.index()
@@ -82,19 +73,26 @@ const newTag = ref(false)
 const selectedTask = ref(null)
 const selectedSubtask = ref(null)
 const selectedTag = ref(null)
-const tag = ref(null)
 const clock = ref('')
 const duration = ref(0)
 
 
-function createTag(tag) {
-    console.log(`The tag is obviously ${tag} duh`)
-    newTag.value = !newTag.value
-}
-
 function launch(clock) {
     console.log(`launching a ${clock}, but how do you want to do it ?`)
 }
+
+function closeModal() {
+    console.log("closing modals")
+    newTask.value = false;
+    newTag.value = false;
+}
+
+watch(taskStore.isCreated, (newValue) => {
+    console.log(`newValue is ${newValue}`)
+    if (newValue === true) {
+        closeModal()
+    }
+});
 
 </script>
 
