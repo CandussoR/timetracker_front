@@ -6,6 +6,10 @@ export const useTaskStore = defineStore('tasks', () => {
     const tasks = ref([])
     /** @type {Array<String>} */
     const uniqueTasks = ref([])
+    const createdTask = ref(null)
+    const createdSubtask = ref(null)
+    const isCreated = ref(false)
+
 
     /** Gets all the tasks from the API and set the tasks and uniqueTasks value. */
     async function index() {
@@ -13,6 +17,22 @@ export const useTaskStore = defineStore('tasks', () => {
             const res = await axios.get('/tasks')
             tasks.value = res.data
             uniqueTasks.value = new Set(tasks.value.map(x => x.task_name))
+        }
+    }
+
+   /**
+    * Sends a request to create a new Task to the database,
+    * and update createdTask and createdSubtask to make them available in TimerFormView.
+    * 
+    * @param {string} taskName 
+    * @param {string} subtask 
+    */ 
+    async function createTask(taskName, subtask) {
+        const data = subtask == null ? {task_name: taskName} : {task_name : taskName, subtask: subtask}
+        const res = await axios.post('/task', data)
+        if (res.status == 200) {
+            createdTask.value = taskName
+            createdSubtask.value = subtask
         }
     }
 
@@ -38,5 +58,5 @@ export const useTaskStore = defineStore('tasks', () => {
         return task_items.map(t => t.subtask)
     }
 
-    return {tasks, uniqueTasks, index, deleteTask, filterSubtask}
+    return {tasks, uniqueTasks, createdTask, createdSubtask, isCreated, index, createTask, deleteTask, filterSubtask}
 })
