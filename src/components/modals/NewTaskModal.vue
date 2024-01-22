@@ -27,9 +27,8 @@ const successMsg = ref('')
 async function handleSubmit() {
     taskStore.isCreated = false
     const res = await taskStore.createTask(taskname.value, subtask.value)
-    if (res) {
+    if (res == 200) {
         successMsg.value = "Task successfully created."
-        taskStore.isCreated = true
     }
 
 }
@@ -40,8 +39,8 @@ form {
     justify-content: space-evenly;
 }
 
-success {
-    color : greenyellow;
+.success {
+    color : #80ED99;
     font-weight: bold;
 }
 </style>

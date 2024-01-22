@@ -87,10 +87,22 @@ function closeModal() {
     newTag.value = false;
 }
 
-watch(taskStore.isCreated, (newValue) => {
-    console.log(`newValue is ${newValue}`)
-    if (newValue === true) {
-        closeModal()
+watch(
+    () => taskStore.isCreated, 
+    (newValue) => {
+        if (newValue === true) {
+            closeModal()
+            selectedTask.value = taskStore.createdTask
+            selectedSubtask.value = taskStore.createdSubtask
+    }
+});
+
+watch(
+    () => tagStore.isCreated, 
+    (newValue) => {
+        if (newValue === true) {
+            closeModal()
+            selectedTag.value = tagStore.createdTag
     }
 });
 

@@ -1,11 +1,11 @@
 import { defineStore } from "pinia"
-import { ref } from "vue"
+import { ref, computed } from "vue"
 import axios from "../utils/apiRequester"
 
 export const useTaskStore = defineStore('tasks', () => {
     const tasks = ref([])
     /** @type {Array<String>} */
-    const uniqueTasks = ref([])
+    const uniqueTasks = computed(() => new Set(tasks.value.map(x => x.task_name)))
     const createdTask = ref(null)
     const createdSubtask = ref(null)
     const isCreated = ref(false)
@@ -28,11 +28,16 @@ export const useTaskStore = defineStore('tasks', () => {
     * @param {string} subtask 
     */ 
     async function createTask(taskName, subtask) {
+        isCreated.value = false
         const data = subtask == null ? {task_name: taskName} : {task_name : taskName, subtask: subtask}
         const res = await axios.post('/task', data)
+
         if (res.status == 200) {
-            createdTask.value = taskName
-            createdSubtask.value = subtask
+            createdTask.value = res.data["task_name"]
+            createdSubtask.value = res.data["subtask"]
+            tasks.value.push(res.data)
+            isCreated.value = true
+            return res.status
         }
     }
 
