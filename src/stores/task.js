@@ -16,7 +16,6 @@ export const useTaskStore = defineStore('tasks', () => {
         if (tasks.value.length == 0 ) {
             const res = await axios.get('/tasks')
             tasks.value = res.data
-            uniqueTasks.value = new Set(tasks.value.map(x => x.task_name))
         }
     }
 
