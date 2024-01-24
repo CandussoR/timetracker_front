@@ -1,119 +1,118 @@
 <template>
-    <h1>Let's set a new timer and do something !</h1>
-
-    <div class="form-container">
-        <form>
-
-            <fieldset id="task__section">
-                <legend>Task</legend>
-
-                <label for="taskNameSelect">Task</label>
-                <select id="taskNameSelect" name="taskName" v-model="selectedTask" @change="newTask = !newTask" required>
-                    <option v-for="task in taskStore.uniqueTasks" :key="task" :value="task">
-                        {{ task }}
-                    </option>
-                </select>
-
-                <label for="subtaskSelect">Subtask</label>
-                <select id="subtaskSelect" name="substask" v-model="selectedSubtask">
-                    <option v-for="subtask in taskStore.filterSubtask(selectedTask)" :key="subtask" :value="subtask">
-                        {{ subtask }}
-                    </option>
-                </select>
-
-                <!-- Using click.stop to prevent propagation of closeModal -->
-                <span class="material-symbols-outlined" v-if="!newTask" @click.stop="newTask = !newTask">add</span> 
-            </fieldset>
-            
-            <fieldset id="tag__section">
-                <legend>Tag</legend>
-                <label for="tagInput" hidden="hidden">Tag</label>
-                <input id="tagInput" name="tagInput" list="tagData" v-model="selectedTag"/>
-                <datalist id="tagData">
-                    <option v-for="tag in tagStore.tags" :key="tag.tag">
-                        {{ tag.tag }}
-                    </option> 
-                </datalist>
-
-                <span class="material-symbols-outlined" v-if="!newTag" @click="newTag = !newTag">add</span>
-            </fieldset>
-
-            <fieldset id="clock__section">
-                <legend>Clock Type</legend>
-                <button @click="clock = 'timer'">Timer</button>
-                <div v-if="clock == 'timer'">
-                    <h2>Set your time</h2>
-                    <input id="duration" name="duration" type="number" min="0" v-model="duration">
-                </div>
-                <button @click="clock = 'chrono'">Stopwatch</button> 
-            </fieldset>
-
-            <button :disabled="clock == ''" @click="launch(clock)">Launch !</button>
-        </form>
+    <button @click="launchRecord">See datetime</button>
+    <p>{{ formattedDuration }}</p>
+    <div id="error" class="error" v-if="err">
+        <p>{{ err }}</p>
     </div>
-
-    <Modal content="newTask" v-if="newTask" v-on-click-outside="closeModal"/>
-    <Modal content="newTag" v-if="newTag" v-on-click-outside="closeModal"/>
+    <button v-if="!timerRunning && !stopwatchRunning && !isDone" 
+            @click="currentDuration ? beginTimeRecord('timer') : beginTimeRecord('stopwatch')">
+            Go !
+    </button>
+    <button v-else-if="(timerRunning || stopwatchRunning) && !isDone" 
+            @click="stopTheClock()">
+            Stop !
+    </button>
+    <div v-else>
+        <textarea v-model="log"></textarea>
+        <button @click="updateTimeRecord()">Send</button>
+        <div>
+            <p>In the end, you kept on going ? Don't worry !</p>
+            <button @click="console.log('Not implemented yet but I head that')">Update to now</button>
+        </div>
+    </div>
 </template>
 
 <script setup>
-import { vOnClickOutside } from '@vueuse/components'
-import Modal from '@/components/modals/Modal.vue';
-import { useTaskStore } from '@/stores/task';
-import { useTagStore } from '@/stores/tag';
-import { ref, watch } from 'vue';
+import { ref, computed } from 'vue';
+import { useTimeRecordStore } from '../stores/timeRecord.js';
+import cleanObject from '../utils/cleanObject.js';
+import getCurrentDateTime from '../utils/getCurrentDateTime.js';
 
-const taskStore = useTaskStore()
-taskStore.index()
-const tagStore = useTagStore()
-tagStore.index()
+const timeRecordStore = useTimeRecordStore()
+const timerRunning = ref(false)
+const stopwatchRunning = ref(false)
+const isDone = ref(false)
+const timeRecord = ref(null)
+const log = ref(null)
+const currentDuration = ref(0)
+const interval = ref(0)
+const err = ref('')
+const formattedDuration = computed(() => {
+    const hours = Math.floor(currentDuration.value / 3600)
+    const minutes = Math.floor((currentDuration.value % 3600) / 60);
+    const seconds = Math.floor(currentDuration.value % 60);
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+})
 
-const newTask = ref(false)
-const newTag = ref(false)
-const selectedTask = ref(null)
-const selectedSubtask = ref(null)
-const selectedTag = ref(null)
-const clock = ref('')
-const duration = ref(0)
 
-
-function launch(clock) {
-    console.log(`launching a ${clock}, but how do you want to do it ?`)
+// Initialising
+let data = sessionStorage.getItem('time_record')
+timeRecord.value = JSON.parse(data)
+let data2 = sessionStorage.getItem('duration')
+if (data2) {
+    currentDuration.value = Number(data2)
 }
 
-function closeModal() {
-    console.log("closing modals")
-    newTask.value = false;
-    newTag.value = false;
+function beginTimeRecord(clockType) {
+    const { currentDate, currentTime } = getCurrentDateTime()
+
+    timeRecord.value["date"] = currentDate
+    timeRecord.value["time_beginning"] = currentTime
+
+    const tr = cleanObject(timeRecord.value)
+    
+    timeRecordStore.createTimeRecord(tr, "begin")
+        .then((res) => {
+            // puts it in the storage in case of refresh
+            sessionStorage.setItem("time_record", JSON.stringify(res))
+            // puts it in the timeRecord for convenience
+            timeRecord.value = res
+
+            if (clockType == "timer") {
+                startTimer()
+            } else {
+                startStopwatch()
+            }
+        })
+        .catch((e) => err.value = e)
 }
 
-watch(
-    () => taskStore.isCreated, 
-    (newValue) => {
-        if (newValue === true) {
-            closeModal()
-            selectedTask.value = taskStore.createdTask
-            selectedSubtask.value = taskStore.createdSubtask
-    }
-});
+function startTimer() {
+    timerRunning.value = true
+    interval.value = setInterval(() => {
+        if (currentDuration.value != 0) {
+            currentDuration.value--
+        } else {
+            stopTheClock()
+        }
+    }, 1000)
+}
 
-watch(
-    () => tagStore.isCreated, 
-    (newValue) => {
-        if (newValue === true) {
-            closeModal()
-            selectedTag.value = tagStore.createdTag
-    }
-});
+function startStopwatch() {
+    stopwatchRunning.value = true
+    interval.value = setInterval(() => {
+        currentDuration.value++;
+    }, 1000)
+}
 
+function stopTheClock() {
+    timerRunning.value = false
+    stopwatchRunning.value = false
+    clearInterval(interval.value)
+    const { currentDate, currentTime } = getCurrentDateTime()
+    timeRecord.value["time_ending"] = currentTime 
+    isDone.value = true
+    // make a sound
+}
+
+function updateTimeRecord() {
+    const tr = {"guid" : timeRecord.value["guid"],
+                "time_ending" : timeRecord.value["time_ending"],
+                "log" : log.value}
+    timeRecordStore.updateTimeRecord(tr, "ending")
+}
 </script>
 
 <style scoped>
-    .template {
-        display: flex;
-        flex-direction: column;
-    }
-    .form_container {
-        display:block;
-    }
+
 </style>
