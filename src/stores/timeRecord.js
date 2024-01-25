@@ -14,7 +14,6 @@ export const useTimeRecordStore = defineStore('timeRecord', () => {
     async function createTimeRecord(timeRecord, type) {
         try {
             const tr = {"type" : type, "data" : timeRecord}
-            console.log(tr)
             const res = await axios.post('/time_records', tr)
             return res.data
         } catch(e) {
@@ -38,5 +37,19 @@ export const useTimeRecordStore = defineStore('timeRecord', () => {
         }
     }
 
-    return { timeRecords, createTimeRecord, updateTimeRecord }
+/**
+ * 
+ * @param {Object} params - a dict of params
+ * @returns {timeRecord[]} - an array of timeRecord
+ */
+    async function getTimeRecords(params) {
+        try {
+            const res = await axios.get('/time_records', {"params" : params})
+            return res.data
+        } catch(e) {
+            return "An error occured."
+        }
+    }
+
+    return { timeRecords, createTimeRecord, updateTimeRecord, getTimeRecords }
 })
