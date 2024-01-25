@@ -15,6 +15,7 @@
     <div v-else>
         <textarea v-model="log"></textarea>
         <button @click="updateTimeRecord()">Send</button>
+        <p id="success" name="success" class="success">{{ success }}</p>
         <div>
             <p>In the end, you kept on going ? Don't worry !</p>
             <button @click="console.log('Not implemented yet but I head that')">Update to now</button>
@@ -27,7 +28,9 @@ import { ref, computed } from 'vue';
 import { useTimeRecordStore } from '../stores/timeRecord.js';
 import cleanObject from '../utils/cleanObject.js';
 import getCurrentDateTime from '../utils/getCurrentDateTime.js';
+import { useRouter } from 'vue-router';
 
+const router = useRouter()
 const timeRecordStore = useTimeRecordStore()
 const timerRunning = ref(false)
 const stopwatchRunning = ref(false)
@@ -37,6 +40,7 @@ const log = ref(null)
 const currentDuration = ref(0)
 const interval = ref(0)
 const err = ref('')
+const success = ref('')
 const formattedDuration = computed(() => {
     const hours = Math.floor(currentDuration.value / 3600)
     const minutes = Math.floor((currentDuration.value % 3600) / 60);
@@ -85,14 +89,14 @@ function startTimer() {
         } else {
             stopTheClock()
         }
-    }, 1000)
+    }, 975)
 }
 
 function startStopwatch() {
     stopwatchRunning.value = true
     interval.value = setInterval(() => {
         currentDuration.value++;
-    }, 1000)
+    }, 975)
 }
 
 function stopTheClock() {
@@ -103,6 +107,8 @@ function stopTheClock() {
     timeRecord.value["time_ending"] = currentTime 
     isDone.value = true
     // make a sound
+    const audio = new Audio(import.meta.env.VITE_APP_RING)
+    audio.play()
 }
 
 function updateTimeRecord() {
@@ -110,9 +116,15 @@ function updateTimeRecord() {
                 "time_ending" : timeRecord.value["time_ending"],
                 "log" : log.value}
     timeRecordStore.updateTimeRecord(tr, "ending")
+        .then(() => {
+            success.value = "Your timer has been saved. You will now be redirected."
+            sessionStorage.removeItem('time_record')
+            sessionStorage.removeItem('duration')
+        })
+        .catch((e) => err.value = e)
+    setTimeout(function() { router.push({ path: '/'})}, 2000)
 }
 </script>
 
 <style scoped>
-
 </style>
