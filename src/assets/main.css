@@ -15,12 +15,72 @@ a,
   padding: 3px;
 }
 
+.error {
+  color: #ff3333;
+  font-weight: bold;
+}
+
+.success {
+  color: hsla(160, 100%, 37%, 1);
+  font-weight: bold;
+}
+
 fieldset {
   border : 0;
 }
 
 legend {
   font-size: 1.5rem;
+}
+
+button {
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    'Fira Sans',
+    'Droid Sans',
+    'Helvetica Neue',
+    sans-serif;
+  color: var(--color-text);
+  border-color:#70CFFF;
+  width: fit-content;
+  padding: 2%;
+  border-radius : 5px;
+  background: var(--color-background)
+}
+
+button:hover {
+  scale: 1.1;
+}
+
+.modalContent {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+.modalInput {
+    width: 60%;
+    height: 160%;
+    margin: 3% auto;
+    padding: 2%;
+    border-radius: 5px;
+}
+
+.modalInput:focus {
+  border-color: #70CFFF;
+    /* border-color: hsla(160, 100%, 37%, 1); */
+}
+
+.modalButton {
+    margin: 0 auto;
 }
 
 @media (hover: hover) {
