@@ -1,6 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import TimerView from '../views/TimerView.vue'
+import TimerFormview from '../views/TimerFormView.vue'
 import HomeView from '../views/HomeView.vue'
+import TaskView from '../views/TaskView.vue'
+import TimerView from '../views/TimerView.vue'
+import TimeRecords from '../views/TimeRecords.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -11,9 +14,24 @@ const router = createRouter({
       component: HomeView
     },
     {
-      path: '/time-record',
+      path: '/new',
+      name: 'timerFormView',
+      component: TimerFormview
+    },
+    {
+      path: '/ongoing',
       name: 'timerView',
       component: TimerView
+    },
+    {
+      path: '/tasks',
+      name: 'taskView',
+      component: TaskView
+    },
+    {
+      path: '/time_records',
+      name: "timeRecords",
+      component: TimeRecords
     }
   ]
 })
