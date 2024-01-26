@@ -12,9 +12,19 @@
                    format='yyyy-MM-dd' 
                    auto-apply 
                    :enable-time-picker="false"
-                   placeholder="Select a date"/>
+                   placeholder="Select a date"
+                   @change="console.log(day)"/>
     </div>
     <div>
+        <VueDatePicker v-if="selectedCriteria.includes('week')"
+                id="week"
+                v-model="week"
+                model-type="yyyy-MM-dd"
+                week-picker
+                auto-apply
+                placeholder="Select a week"
+                @change="console.log(week)"
+        />
         <VueDatePicker v-if="selectedCriteria.includes('month')"
                 id="monthYear" 
                 v-model="monthYear" 
@@ -53,8 +63,9 @@ import { ref } from 'vue';
 import cleanObject from '../utils/cleanObject.js'
 
 const timeRecordStore = useTimeRecordStore()
-const day = ref(null)
 const maxDate = new Date().getFullYear()
+const day = ref(null)
+const week = ref(null)
 const monthYear = ref(null)
 const year = ref(null)
 const task = ref('')
@@ -72,8 +83,11 @@ const possibleCriteria = ['day', 'week', 'month', 'year', 'task', 'subtask', 'ta
  */
 function handleCriteria(criteria) {
     const timespans = ['day', 'week', 'month', 'year']
+    const vars = [day, week, monthYear, year]
     selectedCriteria.value = selectedCriteria.value.filter(() => !timespans.includes(criteria))
+    vars.forEach(element => {element.value = null});
     selectedCriteria.value.push(criteria)
+    console.log(selectedCriteria.value)
 }
 
 /**
@@ -82,6 +96,7 @@ function handleCriteria(criteria) {
 function handleParams() {
     const form = {
         "date" : day.value,
+        "week" : week.value,
         "year" : year.value,
         "monthYear" : monthYear.value,
         "task" : task.value,
