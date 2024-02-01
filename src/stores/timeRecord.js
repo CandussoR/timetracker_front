@@ -44,10 +44,22 @@ export const useTimeRecordStore = defineStore('timeRecord', () => {
  */
     async function getTimeRecords(params) {
         try {
+            let cache = []
             const res = await axios.get('/time_records', {"params" : params})
-            return res.data
+            timeRecords.value = res.data
+            
+            // Trying a little persistence of data
+            const data = {"id" : crypto.randomUUID(), "params" : params, "data": res.data}
+            const request = localStorage.getItem('requests')
+            if (request) {
+                cache = JSON.parse(request)
+            }
+            cache.push(data)
+            localStorage.setItem('requests', JSON.stringify(cache))
+
+            return res.status
         } catch(e) {
-            return "An error occured."
+            throw new Error("An error occured." + e)
         }
     }
 

@@ -43,6 +43,9 @@
                 auto-apply
                 :prevent-min-max-navigation="true"
                 placeholder="Select a year"/>
+        <TaskSelect v-if="selectedCriteria.includes('task')" :task="task" @selected="task = $event" />
+        <SubtaskSelect v-if="selectedCriteria.includes('subtask')" :task="task" @selected="subtask = $event" />
+        <TagSelect v-if="selectedCriteria.includes('tag')" :tag="tag" @selected="tag = $event" />
     </div>
 
     <div class="otherChoice">
@@ -52,29 +55,72 @@
         </select>
     </div>
 
+    <div v-if="pastRequests">
+        <h2>Your old requests</h2>
+        <div v-for="request in pastRequests" :key="request.id">
+            <p @click="redirect(request.id)">{{ request.id }}</p>
+            <div id="request-params">
+                <div id="param-list" v-for="(value, key) in request.params" :key="key" class="param-enum">
+                    <p id="param-item"><span class="param-key">{{ key }}</span> : {{ value }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <p v-if="errorMsg" class="error">{{ errorMsg }}</p>
     <button type="submit" @click="handleParams()">Get'em all</button>
+
+    <div v-if="timeRecordStore.timeRecords.length != 0">
+        <div v-for="item in timeRecordStore.timeRecords" :key="item.guid">
+            <div class="time-record__card">
+                <p class="bold">Date : {{ item.date }}</p>
+                <p>Task guid : {{ item.task_guid }}</p>
+                <div>
+                    <p>Time Beginning : {{ item.time_beginning ?? 'Unknown' }}</p>
+                    <p>Time Ending : {{ item.time_ending ?? 'Unknown' }}</p>
+                </div>
+                <p>Log : <br>{{ item.log }}</p>
+            </div>
+        </div>
+    </div>
+    
 </template>
 
 <script setup>
+import TaskSelect from '@/components/select/TaskSelect.vue';
+import SubtaskSelect from '@/components/select/SubtaskSelect.vue';
+import TagSelect from '@/components/select/TagSelect.vue';
 import { useTimeRecordStore } from '@/stores/timeRecord';
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import cleanObject from '../utils/cleanObject.js'
+import { useRouter } from 'vue-router';
 
+const router = useRouter()
 const timeRecordStore = useTimeRecordStore()
 const maxDate = new Date().getFullYear()
 const day = ref(null)
 const week = ref(null)
 const monthYear = ref(null)
 const year = ref(null)
-const task = ref('')
+const task = ref(null)
 const subtask = ref('')
 const tag = ref('')
 const criteria = ref('')
 const selectedCriteria = ref(['day'])
 const possibleCriteria = ['day', 'week', 'month', 'year', 'task', 'subtask', 'tag']
-
+const errorMsg = ref('')
+const pastRequests = computed(() => {
+  const storedData = localStorage.getItem('requests');
+  if (storedData) {
+    const parsedData = JSON.parse(storedData);
+    return parsedData.map(x => ({ "id": x.id, "params": x.params }));
+  } else {
+    return [];
+  }
+});
+const showParams = ref(false)
 
 /**
  * Swipe one temporal criteria with the new one if needed
@@ -84,27 +130,41 @@ const possibleCriteria = ['day', 'week', 'month', 'year', 'task', 'subtask', 'ta
 function handleCriteria(criteria) {
     const timespans = ['day', 'week', 'month', 'year']
     const vars = [day, week, monthYear, year]
-    selectedCriteria.value = selectedCriteria.value.filter(() => !timespans.includes(criteria))
-    vars.forEach(element => {element.value = null});
+    if (timespans.includes(criteria)) {
+        selectedCriteria.value = selectedCriteria.value.filter((c) => !timespans.includes(c))
+        vars.forEach(element => {element.value = null});
+    }
     selectedCriteria.value.push(criteria)
-    console.log(selectedCriteria.value)
 }
 
 /**
  * Creates a clean dictionary of params for the get request.
  */
 function handleParams() {
+    let rangeBeginning = null
+    let rangeEnd = null
+    if (week.value) {
+        [rangeBeginning, rangeEnd] = week.value
+    }
+
     const form = {
         "date" : day.value,
-        "week" : week.value,
+        "rangeBeginning" : rangeBeginning,
+        "rangeEnd" : rangeEnd,
         "year" : year.value,
-        "monthYear" : monthYear.value,
+        "month" : monthYear.value,
         "task" : task.value,
         "subtask" : subtask.value,
         "tag" : tag.value
     }
     const cleanedForm = cleanObject(form)
     timeRecordStore.getTimeRecords(cleanedForm)
+        .then((res) => console.log("we got a response", res))
+        .catch((e) => errorMsg.value = e)
+}
+
+function redirect(id) {
+    router.push({path : `time_records/${id}`})
 }
 </script>
 
@@ -122,5 +182,13 @@ function handleParams() {
 select {
     width: fit-content;
     min-width: 10%;
+}
+
+.param-enum {
+    display: flex;
+}
+
+.param-key {
+    font-weight: bold
 }
 </style>
