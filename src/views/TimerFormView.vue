@@ -6,36 +6,30 @@
 
             <fieldset id="task__section">
                 <legend>Task</legend>
+               
+                <div class="inline">
+                    <div class="column">
+                        <label for="taskNameSelect">Task</label>
+                        <TaskSelect :task="selectedTask" @selected="selectedTask = $event"/>
 
-                <label for="taskNameSelect">Task</label>
-                <select id="taskNameSelect" name="taskName" v-model="selectedTask" @change="newTask = !newTask" required>
-                    <option v-for="task in taskStore.uniqueTasks" :key="task" :value="task">
-                        {{ task }}
-                    </option>
-                </select>
-
-                <label for="subtaskSelect">Subtask</label>
-                <select id="subtaskSelect" name="substask" v-model="selectedSubtask">
-                    <option v-for="subtask in taskStore.filterSubtask(selectedTask)" :key="subtask" :value="subtask">
-                        {{ subtask }}
-                    </option>
-                </select>
-
-                <!-- Using click.stop to prevent propagation of closeModal -->
-                <span class="material-symbols-outlined" v-if="!newTask" @click.stop="newTask = !newTask">add</span> 
+                        <label for="subtaskSelect">Subtask</label>
+                        <SubtaskSelect :task="selectedTask" @selected="selectedSubtask = $event" /> 
+                    </div>
+                    <!-- Using click.stop to prevent propagation of closeModal -->
+                    <span id="add-task-button" class="material-symbols-outlined" v-if="!newTask" @click.stop="newTask = !newTask">add</span> 
+                </div>
+                
+               
             </fieldset>
             
             <fieldset id="tag__section">
                 <legend>Tag</legend>
                 <label for="tagInput" hidden="hidden">Tag</label>
-                <input id="tagInput" name="tagInput" list="tagData" v-model="selectedTag"/>
-                <datalist id="tagData">
-                    <option v-for="tag in tagStore.tags" :key="tag.tag">
-                        {{ tag.tag }}
-                    </option> 
-                </datalist>
+                <div class="inline">
+                    <TagSelect :tag="selectedTag" @selected="selectedTag = $event"/>
+                    <span class="material-symbols-outlined" v-if="!newTag" @click="newTag = !newTag">add</span>
+                </div>
 
-                <span class="material-symbols-outlined" v-if="!newTag" @click="newTag = !newTag">add</span>
             </fieldset>
 
             <fieldset id="clock__section">
@@ -53,24 +47,25 @@
             <button type="submit" 
                     :disabled="clock == '' || (clock == 'timer' && duration=='0')">Set</button>
         </form>
-    </div>
+     </div>
 
     <Modal content="newTask" v-if="newTask" v-on-click-outside="closeModal"/>
     <Modal content="newTag" v-if="newTag" v-on-click-outside="closeModal"/>
 </template>
 
 <script setup>
-import { vOnClickOutside } from '@vueuse/components'
+import TaskSelect from '@/components/select/TaskSelect.vue'
+import SubtaskSelect from '@/components/select/SubtaskSelect.vue'
+import TagSelect from '@/components/select/TagSelect.vue'
 import Modal from '@/components/modals/Modal.vue';
+import { vOnClickOutside } from '@vueuse/components'
 import { useTaskStore } from '@/stores/task';
 import { useTagStore } from '@/stores/tag';
 import { ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
 const taskStore = useTaskStore()
-taskStore.index()
 const tagStore = useTagStore()
-tagStore.index()
 const router = useRouter()
 
 const newTask = ref(false)
@@ -91,8 +86,6 @@ watch(
     (newValue) => {
         if (newValue === true) {
             closeModal()
-            selectedTask.value = taskStore.createdTask
-            selectedSubtask.value = taskStore.createdSubtask
     }
 });
 
@@ -101,7 +94,6 @@ watch(
     (newValue) => {
         if (newValue === true) {
             closeModal()
-            selectedTag.value = tagStore.createdTag
     }
 });
 
@@ -138,8 +130,27 @@ function handleSubmit() {
     .template {
         display: flex;
         flex-direction: column;
+        justify-content: center;
     }
     .form_container {
         display:block;
+        width: 75%;
+    }
+
+    .form {
+        justify-content: center;
+    }
+
+    .inline {
+        display: flex;
+    }
+
+    .column {
+        display: flex;
+        flex-direction: column;
+    }
+
+    #add-task-button {
+        margin: auto 0;
     }
 </style>
