@@ -58,7 +58,8 @@
     <div v-if="pastRequests">
         <h2>Your old requests</h2>
         <div v-for="request in pastRequests" :key="request.id">
-            <p @click="redirect(request.id)">{{ request.id }}</p>
+            <p @click="requested != null ? requested = null : requested = request.id">{{ request.id }}</p>
+            <!-- <p @click="redirect(request.id)">{{ request.id }}</p> -->
             <div id="request-params">
                 <div id="param-list" v-for="(value, key) in request.params" :key="key" class="param-enum">
                     <p id="param-item"><span class="param-key">{{ key }}</span> : {{ value }}</p>
@@ -70,23 +71,17 @@
     <p v-if="errorMsg" class="error">{{ errorMsg }}</p>
     <button type="submit" @click="handleParams()">Get'em all</button>
 
-    <div v-if="timeRecordStore.timeRecords.length != 0">
-        <div v-for="item in timeRecordStore.timeRecords" :key="item.guid">
-            <div class="time-record__card">
-                <p class="bold">Date : {{ item.date }}</p>
-                <p>Task guid : {{ item.task_guid }}</p>
-                <div>
-                    <p>Time Beginning : {{ item.time_beginning ?? 'Unknown' }}</p>
-                    <p>Time Ending : {{ item.time_ending ?? 'Unknown' }}</p>
-                </div>
-                <p>Log : <br>{{ item.log }}</p>
-            </div>
+        
+    <div v-if="records.length != 0">
+        <!-- <div v-for="item in timeRecordStore.timeRecords" :key="item.guid"></div> -->
+        <div v-for="(record, i) in records" :key="i">
+            <TimeRecordCard :record="record"/>
         </div>
     </div>
-    
 </template>
 
 <script setup>
+import TimeRecordCard from '@/components/TimeRecordCard.vue';
 import TaskSelect from '@/components/select/TaskSelect.vue';
 import SubtaskSelect from '@/components/select/SubtaskSelect.vue';
 import TagSelect from '@/components/select/TagSelect.vue';
@@ -121,6 +116,16 @@ const pastRequests = computed(() => {
   }
 });
 const showParams = ref(false)
+const requested = ref(null)
+const records = computed(() => {
+    if (requested.value) {
+        const data = localStorage.getItem('requests');
+        const parsed = JSON.parse(data)
+        const filteredMap = parsed.filter(x => x.id == requested.value).map(x => x.data).flat()
+        return [...filteredMap]
+    }
+    return []
+})
 
 /**
  * Swipe one temporal criteria with the new one if needed

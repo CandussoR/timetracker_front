@@ -89,14 +89,14 @@ function startTimer() {
         } else {
             stopTheClock()
         }
-    }, 975)
+    }, 981)
 }
 
 function startStopwatch() {
     stopwatchRunning.value = true
     interval.value = setInterval(() => {
         currentDuration.value++;
-    }, 975)
+    }, 981)
 }
 
 function stopTheClock() {
