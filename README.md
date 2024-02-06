@@ -1,57 +1,14 @@
 # timetracker-front
 
-This template should help get you started developing with Vue 3 in Vite.
+This project is the front-end related to my [timetracker](https://github.com/CandussoR/timetracker) and is destined to be both the Web App and Desktop App (with Tauri).
 
-## Recommended IDE Setup
+Current State : under development - css and html are left shaky on purpose for now.
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Run Unit Tests with [Vitest](https://vitest.dev/)
-
-```sh
-npm run test:unit
-```
-
-### Run End-to-End Tests with [Cypress](https://www.cypress.io/)
-
-```sh
-npm run test:e2e:dev
-```
-
-This runs the end-to-end tests against the Vite development server.
-It is much faster than the production build.
-
-But it's still recommended to test the production build with `test:e2e` before deploying (e.g. in CI environments):
-
-```sh
-npm run build
-npm run test:e2e
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+# Install process
+* First clone the back repository :  
+  `git clone https://github.com/CandussoR/timetracker.git`  
+* Clone this repository :  
+  `https://github.com/CandussoR/timetracker_front`  
+* `cd` into your repo ;  
+* `npm install` ;
+* After having launched the back repo with the arg `--api` (see [this readme](https://github.com/CandussoR/timetracker/blob/master/README.md)), run this one with `npm run dev`.
