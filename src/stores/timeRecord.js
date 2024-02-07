@@ -57,7 +57,7 @@ export const useTimeRecordStore = defineStore('timeRecord', () => {
             cache.push(data)
             localStorage.setItem('requests', JSON.stringify(cache))
 
-            return res.status
+            return res.status, data
         } catch(e) {
             throw new Error("An error occured." + e)
         }

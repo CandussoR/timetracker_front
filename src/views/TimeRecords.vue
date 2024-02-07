@@ -55,14 +55,16 @@
         </select>
     </div>
 
-    <div v-if="pastRequests">
+    <div v-if="requests">
         <h2>Your old requests</h2>
-        <div v-for="request in pastRequests" :key="request.id">
-            <p @click="requested != null ? requested = null : requested = request.id">{{ request.id }}</p>
-            <!-- <p @click="redirect(request.id)">{{ request.id }}</p> -->
-            <div id="request-params">
-                <div id="param-list" v-for="(value, key) in request.params" :key="key" class="param-enum">
-                    <p id="param-item"><span class="param-key">{{ key }}</span> : {{ value }}</p>
+        <div v-for="(request, index) in requests" :key="index">
+            <div id="request" @mouseenter="showDelete = true" @mouseleave="showDelete = false">
+                <span class="material-symbols-outlined" v-if="showDelete" @click="handleDelete(index)"> delete </span>
+                <p id="request-records" v-if="records.length === 0" @click="redirect(request.id)">{{ request.id }}</p>
+                <div id="request-params">
+                    <div id="param-list" v-for="(value, key) in request.params" :key="key" class="param-enum">
+                        <p id="param-item"><span class="param-key">{{ key }}</span> : {{ value }}</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -72,29 +74,24 @@
     <button type="submit" @click="handleParams()">Get'em all</button>
 
         
-    <div v-if="records.length != 0">
-        <!-- <div v-for="item in timeRecordStore.timeRecords" :key="item.guid"></div> -->
-        <div v-for="(record, i) in records" :key="i">
-            <TimeRecordCard :record="record"/>
-        </div>
-    </div>
+    
 </template>
 
 <script setup>
-import TimeRecordCard from '@/components/TimeRecordCard.vue';
+import '@vuepic/vue-datepicker/dist/main.css';
 import TaskSelect from '@/components/select/TaskSelect.vue';
 import SubtaskSelect from '@/components/select/SubtaskSelect.vue';
 import TagSelect from '@/components/select/TagSelect.vue';
-import { useTimeRecordStore } from '@/stores/timeRecord';
 import VueDatePicker from '@vuepic/vue-datepicker';
-import '@vuepic/vue-datepicker/dist/main.css';
-import { computed, ref } from 'vue';
 import cleanObject from '../utils/cleanObject.js'
+import { onMounted, ref } from 'vue';
+import { useTimeRecordStore } from '@/stores/timeRecord';
 import { useRouter } from 'vue-router';
 
 const router = useRouter()
 const timeRecordStore = useTimeRecordStore()
 const maxDate = new Date().getFullYear()
+const showDelete = ref(false)
 const day = ref(null)
 const week = ref(null)
 const monthYear = ref(null)
@@ -106,25 +103,11 @@ const criteria = ref('')
 const selectedCriteria = ref(['day'])
 const possibleCriteria = ['day', 'week', 'month', 'year', 'task', 'subtask', 'tag']
 const errorMsg = ref('')
-const pastRequests = computed(() => {
-  const storedData = localStorage.getItem('requests');
-  if (storedData) {
-    const parsedData = JSON.parse(storedData);
-    return parsedData.map(x => ({ "id": x.id, "params": x.params }));
-  } else {
-    return [];
-  }
-});
-const showParams = ref(false)
-const requested = ref(null)
-const records = computed(() => {
-    if (requested.value) {
-        const data = localStorage.getItem('requests');
-        const parsed = JSON.parse(data)
-        const filteredMap = parsed.filter(x => x.id == requested.value).map(x => x.data).flat()
-        return [...filteredMap]
-    }
-    return []
+const requests = ref([])
+const records = ref([])
+
+onMounted(() => {
+    requests.value = JSON.parse(localStorage.getItem('requests')).map(x => ({ "id": x.id, "params": x.params })) || [];
 })
 
 /**
@@ -151,7 +134,6 @@ function handleParams() {
     if (week.value) {
         [rangeBeginning, rangeEnd] = week.value
     }
-
     const form = {
         "date" : day.value,
         "rangeBeginning" : rangeBeginning,
@@ -164,13 +146,19 @@ function handleParams() {
     }
     const cleanedForm = cleanObject(form)
     timeRecordStore.getTimeRecords(cleanedForm)
-        .then((res) => console.log("we got a response", res))
+        .then((res) => { requests.value.push({ "id": res["id"], "params": res["params"] }) })
         .catch((e) => errorMsg.value = e)
 }
 
 function redirect(id) {
-    router.push({path : `time_records/${id}`})
+    router.push({path : `time_records/search/${id}`})
 }
+
+function handleDelete(index) {
+    requests.value.splice(index, 1)
+    localStorage.setItem('requests', JSON.stringify(requests.value))
+}
+
 </script>
 
 <style scoped>

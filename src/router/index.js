@@ -4,6 +4,7 @@ import HomeView from '../views/HomeView.vue'
 import TaskView from '../views/TaskView.vue'
 import TimerView from '../views/TimerView.vue'
 import TimeRecords from '../views/TimeRecords.vue'
+import RecordsSearchResult from '../views/RecordsSearchResult.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -30,8 +31,13 @@ const router = createRouter({
     },
     {
       path: '/time_records',
-      name: "timeRecords",
+      name: 'timeRecords',
       component: TimeRecords
+    },
+    {
+      path: '/time_records/search/:id',
+      name: 'RecordsSearchResult',
+      component: RecordsSearchResult
     }
   ]
 })

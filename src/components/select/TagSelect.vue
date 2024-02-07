@@ -19,9 +19,9 @@ import { useTagStore } from '@/stores/tag.js'
 import { ref, watch } from 'vue';
 const tagStore = useTagStore()
 tagStore.index()
-const selectedTag = ref(null)
+const props = defineProps(["tag"])
+const selectedTag = ref(props.tag ?? '')
 const emit = defineEmits(["selected"])
-defineProps(["tag"])
 
 watch(
     () => tagStore.isCreated,

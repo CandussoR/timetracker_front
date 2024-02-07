@@ -14,8 +14,7 @@ const taskStore = useTaskStore()
 taskStore.index()
 const props = defineProps(["task"])
 const emit = defineEmits(["selected"])
-const selectedTask = ref(props.value ?? '')
-
+const selectedTask = ref(props.task ?? '')
 watch(
     () => taskStore.isCreated, 
     (newValue) => {

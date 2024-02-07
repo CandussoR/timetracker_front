@@ -12,10 +12,10 @@ import { useTaskStore } from '@/stores/task.js'
 import { ref, watch } from 'vue';
 const taskStore = useTaskStore();
 // Gets the task selected to update the dropdown
-defineProps(["task"]);
+const props = defineProps(["task", "subtask"]);
 // Returns the selected Subtask to the parent
 const emit = defineEmits(["selected"]);
-const selectedSubtask = ref("");
+const selectedSubtask = ref(props.subtask ?? "");
 
 // Watches for the change of value on creation,
 // which precedes the closing of the modal in the parent
