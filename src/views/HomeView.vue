@@ -10,9 +10,10 @@
                 <span class="material-symbols-outlined" @click="handleForward">arrow_forward</span>
             </div>
             <div class="data-card-data" v-if="data">
-                <p class="data-card-data__count">{{ data.count }} timers</p>
+                <p class="data-card-data__count">{{ data.count }} {{ data.count === 1 ? "timer" : "timers" }}</p>
                 <p class="data-card-data__time">{{ data.time }}</p>
             </div>
+            <div id="stats-link"><p><a href="/stats">More stats</a></p></div>
             <div v-if="loading"><span class="loader"></span></div>
         </div>
     </div>
@@ -139,6 +140,10 @@ function redirect() {
     display : flex ;
     flex-direction: column;
     margin : 5%;
+}
+
+div#stats-link p {
+    text-align: right;
 }
 .loader {
     .loader {
