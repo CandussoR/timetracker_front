@@ -1,4 +1,5 @@
 <template>
+    <label for="subtask">Subtask name (optional) : </label>
     <select id="subtaskSelect" name="substask" v-model="selectedSubtask" @change="emit('selected', selectedSubtask)">
         <option v-if="task" value="" disabled selected>Select a subtask (optional)</option>
         <option v-for="subtask in taskStore.filterSubtask(task)" :key="subtask" :value="subtask">
@@ -29,6 +30,8 @@ watch(
 });
 </script>
 
-<style lang="scss" scoped>
-
+<style scoped>
+#subtaskSelect {
+    display: flex;
+}
 </style>
