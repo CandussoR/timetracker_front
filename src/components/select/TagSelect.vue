@@ -1,5 +1,6 @@
 <template>
     <div>
+        <label for="tagInput">Tag (optional) : </label>
         <input
             id="tagInput" name="tagInput" list="tagData" 
             v-model="selectedTag" 
@@ -31,3 +32,10 @@ watch(
         }
       })
 </script>
+
+<style scoped>
+div {
+    display : flex;
+    flex-direction: column;
+}
+</style>

@@ -9,10 +9,7 @@
                
                 <div class="inline">
                     <div class="column">
-                        <label for="taskNameSelect">Task</label>
                         <TaskSelect :task="selectedTask" @selected="selectedTask = $event"/>
-
-                        <label for="subtaskSelect">Subtask</label>
                         <SubtaskSelect :task="selectedTask" @selected="selectedSubtask = $event" /> 
                     </div>
                     <!-- Using click.stop to prevent propagation of closeModal -->
@@ -24,7 +21,6 @@
             
             <fieldset id="tag__section">
                 <legend>Tag</legend>
-                <label for="tagInput" hidden="hidden">Tag</label>
                 <div class="inline">
                     <TagSelect :tag="selectedTag" @selected="selectedTag = $event"/>
                     <span class="material-symbols-outlined" v-if="!newTag" @click="newTag = !newTag">add</span>
