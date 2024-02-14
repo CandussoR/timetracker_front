@@ -13,7 +13,7 @@
                 <p class="data-card-data__count">{{ data.count }} {{ data.count === 1 ? "timer" : "timers" }}</p>
                 <p class="data-card-data__time">{{ data.time }}</p>
             </div>
-            <div id="stats-link"><p><a href="/stats">More stats</a></p></div>
+            <div id="stats-link"><p><a @click="router.push('/stats')">More stats</a></p></div>
             <div v-if="loading"><span class="loader"></span></div>
         </div>
     </div>
@@ -78,6 +78,7 @@ function handleUpdate() {
     axios.put('/time_records/last_to_now')
         .then(() => success.value = "Updated, boss.")
         .catch(() => error.value = "An error occured.")
+    statStore.handleUpdated()
 }
 
 function handleBack() {
