@@ -91,5 +91,49 @@ export const useStatStore = defineStore("stats", () => {
         sessionStorage.removeItem('stats')
     }
 
-    return {updated, daily, weekly, monthly, yearly, weekBarChart, taskRatio, getHomeStats, getWeekStatsForYear, getTaskTimeRatio, handleUpdated}
+    /**
+     * 
+     */
+    async function getGenericWeekStats () {
+        try {
+            const res = await axios.get('stats/generic/week')
+             return res.data
+        } catch(e) {
+            throw new Error(e);
+        }
+    }
+    
+    async function getGenericMonthStats () {
+        try {
+            const res = await axios.get('stats/generic/month')
+            return res.data
+        } catch(e) {
+            throw new Error(e);
+        }
+    }
+    
+    async function getGenericYearStats () {
+        try {
+            const res = await axios.get('stats/generic/year')
+            return res.data
+        } catch(e) {
+            throw new Error(e);
+        }
+    }
+
+    return { updated, 
+        daily, 
+        weekly, 
+        monthly, 
+        yearly, 
+        weekBarChart, 
+        taskRatio, 
+        getHomeStats, 
+        getWeekStatsForYear, 
+        getTaskTimeRatio, 
+        handleUpdated, 
+        getGenericWeekStats, 
+        getGenericMonthStats, 
+        getGenericYearStats
+    }
 })
