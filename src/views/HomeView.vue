@@ -11,7 +11,9 @@
             </div>
             <div class="data-card-data" v-if="data">
                 <p class="data-card-data__count">{{ data.count }} {{ data.count === 1 ? "timer" : "timers" }}</p>
-                <p class="data-card-data__time">{{ data.time }}</p>
+                <TimeDisplay v-if="timeData.length === 4" :day="timeData[0]" :hours="timeData[1]" :minutes="timeData[2]" :seconds="timeData[3]"/>
+                <TimeDisplay v-else-if="timeData.length === 3" :hours="timeData[0]" :minutes="timeData[1]" :seconds="timeData[2]" />
+                <p v-else>--</p>
             </div>
             <div id="stats-link"><p><a @click="router.push('/stats')">More stats</a></p></div>
             <div v-if="loading"><span class="loader"></span></div>
@@ -31,6 +33,7 @@ import axios from 'axios';
 import { computed, onMounted, ref } from 'vue';
 import {useStatStore } from '../stores/stats';
 import { useRouter } from 'vue-router';
+import TimeDisplay from '@/components/TimeDisplay.vue';
 
 const router = useRouter()
 const statStore = useStatStore()
@@ -53,6 +56,8 @@ const data = computed(() => {
         return null
     }
 })
+
+const timeData = computed(() => data.value.time.split(":") || null)
 const selectors = ["D", "W", "M", "Y"]
 const selected = ref('')
 const loading = ref(null)
@@ -100,6 +105,7 @@ function redirect() {
 
 <style scoped>
 .data-card {
+    margin: auto;
     min-width: 400px;
     max-width: 500px;
     border: #EEEEEE 1px solid;
@@ -167,7 +173,6 @@ div#stats-link p {
     }
     } 
 }
-
 .button__timer {
     min-width: 100%;
     font-size: 1.5rem;
