@@ -1,7 +1,7 @@
 <template>
     <ul>
         <li>General</li>
-        <li>Dive Into</li>
+        <li @click="router.push('/stats/dive')">Dive Into</li>
         <li>Reports</li>
     </ul>
 
@@ -20,10 +20,14 @@
     </div>
 
     <div v-else>
-      <div id="resume">
+      <div id="resume" v-if="resume.count && resume.time">
         <p id="resume__count">{{ resume.count }} {{ resume.count === 1 ? "timer" : "timers" }}</p>
         <p id="resume__total-time">{{ resume.time }}</p>
       </div>
+      <div id="resume" v-else>
+        <p>No timer yet ! Go do one !</p>
+      </div>
+
       <div id="custom-bar-chart">
         <div class="bar"
             :style="{ width: item.ratio + '%' }"
@@ -51,6 +55,8 @@
             <apexchart type="line" height="350" :options="weeksLineChart.chartOptions" :series="weeksLineChart.series"/>
           </div>
           <div v-else-if="selected === 'Y'" id="chart">
+            <apexchart type="bar" height="350" :options="yearTaskRatio.chartOptions" :series="yearTaskRatio.series" />
+            <apexchart type="line" height="350" :options="monthsLineChart.chartOptions" :series="monthsLineChart.series"/>
             <label class="chart-title" for="bar-chart__week">Time per week</label>
             <apexchart id="bar-chart__week" type="bar" width="550" height="450" :options="weekBar.chartOptions" :series="weekBar.series"/>
           </div>
@@ -63,7 +69,9 @@
 import { computed, onMounted, ref } from 'vue';
 import { useStatStore } from '../stores/stats';
 import formatTime from '../utils/formatTime';
+import { useRouter } from 'vue-router';
 
+const router = useRouter()
 const statStore = useStatStore()
 const loading = ref(true)
 const selected = ref("D")
@@ -97,7 +105,13 @@ const weekBar = ref({
                 columnWidth: '60%'
               }
             },
-            colors: ['#00E396'],
+        title: {
+          text: 'Total time per week',
+          align: 'left'
+        },
+        dataLabels: {
+          enable: false
+        }
     }
 })
 const weekTaskRatio = ref({
@@ -140,7 +154,7 @@ const weekTaskRatio = ref({
               },
             },
             xaxis: {
-              type: 'datetime',
+              type: 'numeric',
               categories: null,
             },
             title: {
@@ -279,13 +293,99 @@ const daysLineChart = ref(
     }
   }
   )
+
+  const yearTaskRatio = ref({
+          series: null,
+          chartOptions: {
+            chart: {
+              type: 'bar',
+              height: 350,
+              stacked: true,
+              toolbar: {
+                show: true
+              },
+              zoom: {
+                enabled: true
+              }
+            },
+            responsive: [{
+              breakpoint: 480,
+              options: {
+                legend: {
+                  position: 'bottom',
+                  offsetX: -10,
+                  offsetY: 0
+                }
+              }
+            }],
+            plotOptions: {
+              bar: {
+                horizontal: false,
+                borderRadius: 10,
+                dataLabels: {
+                  total: {
+                    enabled: false,
+                    style: {
+                      fontSize: '13px',
+                      fontWeight: 900
+                    }
+                  }
+                }
+              },
+            },
+            xaxis: {
+              type: 'datetime',
+              categories: null,
+            },
+            title: {
+              text: 'Task ratio per month',
+              align: 'left'
+            },
+            legend: {
+              position: 'right',
+              offsetY: 40
+            },
+            fill: {
+              opacity: 1
+            }
+          }
+        })
+
+  const monthsLineChart = ref(
+  {
+    series: null,
+    chartOptions: {
+      chart: {
+        height: 350,
+        type: 'line',
+        zoom: {
+          enabled: false
+        }
+      },
+      dataLabels: {
+        enabled: true,
+        position: 'top',
+        offsetY: -10,
+        formatter: function (val) {
+          return formatTime(val)
+        }
+      },
+      stroke: {
+        curve: 'straight'
+      },
+      title: {
+        text: 'Total time per month',
+        align: 'left'
+      },
+      xaxis: {
+        categories: null,
+      }
+    }
+  }
+  )
     
 onMounted(async () => {
-    // await statStore.getWeekStatsForYear(2023)
-    // for (let i=0; i < Object.entries(statStore.weekBarChart).length; i++) {
-    //     const [year, weeks] = Object.entries(statStore.weekBarChart)[i]
-    //     weekBar.value.series.push({name : year, data : weeks})
-    // }
+
 
     // in case of a refresh which empties the store
     if (!statStore.daily) {
@@ -327,6 +427,19 @@ async function loadMore() {
       monthTaskRatio.value.series = res.stackedBarChart
       weeksLineChart.value.chartOptions.xaxis.categories = res.weeks
       weeksLineChart.value.series = [res.weeksLineChart]
+      generic.value = true
+    } else if (selected.value === 'Y') {
+      const res = await statStore.getGenericYearStats()
+      console.log(res)
+      yearTaskRatio.value.chartOptions.xaxis.categories = res.months
+      yearTaskRatio.value.series = res.stackedBarChart
+      monthsLineChart.value.chartOptions.xaxis.categories = res.months
+      monthsLineChart.value.series = [res.monthsLineChart]
+      console.log(res.weekLineChart)
+      for (let i=0; i < Object.entries(res.weekLineChart).length; i++) {
+        const [year, weeks] = Object.entries(res.weekLineChart)[i]
+        weekBar.value.series.push({name : year, data : weeks})
+      }
       generic.value = true
     }
 }
