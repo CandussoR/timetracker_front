@@ -40,7 +40,6 @@ const isDone = ref(false)
 const timeRecord = ref(null)
 const log = ref(null)
 const currentDuration = ref(0)
-const interval = ref(0)
 const err = ref('')
 const success = ref('')
 const formattedDuration = computed(() => {
@@ -59,6 +58,8 @@ if (data2) {
     currentDuration.value = Number(data2)
 }
 
+let worker;
+
 function beginTimeRecord(clockType) {
     const { currentDate, currentTime } = getCurrentDateTime()
 
@@ -75,40 +76,48 @@ function beginTimeRecord(clockType) {
             timeRecord.value = res
 
             if (clockType == "timer") {
-                startTimer()
+                startTheClock("timer")
             } else {
-                startStopwatch()
+                startTheClock("stopwatch")
             }
         })
         .catch((e) => err.value = e)
 }
 
-function startTimer() {
-    timerRunning.value = true
-    interval.value = setInterval(() => {
-        if (currentDuration.value != 0) {
-            currentDuration.value--
-        } else {
+function startTheClock(type) {
+    if (!window.Worker) {
+        err.value = "Your browser doesn't support workers."
+        return;
+    }
+
+    if (type === "timer") {
+        timerRunning.value = true
+    } else {
+        stopwatchRunning.value = true
+    }
+
+    worker = new Worker('src/worker/clock.js')
+    worker.postMessage({type: type, duration: currentDuration.value})
+    worker.onmessage = (e) => {
+        currentDuration.value = e.data
+        if (type === "timer" && e.data === 0) {
             stopTheClock()
         }
-    }, 981)
-}
-
-function startStopwatch() {
-    stopwatchRunning.value = true
-    interval.value = setInterval(() => {
-        currentDuration.value++;
-    }, 981)
+    }
 }
 
 function stopTheClock() {
+    if (worker) {
+        worker.terminate();
+        worker = null
+    }
     timerRunning.value = false
     stopwatchRunning.value = false
-    clearInterval(interval.value)
+
     const currentTime = getCurrentDateTime().currentTime
     timeRecord.value["time_ending"] = currentTime 
     isDone.value = true
-    // make a sound
+
     const audio = new Audio(import.meta.env.VITE_APP_RING)
     audio.play()
 }
