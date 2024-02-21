@@ -9,7 +9,7 @@ export const useTimeRecordStore = defineStore('timeRecord', () => {
      * 
      * @param {*} timeRecord 
      * @param {string} type - can be "old" or "begin" 
-     * @returns {timeRecord} 
+     * @returns {timeRecord} - returns the timeRecord.
      */
     async function createTimeRecord(timeRecord, type) {
         try {
