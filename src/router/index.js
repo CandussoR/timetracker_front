@@ -6,6 +6,8 @@ import TimerView from '../views/TimerView.vue'
 import TimeRecords from '../views/TimeRecords.vue'
 import RecordsSearchResult from '../views/RecordsSearchResult.vue'
 import OldTimer from '../views/OldTimer.vue'
+import StatsView from '../views/StatsView.vue'
+import StatDiveView from '../views/StatDiveView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -44,6 +46,16 @@ const router = createRouter({
       path: '/time_records/search/:id',
       name: 'RecordsSearchResult',
       component: RecordsSearchResult
+    },
+    {
+      path: '/stats',
+      name: 'statsView',
+      component: StatsView
+    },
+    {
+      path: '/stats/dive',
+      name: 'StatDiveView',
+      component: StatDiveView
     }
   ]
 })
