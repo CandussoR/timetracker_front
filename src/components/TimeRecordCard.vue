@@ -53,8 +53,10 @@
                                 enable-seconds
                                 />
             </div>
-            <label class="bold" for="log">Log :</label> 
-            <textarea id="log" name="log" v-model="formRecord.log"/>
+            <fieldset>
+                <label class="bold" for="log">Log :</label> 
+                <textarea id="log" name="log" v-model="formRecord.log"/>
+            </fieldset>
         </div> 
     </form>
 
@@ -70,12 +72,14 @@ import '@vuepic/vue-datepicker/dist/main.css';
 import { useTimeRecordStore } from '@/stores/timeRecord';
 import { useTaskStore } from '@/stores/task';
 import { useTagStore } from '@/stores/tag';
+import { useStatStore } from '@/stores/stats';
 
 const props = defineProps(["record"])
 const emit = defineEmits(["updated"])
 const recordStore = useTimeRecordStore()
 const taskStore = useTaskStore()
 const tagStore = useTagStore()
+const statStore = useStatStore()
 const originalRecord = props.record
 const showEdit = ref(false)
 const showDone = ref(false)
@@ -131,12 +135,8 @@ async function handleSubmit() {
         const fte = formRecord.value.timeEnding
         formRecord.value.timeEnding = `${fte.hours}:${fte.minutes}:${fte.seconds}`
     }
-    // First spring cleaning for the form.
+
     formRecord.value.guid = props.record.guid
-    formRecord.value.time_beginning = formRecord.value.timeBeginning 
-    formRecord.value.time_ending = formRecord.value.timeEnding 
-    delete formRecord.value.timeBeginning 
-    delete formRecord.value.timeEnding
 
     if (!areObjectEquals(originalRecord, formRecord.value)) {
         // Continuation of the spring cleaning : format, guids.
@@ -144,20 +144,22 @@ async function handleSubmit() {
         formRecord.value.task_guid = taskStore.tasks.filter(x => x.task_name == formRecord.value.task_name 
                                                                 && x.subtask == formRecord.value.subtask)
                                                     .map(x => x.guid)[0]
+        delete formRecord.value.subtask 
+        delete formRecord.value.task_name
+
+
         if (formRecord.value.tag === null) {
             formRecord.value.tag_guid = null
         } else {
             formRecord.value.tag_guid = tagStore.tags.filter(x => x.tag === formRecord.value.tag)
             .map(x => x.guid)[0]
         }
-
-        delete formRecord.value.subtask 
-        delete formRecord.value.task_name
         delete formRecord.value.tag
 
         // make an update of the record.
         recordStore.updateTimeRecord(formRecord.value, "edit")
             .then((res) => {
+                statStore.handleUpdated()
                 emit("updated", res)
                 editing.value = !editing.value
             })

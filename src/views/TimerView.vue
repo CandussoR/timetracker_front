@@ -29,9 +29,11 @@ import { useTimeRecordStore } from '../stores/timeRecord.js';
 import cleanObject from '../utils/cleanObject.js';
 import getCurrentDateTime from '../utils/getCurrentDateTime.js';
 import { useRouter } from 'vue-router';
+import { useStatStore } from '@/stores/stats';
 
 const router = useRouter()
 const timeRecordStore = useTimeRecordStore()
+const statStore = useStatStore()
 const timerRunning = ref(false)
 const stopwatchRunning = ref(false)
 const isDone = ref(false)
@@ -103,7 +105,7 @@ function stopTheClock() {
     timerRunning.value = false
     stopwatchRunning.value = false
     clearInterval(interval.value)
-    const { currentDate, currentTime } = getCurrentDateTime()
+    const currentTime = getCurrentDateTime().currentTime
     timeRecord.value["time_ending"] = currentTime 
     isDone.value = true
     // make a sound
@@ -122,6 +124,7 @@ function updateTimeRecord() {
             sessionStorage.removeItem('duration')
         })
         .catch((e) => err.value = e)
+    statStore.handleUpdated()
     setTimeout(function() { router.push({ path: '/'})}, 2000)
 }
 </script>

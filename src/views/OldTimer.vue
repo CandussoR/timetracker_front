@@ -1,6 +1,6 @@
 <template>
     <h1>Add an Old Timer</h1>
-    <form @submit.prevent="handleSubmit">
+    <form v-if="!record" @submit.prevent="handleSubmit">
         <div class="time-record-form">
 
             <fieldset>
@@ -60,16 +60,37 @@
             <button type="submit">Submit</button>
         </div>
     </form>
+    <div v-else>
+        <TimeRecordCard :record="record" @updated="record = $event"/>
+    </div>
+
+    <div v-if="success">
+        <button @click="handleAnother">Create another timer</button>
+        <router-link to="/">Home</router-link>
+    </div>
 </template>
 
 <script setup>
 import { ref } from 'vue';
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
+import TimeRecordCard from '@/components/TimeRecordCard.vue';
 import TaskSelect from '@/components/select/TaskSelect.vue';
 import SubtaskSelect from '@/components/select/SubtaskSelect.vue';
 import TagSelect from '@/components/select/TagSelect.vue';
+import { useTimeRecordStore } from '@/stores/timeRecord';
+import { useTaskStore } from '@/stores/task';
+import { useTagStore } from '@/stores/tag';
+import { useStatStore } from '@/stores/stats';
 
+
+const recordStore = useTimeRecordStore()
+const taskStore = useTaskStore()
+const tagStore = useTagStore()
+const statStore = useStatStore()
+const record = ref(null)
+const errorMsg = ref('')
+const success = ref(false)
 const formRecord = ref({
     date : null,
     task_name : null,
@@ -90,6 +111,35 @@ const formRecord = ref({
     log: null
 })
 
+async function handleSubmit() {
+    try {
+        if (formRecord.value.subtask !== '') formRecord.value.subtask = null
+        formRecord.value.task_guid = taskStore.tasks.filter(x => x.task_name == formRecord.value.task_name 
+                                                                && x.subtask == formRecord.value.subtask)
+                                                    .map(x => x.guid)[0]
+        if (formRecord.value.tag === null) {
+            formRecord.value.tag_guid = null
+        } else {
+            formRecord.value.tag_guid = tagStore.tags.filter(x => x.tag === formRecord.value.tag)
+            .map(x => x.guid)[0]
+        }
+        const res = await recordStore.createTimeRecord(formRecord.value, "old")
+        if (res) {
+            success.value = true
+            record.value = res
+            statStore.handleUpdated();
+        }
+    }
+    catch(e) {
+        errorMsg.value = e
+    }
+}
+
+function handleAnother() {
+    success.value = false
+    record.value = null
+    errorMsg.value = ''
+}
 </script>
 
 <style scoped>

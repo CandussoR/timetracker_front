@@ -4,7 +4,7 @@ function getCurrentDateTime() {
     let dt = null
     // This date has an offSet
     const d = new Date()
-    // Countering the offset by substracting it's time in milliseconds
+    // Countering the offset by substracting its time in milliseconds
     const offset = d.getTimezoneOffset()
     if (offset < 0) {
         dt = new Date(d.getTime() - (offset * 60 * 1000)); 
