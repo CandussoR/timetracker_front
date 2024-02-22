@@ -62,6 +62,7 @@ let worker;
 
 function beginTimeRecord(clockType) {
     const { currentDate, currentTime } = getCurrentDateTime()
+    const datetime = new Date(currentDate + ' ' + currentTime)
 
     timeRecord.value["date"] = currentDate
     timeRecord.value["time_beginning"] = currentTime
@@ -76,15 +77,15 @@ function beginTimeRecord(clockType) {
             timeRecord.value = res
 
             if (clockType == "timer") {
-                startTheClock("timer")
+                startTheClock("timer", datetime)
             } else {
-                startTheClock("stopwatch")
+                startTheClock("stopwatch", datetime)
             }
         })
         .catch((e) => err.value = e)
 }
 
-function startTheClock(type) {
+function startTheClock(type, beginningDatetime) {
     if (!window.Worker) {
         err.value = "Your browser doesn't support workers."
         return;
@@ -97,7 +98,8 @@ function startTheClock(type) {
     }
 
     worker = new Worker('src/worker/clock.js')
-    worker.postMessage({type: type, duration: currentDuration.value})
+    // duration is in seconds
+    worker.postMessage({type: type, duration: currentDuration.value, beginning: beginningDatetime})
     worker.onmessage = (e) => {
         currentDuration.value = e.data
         if (type === "timer" && e.data === 0) {
@@ -113,11 +115,8 @@ function stopTheClock() {
     }
     timerRunning.value = false
     stopwatchRunning.value = false
-
-    const currentTime = getCurrentDateTime().currentTime
-    timeRecord.value["time_ending"] = currentTime 
+    timeRecord.value["time_ending"] = getCurrentDateTime().currentTime
     isDone.value = true
-
     const audio = new Audio(import.meta.env.VITE_APP_RING)
     audio.play()
 }
