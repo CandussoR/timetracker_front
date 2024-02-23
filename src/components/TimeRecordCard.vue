@@ -9,7 +9,11 @@
             <p>Time Beginning : {{ record.time_beginning ?? 'Unknown' }}</p>
             <p>Time Ending : {{ record.time_ending ?? 'Unknown' }}</p>
         </div>
-        <p>Log : <br>{{ record.log }}</p>
+        <!-- v-html is okay here because the log is sanitized. -->
+        <div v-if="record.log">
+            <p>Log :</p>
+            <div v-html="mdParse(record.log)"></div>
+        </div>
     </div>
 
     <form @submit.prevent="handleSubmit">
@@ -73,6 +77,7 @@ import { useTimeRecordStore } from '@/stores/timeRecord';
 import { useTaskStore } from '@/stores/task';
 import { useTagStore } from '@/stores/tag';
 import { useStatStore } from '@/stores/stats';
+import mdParse from '@/utils/markdownParser';
 
 const props = defineProps(["record"])
 const emit = defineEmits(["updated"])
