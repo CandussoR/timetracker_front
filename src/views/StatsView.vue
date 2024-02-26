@@ -30,6 +30,7 @@
           <p>No timer yet ! Go do one !</p>
         </div>
   
+        <!-- statStore.taskRatio always has only the taskRatio for the period selected. -->
         <div id="custom-bar-chart">
           <div class="bar"
               :style="{ width: item.ratio + '%' }"
@@ -38,10 +39,16 @@
               :class="['bar', 'task' + index]">
           </div>
         </div>
-        <div id="task-list" v-for="({ task, formatted, ratio }, index) in statStore.taskRatio" :key="task">
+        <!-- <div id="task-list" v-for="({ task, formatted, ratio }, index) in statStore.taskRatio" :key="task">
           <div class="box-color" :class="['box-color', 'task' + index]"></div> 
-            <span class="task-name">{{ task }}</span> : {{ formatted }} ({{ ratio }}%)
-        </div>
+            <div id="task-name" class="task-name">{{ task }}</div>
+            <div>
+              <TimeDisplay v-if="timeData.length === 4" :day="timeData[0]" :hours="timeData[1]" :minutes="timeData[2]" :seconds="timeData[3]"/>
+              <TimeDisplay v-else-if="timeData.length === 3" :hours="timeData[0]" :minutes="timeData[1]" :seconds="timeData[2]" />
+              <p v-else>--</p>
+            </div>
+            <div id="ratio">{{ ratio }}</div> -->
+        <!-- </div> -->
   
         <div id="details" v-if="selected !== 'D'" @click="loadMore()">
           More details !<span class="material-symbols-outlined">arrow_drop_down</span>
@@ -74,6 +81,7 @@ import { computed, onMounted, ref } from 'vue';
 import { useStatStore } from '../stores/stats';
 import formatTime from '../utils/formatTime';
 import { useRouter } from 'vue-router';
+import TimeDisplay from '@/components/TimeDisplay.vue';
 
 const router = useRouter()
 const statStore = useStatStore()
@@ -96,6 +104,7 @@ const resume = computed(() => {
         return statStore.yearly
     }
 })
+const timeData = computed(() => resume.value.time.split(":") || null)
 const generic = ref(false)
 // Week-related generic stats
 const weekTaskRatio = ref({
@@ -188,7 +197,6 @@ const daysLineChart = ref(
               }
             }],
             xaxis: {
-              type: 'datetime',
               categories: null,
             },
             title: {
@@ -233,7 +241,14 @@ const daysLineChart = ref(
       },
       xaxis: {
         categories: null,
-      }
+      },
+      yaxis: {
+        labels: {
+          formatter: function (val) {
+          return formatTime(val)
+          }
+        }
+      },
     }
   }
   )
@@ -318,6 +333,7 @@ const weekBar = ref({
         enabled: false
       },
       yaxis: {
+        stepSize: 7200,
         labels: {
           formatter: function (val) {
           return formatTime(val)
