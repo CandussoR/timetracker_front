@@ -19,6 +19,20 @@
   --vt-c-text-light-2: rgba(60, 60, 60, 0.66);
   --vt-c-text-dark-1: var(--vt-c-white);
   --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
+
+  /* Realtime Colors */
+  --text: #eaeaf0;
+  --background: #050509;
+  --primary: #9798d1;
+  --secondary: #272975;
+  --accent: #5557d5;
+
+  --linearPrimarySecondary: linear-gradient(#9798d1, #272975);
+  --linearPrimaryAccent: linear-gradient(#9798d1, #5557d5);
+  --linearSecondaryAccent: linear-gradient(#272975, #5557d5);
+  --radialPrimarySecondary: radial-gradient(#9798d1, #272975);
+  --radialPrimaryAccent: radial-gradient(#9798d1, #5557d5);
+  --radialSecondaryAccent: radial-gradient(#272975, #5557d5);
 }
 
 /* semantic color variables for this project */
@@ -31,14 +45,15 @@
   --color-border-hover: var(--vt-c-divider-light-1);
 
   --color-heading: var(--vt-c-text-light-1);
-  --color-text: var(--vt-c-text-light-1);
+  --color-text: var(--text);
 
   --section-gap: 160px;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-background: var(--vt-c-black);
+    --color-background: var(--background);
+    /* --color-background: var(--vt-c-black); */
     --color-background-soft: var(--vt-c-black-soft);
     --color-background-mute: var(--vt-c-black-mute);
 
@@ -46,7 +61,8 @@
     --color-border-hover: var(--vt-c-divider-dark-1);
 
     --color-heading: var(--vt-c-text-dark-1);
-    --color-text: var(--vt-c-text-dark-2);
+    --color-text: var(--text);
+    /* --color-text: var(--vt-c-text-dark-2); */
   }
 }
 
@@ -83,8 +99,4 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-.modal {
-  background: var(--color-background)
 }

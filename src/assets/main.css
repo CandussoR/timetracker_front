@@ -2,9 +2,16 @@
 
 #app {
   max-width: 1280px;
+  min-width: 80%;
   margin: 0 auto;
   padding: 2rem;
   font-weight: normal;
+  place-items: center;
+}
+
+h1 {
+  text-align: center;
+  margin: 5% 0;
 }
 
 a,
@@ -27,10 +34,17 @@ a,
 
 fieldset {
   border : 0;
+  margin: 5% 0;
 }
 
 legend {
   font-size: 1.5rem;
+}
+
+.form-button {
+  display: flex;
+  justify-content: space-evenly;
+  
 }
 
 button {
@@ -52,11 +66,30 @@ button {
   width: fit-content;
   padding: 2%;
   border-radius : 5px;
-  background: var(--color-background)
+  background: var(--primary);
+  margin : auto;
+}
+
+button.secondary {
+  background: var(--secondary);
 }
 
 button:hover {
   scale: 1.1;
+}
+
+input, select, textarea {
+  width: 100%;
+  max-width: 300px;
+}
+
+select {
+  border-radius: 5px;
+  height: 2rem;
+}
+
+.modal {
+  background: var(--background)
 }
 
 .modalContent {
@@ -76,11 +109,31 @@ button:hover {
 
 .modalInput:focus {
   border-color: #70CFFF;
-    /* border-color: hsla(160, 100%, 37%, 1); */
+    border-color: hsla(160, 100%, 37%, 1);
 }
 
 .modalButton {
     margin: 0 auto;
+}
+
+.loader {
+  width: 48px;
+  height: 48px;
+  border: 5px solid #FFF;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+  }
+
+  @keyframes rotation {
+  0% {
+      transform: rotate(0deg);
+  }
+  100% {
+      transform: rotate(360deg);
+  }
 }
 
 @media (hover: hover) {
