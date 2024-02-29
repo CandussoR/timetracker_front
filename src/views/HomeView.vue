@@ -21,10 +21,10 @@
     </div>
 
     <div id="buttons" class="buttons">
-        <button class="button__timer" @click="redirect">New timer</button>
+        <button @click="redirect">New timer</button>
         <p v-if="success" id="success" class="success">{{ success }}</p>
         <p v-if="error" id="error" class="error">{{ error }}</p>
-        <button class="button__update" @click="handleUpdate()">Update last timer to now</button>
+        <button class="secondary" @click="handleUpdate()">Update last timer to now</button>
     </div>
 </template>
 
@@ -37,12 +37,14 @@ import TimeDisplay from '@/components/TimeDisplay.vue';
 
 const router = useRouter()
 const statStore = useStatStore()
+
 const cardData = ref({
     daily: null,
     weekly: null,
     monthly: null,
     yearly: null
 })
+
 const data = computed(() => {
     if (selected.value === "D") {
         return cardData.value.daily
@@ -57,6 +59,7 @@ const data = computed(() => {
     }
 })
 
+// Split the formatted time if there is one
 const timeData = computed(() => data.value.time.split(":") || null)
 const selectors = ["D", "W", "M", "Y"]
 const selected = ref('')

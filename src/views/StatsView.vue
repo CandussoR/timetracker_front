@@ -30,25 +30,9 @@
           <p>No timer yet ! Go do one !</p>
         </div>
   
-        <!-- statStore.taskRatio always has only the taskRatio for the period selected. -->
-        <div id="custom-bar-chart">
-          <div class="bar"
-              :style="{ width: item.ratio + '%' }"
-              v-for="(item, index) in statStore.taskRatio" 
-              :key="index" 
-              :class="['bar', 'task' + index]">
-          </div>
-        </div>
-        <!-- <div id="task-list" v-for="({ task, formatted, ratio }, index) in statStore.taskRatio" :key="task">
-          <div class="box-color" :class="['box-color', 'task' + index]"></div> 
-            <div id="task-name" class="task-name">{{ task }}</div>
-            <div>
-              <TimeDisplay v-if="timeData.length === 4" :day="timeData[0]" :hours="timeData[1]" :minutes="timeData[2]" :seconds="timeData[3]"/>
-              <TimeDisplay v-else-if="timeData.length === 3" :hours="timeData[0]" :minutes="timeData[1]" :seconds="timeData[2]" />
-              <p v-else>--</p>
-            </div>
-            <div id="ratio">{{ ratio }}</div> -->
-        <!-- </div> -->
+        <CustomBar/>
+
+       <TaskRatioList/> 
   
         <div id="details" v-if="selected !== 'D'" @click="loadMore()">
           More details !<span class="material-symbols-outlined">arrow_drop_down</span>
@@ -81,7 +65,8 @@ import { computed, onMounted, ref } from 'vue';
 import { useStatStore } from '../stores/stats';
 import formatTime from '../utils/formatTime';
 import { useRouter } from 'vue-router';
-import TimeDisplay from '@/components/TimeDisplay.vue';
+import CustomBar from '@/components/stats/CustomBar.vue';
+import TaskRatioList from '@/components/stats/TaskRatioList.vue';
 
 const router = useRouter()
 const statStore = useStatStore()
@@ -93,6 +78,7 @@ const selector = {
     "M": "month",
     "Y": "year"
 }
+
 const resume = computed(() => {
     if (selected.value === 'D') {
         return statStore.daily
@@ -104,7 +90,7 @@ const resume = computed(() => {
         return statStore.yearly
     }
 })
-const timeData = computed(() => resume.value.time.split(":") || null)
+
 const generic = ref(false)
 // Week-related generic stats
 const weekTaskRatio = ref({
@@ -290,38 +276,39 @@ const yearTaskRatio = ref({
   }
       })
 
-  const monthsLineChart = ref(
-  {
-    series: null,
-    chartOptions: {
-      chart: {
-        height: 350,
-        type: 'line',
-        zoom: {
-          enabled: false
-        }
-      },
-      dataLabels: {
-        enabled: true,
-        position: 'top',
-        offsetY: -10,
-        formatter: function (val) {
-          return formatTime(val) 
-        }
-      },
-      stroke: {
-        curve: 'straight'
-      },
-      title: {
-        text: 'Total time per month',
-        align: 'left'
-      },
-      xaxis: {
-        categories: null,
+const monthsLineChart = ref(
+{
+  series: null,
+  chartOptions: {
+    chart: {
+      height: 350,
+      type: 'line',
+      zoom: {
+        enabled: false
       }
+    },
+    dataLabels: {
+      enabled: true,
+      position: 'top',
+      offsetY: -10,
+      formatter: function (val) {
+        return formatTime(val) 
+      }
+    },
+    stroke: {
+      curve: 'straight'
+    },
+    title: {
+      text: 'Total time per month',
+      align: 'left'
+    },
+    xaxis: {
+      categories: null,
     }
   }
-  )
+}
+)
+
 const weekBar = ref({
   series : [],
   chartOptions : {
@@ -455,40 +442,8 @@ async function refresh() {
     margin-left: auto;
 }
 
-#custom-bar-chart {
-  display: flex;
-  width: 50%; /* Adjust as needed */
-  min-height: 10px;
-  margin: auto;
-  margin-bottom: 20px;
-  border-radius: 2px;
-}
-
 #resume p {
   text-align: center;
-}
-
-.bar {
-  min-height: 100%;
-  position: relative;
-}
-
-.bar:not(:last-child) {
-  margin-right: 2px; /* Adjust as needed */
-}
-
-#task-list {
-    display: flex;
-    flex-direction: row;
-    align-content: center;
-    justify-content: center; 
-}
-
-.box-color {
-  width: 5px;
-  height: 5px;
-  margin-right: 5px;
-  align-self: center;
 }
 
 #details {
