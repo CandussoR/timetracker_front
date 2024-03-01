@@ -114,15 +114,16 @@ const formRecord = ref({
 onMounted(() => {
     formRecord.value.timeBeginning = createDateFromTimeString(formRecord.value.timeBeginning, 
                                                               ...props.record.time_beginning.split(":"))
+    let time_ending = props.record.time_ending === null ? [0,0,0] : props.record.time_ending.split(":");
     formRecord.value.timeEnding = createDateFromTimeString(formRecord.value.timeEnding, 
-                                                           ...props.record.time_ending.split(":"))
+                                                           ...time_ending)
 });
 
 function createDateFromTimeString(valueToUpdate, hour, minutes, seconds) {
     valueToUpdate = {
-        hours: hour,
-        minutes: minutes,
-        seconds: seconds
+        hours: hour | 0,
+        minutes: minutes | 0,
+        seconds: seconds | 0
     }
     return valueToUpdate
 }
@@ -132,11 +133,11 @@ function createDateFromTimeString(valueToUpdate, hour, minutes, seconds) {
  */
 async function handleSubmit() {
     // Converts the time picker format to string if untouched
-    if (typeof formRecord.value.timeBeginning != String) {
+    if (typeof formRecord.value.timeBeginning !== "string") {
         const ftb = formRecord.value.timeBeginning
         formRecord.value.timeBeginning = `${ftb.hours}:${ftb.minutes}:${ftb.seconds}`
     }
-    if (typeof formRecord.value.timeEnding != String) {
+    if (typeof formRecord.value.timeEnding !== "string") {
         const fte = formRecord.value.timeEnding
         formRecord.value.timeEnding = `${fte.hours}:${fte.minutes}:${fte.seconds}`
     }
