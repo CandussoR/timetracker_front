@@ -3,7 +3,7 @@
         <div class="data-card">
             <div class="data-card-header">
                 <span class="material-symbols-outlined" @click="handleBack">arrow_back</span>
-                <div :class="selected === s ? 'data-card-header__item--selected' : 'data-card-header__item'" 
+                <div :class="selected === s ? 'data-card-header__item--selected primary' : 'data-card-header__item secondary'" 
                     v-for="s in selectors" :key="s" @click="selected = s">
                     {{ s }}
                 </div>
@@ -122,16 +122,12 @@ function redirect() {
 }
 .data-card-header__item {
     width: 25%;
-    background-color: #E3E3E3;
-    color: #303030;
     text-align: center;
     cursor: pointer;
 }
 
 .data-card-header__item--selected {
     width: 25%;
-    background-color: #FAFAFA;
-    color: #303030;
     text-align: center;
     cursor : pointer;
 }
@@ -155,27 +151,7 @@ function redirect() {
 div#stats-link p {
     text-align: right;
 }
-.loader {
-    .loader {
-    width: 48px;
-    height: 48px;
-    border: 5px solid #FFF;
-    border-bottom-color: transparent;
-    border-radius: 50%;
-    display: inline-block;
-    box-sizing: border-box;
-    animation: rotation 1s linear infinite;
-    }
 
-    @keyframes rotation {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
-    } 
-}
 .button__timer {
     min-width: 100%;
     font-size: 1.5rem;

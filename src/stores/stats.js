@@ -54,6 +54,7 @@ export const useStatStore = defineStore("stats", () => {
             })
             taskRatio.value = res.data
 
+
             // This is to be recalculated frequently so I don't want it in the localStorage,
             // opposite to what I have done for the past requests.
             let data = {}
@@ -61,12 +62,24 @@ export const useStatStore = defineStore("stats", () => {
 
             if (!stats) {
                 data[period] = res.data
+                // Splitting the formatted time for display ?
+                for (let i=0; i < data[period].length; i++) {
+
+                data[period][i]["formatted"] = data[period][i]["formatted"].split(":")
+                console.log(data[period][i])
+                }
                 sessionStorage.setItem('stats', JSON.stringify(data))
                 return;
             }
 
             data = JSON.parse(stats)
             data[period] = res.data
+            // Splitting the formatted time for display ?
+            for (let i=0; i < data[period].length; i++) {
+
+                data[period][i]["formatted"] = data[period][i]["formatted"].split(":")
+                console.log(data[period][i])
+            }
             sessionStorage.setItem('stats', JSON.stringify(data))
 
             // No need to fetch anything is there has been no update every period is stored

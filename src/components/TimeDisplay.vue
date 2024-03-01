@@ -2,7 +2,7 @@
     <div id="data-card-row">
         <div id="data-card-data__time-card" class="unit-card" v-for="(p,nom) in filteredProps" :key="nom">
             <p id="num" :class="{'num-medium': font === 'medium', 'num': props.font !== 'medium'}">{{ p }}</p>
-            <p id="time">{{ nom }}</p>
+            <p id="time" class="time">{{ nom }}</p>
         </div>
     </div>
 </template>
@@ -33,17 +33,18 @@ const filteredProps = computed(() => {
 
 .num {
     font-size: 4rem;
-    justify-content: center;
+    text-align: center;
 }
 .num-medium {
     font-size: 2rem;
-    justify-content: center;
+    text-align: center;
 }
 
 .unit-card {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
 }
 
 #data-card-data__time-card:not(:last-child) {

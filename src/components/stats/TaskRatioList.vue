@@ -3,7 +3,7 @@
           <div id="task-item" class="task-item" :class="{ 'length4': maxElements === 4, 'length3': maxElements === 3 }" v-for="({ task, formatted, ratio }, index) in statStore.taskRatio" :key="task">
             
             <div class="box-color" :class="['box-color', 'task' + index]"></div>
-            <div id="task-name" class="task-name">{{ task }}</div>
+            <div id="task-name" :style="task.length < 8 ? {'font-size' : fontSize + 'rem'} : {}">{{ task }}</div>
 
             <div class="separator"></div>
 
@@ -15,13 +15,13 @@
 
             <div class="separator"></div>
 
-            <div id="ratio" class="ratio">{{ ratio }}</div> 
+            <div id="ratio" class="ratio">{{ ratio }} <span class="percent">%</span></div> 
          </div>
     </div>
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import TimeDisplay from '../TimeDisplay.vue';
 import { useStatStore } from '@/stores/stats';
 
@@ -35,21 +35,25 @@ const maxElements = computed(() => {
   }
   return max
 })
+
+const fontSize = ref(1.5)
 </script>
 
 <style scoped>
     .task-list {
         display: grid;
         justify-items: center;
+        row-gap: 2%;
     }
 
     .task-item {
-        grid-template-columns: 1fr 1fr 1px 2fr 1px 1fr;
+        grid-template-columns: 0.5fr 1fr 1px 2fr 1px 1fr;
         display: grid;
         place-items : center;  
         border: solid 1px #ccc;
         border-radius: 10px;
         padding: 1% 0;
+        padding-left: 2%;
     }
     .length4 {
         width: 70%;
@@ -57,9 +61,15 @@ const maxElements = computed(() => {
     .length3 {
         width: 50%;
     }
+
     .box-color {
-        min-width: 25px;
-        min-height: 25px;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+    }
+
+    .task-name {
+        font-size: 1.5rem;
     }
 
     .separator {
@@ -72,13 +82,13 @@ const maxElements = computed(() => {
         padding: 0 2%;
     }
 
-    .task-name {
-        font-weight: bold;
-    }
-
     .ratio {
         font-size: 2rem;
         font-weight: 600;
+    }
+
+    .percent {
+        font-size: 1rem;
     }
 
     .task0 {

@@ -453,22 +453,4 @@ async function refresh() {
   align-content: center;
   margin-top: 5%;
 }
-
-.task-name {
-    font-weight: bold;
-}
-.task0 {
-    background-color: blue;
-}
-.task1 {
-    background-color: purple;
-}
-.task2 {
-    background-color: beige;
-}
-.task3 {
-    background-color: yellowgreen
-}.task4 {
-    background-color: yellow
-}
 </style>
