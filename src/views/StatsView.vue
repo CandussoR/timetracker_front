@@ -14,17 +14,29 @@
     
         <div v-if="loading">
         </div>
+
     
         <div v-else>
-          <div id="resume" v-if="resume.count && resume.time">
-            <p id="resume__count">{{ resume.count }} {{ resume.count === 1 ? "timer" : "timers" }}</p>
-            <p id="resume__total-time">{{ resume.time }}</p>
+          <div id="cards-row" class="cards-row">
+            <div id="resume-card" class="card" v-if="resume.count && resume.time">
+              <p id="resume__count">{{ resume.count }} {{ resume.count === 1 ? "timer" : "timers" }}</p>
+              <TimeDisplay v-if="resume.time.length === 4" :day="resume.time[0]" :hours="resume.time[1]" :mins="resume.time[2]" :secs="resume.time[3]" :font="'medium'"/>
+              <TimeDisplay v-else-if="resume.time.length === 3" :hours="resume.time[0]" :mins="resume.time[1]" :secs="resume.time[2]" :font="'medium'"/>
+              <p v-else>--</p>
+            </div>
+            <div id="mean-card" class="card" v-if="resume.mean">
+              <p>Mean {{ selector[selected] }}</p>
+              <TimeDisplay v-if="resume.mean.length === 4" :day="resume.mean[0]" :hours="resume.mean[1]" :mins="resume.mean[2]" :secs="resume.mean[3]" :font="'medium'"/>
+              <TimeDisplay v-else-if="resume.mean.length === 3" :hours="resume.mean[0]" :mins="resume.mean[1]" :secs="resume.mean[2]" :font="'medium'"/>
+              <p v-else>--</p>
+            </div>
           </div>
-          <div id="resume" v-else>
+
+          <div id="resume" v-if="!resume.count || !resume.time">
             <p>No timer yet ! Go do one !</p>
           </div>
     
-          <CustomBar/>
+        <CustomBar/>
 
         <TaskRatioList/> 
     
@@ -32,7 +44,7 @@
             More details !<span class="material-symbols-outlined">arrow_drop_down</span>
           </div>
     
-          <div id="generic-stat" v-if="generic">
+          <div id="generic-stat" class="generic-stat" v-if="generic">
               <div v-if="selected === 'W'" id="chart">
                 <apexchart type="line" height="350" :options="daysLineChart.chartOptions" :series="daysLineChart.series"/>
                 <apexchart type="bar" height="350" :options="weekTaskRatio.chartOptions" :series="weekTaskRatio.series" />
@@ -60,6 +72,7 @@ import { useStatStore } from '../stores/stats';
 import formatTime from '../utils/formatTime';
 import CustomBar from '@/components/stats/CustomBar.vue';
 import TaskRatioList from '@/components/stats/TaskRatioList.vue';
+import TimeDisplay from '@/components/TimeDisplay.vue';
 
 const statStore = useStatStore()
 const loading = ref(true)
@@ -404,9 +417,10 @@ async function refresh() {
 }
 
 #main {
-  width: 100%;
+  width: 75%;
   display: flex;
   flex-direction: column;
+  margin: auto; 
 }
 
 #time-span__header {
@@ -434,6 +448,17 @@ async function refresh() {
     margin-left: auto;
 }
 
+.cards-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.card {
+  place-items: center;
+  margin : 1em auto 2em;
+  /* border: 1px solid var(--text); */
+
+}
+
 #resume p {
   text-align: center;
 }
@@ -445,4 +470,5 @@ async function refresh() {
   align-content: center;
   margin-top: 5%;
 }
+
 </style>
