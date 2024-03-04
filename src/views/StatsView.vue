@@ -1,61 +1,55 @@
 <template>
     <div id="stats-page">
-      <ul id="menu">
-        <li>General</li>
-        <li @click="router.push('/stats/dive')">Dive Into</li>
-        <li>Reports</li>
-    </ul>
+      <div id="main">
+        <h1>Stats</h1>
+        <div id="time-span__header">
+            <span id="left-arrow" class="material-symbols-outlined" @click="handleBack">arrow_back</span>
+            <h2 v-if="selected === 'D'">Today</h2>
+            <h2 v-else-if="selected === 'W'">This Week</h2>
+            <h2 v-else-if="selected === 'M'">This Month</h2>
+            <h2 v-else>This Year</h2>
+            <span id="right-arrow" class="material-symbols-outlined" @click="handleForward">arrow_forward</span>
+            <span id="refresh" class="material-symbols-outlined" @click="refresh">refresh</span>
+        </div>
+    
+        <div v-if="loading">
+        </div>
+    
+        <div v-else>
+          <div id="resume" v-if="resume.count && resume.time">
+            <p id="resume__count">{{ resume.count }} {{ resume.count === 1 ? "timer" : "timers" }}</p>
+            <p id="resume__total-time">{{ resume.time }}</p>
+          </div>
+          <div id="resume" v-else>
+            <p>No timer yet ! Go do one !</p>
+          </div>
+    
+          <CustomBar/>
 
-    <div id="main">
-      <h1>Stats</h1>
-      <div id="time-span__header">
-          <span id="left-arrow" class="material-symbols-outlined" @click="handleBack">arrow_back</span>
-          <h2 v-if="selected === 'D'">Today</h2>
-          <h2 v-else-if="selected === 'W'">This Week</h2>
-          <h2 v-else-if="selected === 'M'">This Month</h2>
-          <h2 v-else>This Year</h2>
-          <span id="right-arrow" class="material-symbols-outlined" @click="handleForward">arrow_forward</span>
-          <span id="refresh" class="material-symbols-outlined" @click="refresh">refresh</span>
-      </div>
-  
-      <div v-if="loading">
-      </div>
-  
-      <div v-else>
-        <div id="resume" v-if="resume.count && resume.time">
-          <p id="resume__count">{{ resume.count }} {{ resume.count === 1 ? "timer" : "timers" }}</p>
-          <p id="resume__total-time">{{ resume.time }}</p>
-        </div>
-        <div id="resume" v-else>
-          <p>No timer yet ! Go do one !</p>
-        </div>
-  
-        <CustomBar/>
-
-       <TaskRatioList/> 
-  
-        <div id="details" v-if="selected !== 'D'" @click="loadMore()">
-          More details !<span class="material-symbols-outlined">arrow_drop_down</span>
-        </div>
-  
-        <div id="generic-stat" v-if="generic">
-            <div v-if="selected === 'W'" id="chart">
-              <apexchart type="line" height="350" :options="daysLineChart.chartOptions" :series="daysLineChart.series"/>
-              <apexchart type="bar" height="350" :options="weekTaskRatio.chartOptions" :series="weekTaskRatio.series" />
-            </div>
-            <div v-else-if="selected === 'M'" id="chart">
-              <apexchart type="line" height="350" :options="weeksLineChart.chartOptions" :series="weeksLineChart.series"/>
-              <apexchart type="bar" height="350" :options="monthTaskRatio.chartOptions" :series="monthTaskRatio.series" />
-            </div>
-            <div v-else-if="selected === 'Y'" id="chart">
-              <apexchart type="line" height="350" :options="monthsLineChart.chartOptions" :series="monthsLineChart.series"/>
-              <apexchart type="bar" height="350" :options="yearTaskRatio.chartOptions" :series="yearTaskRatio.series" />
-              <label class="chart-title" for="bar-chart__week">Time per week</label>
-              <apexchart id="bar-chart__week" type="bar" width="550" height="450" :options="weekBar.chartOptions" :series="weekBar.series"/>
-            </div>
+        <TaskRatioList/> 
+    
+          <div id="details" v-if="selected !== 'D'" @click="loadMore()">
+            More details !<span class="material-symbols-outlined">arrow_drop_down</span>
+          </div>
+    
+          <div id="generic-stat" v-if="generic">
+              <div v-if="selected === 'W'" id="chart">
+                <apexchart type="line" height="350" :options="daysLineChart.chartOptions" :series="daysLineChart.series"/>
+                <apexchart type="bar" height="350" :options="weekTaskRatio.chartOptions" :series="weekTaskRatio.series" />
+              </div>
+              <div v-else-if="selected === 'M'" id="chart">
+                <apexchart type="line" height="350" :options="weeksLineChart.chartOptions" :series="weeksLineChart.series"/>
+                <apexchart type="bar" height="350" :options="monthTaskRatio.chartOptions" :series="monthTaskRatio.series" />
+              </div>
+              <div v-else-if="selected === 'Y'" id="chart">
+                <apexchart type="line" height="350" :options="monthsLineChart.chartOptions" :series="monthsLineChart.series"/>
+                <apexchart type="bar" height="350" :options="yearTaskRatio.chartOptions" :series="yearTaskRatio.series" />
+                <label class="chart-title" for="bar-chart__week">Time per week</label>
+                <apexchart id="bar-chart__week" type="bar" width="550" height="450" :options="weekBar.chartOptions" :series="weekBar.series"/>
+              </div>
+          </div>
         </div>
       </div>
-    </div>
   </div>
 
 </template>
@@ -64,11 +58,9 @@
 import { computed, onMounted, ref } from 'vue';
 import { useStatStore } from '../stores/stats';
 import formatTime from '../utils/formatTime';
-import { useRouter } from 'vue-router';
 import CustomBar from '@/components/stats/CustomBar.vue';
 import TaskRatioList from '@/components/stats/TaskRatioList.vue';
 
-const router = useRouter()
 const statStore = useStatStore()
 const loading = ref(true)
 const selected = ref("D")
