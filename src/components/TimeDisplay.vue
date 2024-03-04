@@ -10,7 +10,7 @@
 <script setup>
 import { computed } from 'vue';
 
-const props = defineProps(["day", "hours", "minutes", "seconds", "font"])
+const props = defineProps(["day", "hours", "mins", "secs", "font"])
 
 const filteredProps = computed(() => {
     const filtered = {};

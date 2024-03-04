@@ -3,7 +3,7 @@
         <div class="data-card">
             <div class="data-card-header">
                 <span class="material-symbols-outlined" @click="handleBack">arrow_back</span>
-                <div :class="selected === s ? 'data-card-header__item--selected primary' : 'data-card-header__item secondary'" 
+                <div :class="selected === s ? 'data-card-header__item primary' : 'data-card-header__item secondary'" 
                     v-for="s in selectors" :key="s" @click="selected = s">
                     {{ s }}
                 </div>
@@ -11,8 +11,8 @@
             </div>
             <div class="data-card-data" v-if="data">
                 <p class="data-card-data__count">{{ data.count }} {{ data.count === 1 ? "timer" : "timers" }}</p>
-                <TimeDisplay v-if="timeData.length === 4" :day="timeData[0]" :hours="timeData[1]" :minutes="timeData[2]" :seconds="timeData[3]"/>
-                <TimeDisplay v-else-if="timeData.length === 3" :hours="timeData[0]" :minutes="timeData[1]" :seconds="timeData[2]" />
+                <TimeDisplay v-if="timeData.length === 4" :day="timeData[0]" :hours="timeData[1]" :mins="timeData[2]" :secs="timeData[3]"/>
+                <TimeDisplay v-else-if="timeData.length === 3" :hours="timeData[0]" :mins="timeData[1]" :secs="timeData[2]" />
                 <p v-else>--</p>
             </div>
             <div id="stats-link"><p><a @click="router.push('/stats')">More stats</a></p></div>
@@ -120,17 +120,13 @@ function redirect() {
     display: flex;
     flex-direction: row;
 }
+
 .data-card-header__item {
     width: 25%;
     text-align: center;
     cursor: pointer;
 }
 
-.data-card-header__item--selected {
-    width: 25%;
-    text-align: center;
-    cursor : pointer;
-}
 .data-card-data {
     display: flex;
     flex-direction: column;
@@ -156,7 +152,6 @@ div#stats-link p {
     min-width: 100%;
     font-size: 1.5rem;
     border-radius: 10px;
-    margin-bottom: 5%;
-    border-color:#70CFFF;
+    margin-bottom: auto;
 }
 </style>
