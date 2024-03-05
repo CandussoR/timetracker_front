@@ -1,8 +1,8 @@
 <template>
     <div id="data-card-row">
-        <div id="data-card-data__time-card" class="unit-card" v-for="(p,nom) in filteredProps" :key="nom">
-            <p id="num" :class="{'num-medium': font === 'medium', 'num': props.font !== 'medium'}">{{ p }}</p>
-            <p id="time" class="time">{{ nom }}</p>
+        <div id="data-card-data__time-card" class="unit-card" v-for="(num, i) in props.time" :key="num">
+            <p id="num" :class="{'num-medium': font === 'medium', 'num': props.font !== 'medium'}">{{ num }}</p>
+            <p id="time" class="time">{{ timeUnits[i] }}</p>
         </div>
     </div>
 </template>
@@ -10,17 +10,14 @@
 <script setup>
 import { computed } from 'vue';
 
-const props = defineProps(["day", "hours", "mins", "secs", "font"])
+const props = defineProps(["time", "font"])
 
-const filteredProps = computed(() => {
-    const filtered = {};
-    for (const [key, value] of Object.entries(props)) {
-        if (value !== undefined && value !== null && value !== '' & key !== 'font') {
-            filtered[key] = value;
+const timeUnits = computed(() => {
+        if (props.time.length === 4) {
+            return ["day", "hours", "mins", "secs"]
         }
-    }
-    return filtered;
-});
+        return ["hours", "mins", "secs"]
+    })
 </script>
 
 <style scoped>
@@ -29,6 +26,7 @@ const filteredProps = computed(() => {
     flex-direction: row;
     justify-content: center;
     align-items: center;
+    padding: 0.2em;
 }
 
 .num {
@@ -40,6 +38,10 @@ const filteredProps = computed(() => {
     text-align: center;
 }
 
+.time {
+    font-size: 0.9rem;
+}
+
 .unit-card {
   display: flex;
   flex-direction: column;
@@ -48,7 +50,7 @@ const filteredProps = computed(() => {
 }
 
 #data-card-data__time-card:not(:last-child) {
-  margin-right: 7%;
+  margin-right: 1em;
 }
 
 </style>

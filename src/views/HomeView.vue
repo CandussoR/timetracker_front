@@ -11,8 +11,7 @@
             </div>
             <div class="data-card-data" v-if="data">
                 <p class="data-card-data__count">{{ data.count }} {{ data.count === 1 ? "timer" : "timers" }}</p>
-                <TimeDisplay v-if="timeData.length === 4" :day="timeData[0]" :hours="timeData[1]" :mins="timeData[2]" :secs="timeData[3]"/>
-                <TimeDisplay v-else-if="timeData.length === 3" :hours="timeData[0]" :mins="timeData[1]" :secs="timeData[2]" />
+                <TimeDisplay v-if="data.time" :time="data.time"/>
                 <p v-else>--</p>
             </div>
             <div id="stats-link"><p><a @click="router.push('/stats')">More stats</a></p></div>
@@ -60,7 +59,7 @@ const data = computed(() => {
 })
 
 // Split the formatted time if there is one
-const timeData = computed(() => data.value.time.split(":") || null)
+// const timeData = computed(() => data.value.time.split(":") || null)
 const selectors = ["D", "W", "M", "Y"]
 const selected = ref('')
 const loading = ref(null)
