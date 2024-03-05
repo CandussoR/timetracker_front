@@ -1,13 +1,15 @@
 <template>
     <div id="task-list" class="task-list">
-          <div id="task-item" class="task-item" :class="{ 'length4': maxElements === 4, 'length3': maxElements === 3 }" v-for="({ task, formatted, ratio }, index) in statStore.taskRatio" :key="task">
+          <div id="task-item" class="task-item" :class="{ 'length3': maxElements === 3, 'length4': maxElements === 4 }" v-for="({ task, formatted, ratio }, index) in statStore.taskRatio" :key="task">
             
-            <div class="box-color" :class="['box-color', 'task' + index]"></div>
-            <div id="task-name" :style="task.length < 8 ? {'font-size' : fontSize + 'rem'} : {}">{{ task }}</div>
+            <div id="color-task" class="color-task">
+                <div class="box-color" :class="['box-color', 'task' + index]"></div>
+                <div id="task-name" class="task-name">{{ task }}</div>
+            </div>
 
             <div class="separator"></div>
 
-            <div id="time-display" class="time-display">
+            <div id="time-display">
               <TimeDisplay v-if="formatted.length" :time="formatted" :font="'medium'"/>
               <p v-else>--</p>
             </div>
@@ -20,7 +22,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import TimeDisplay from '../TimeDisplay.vue';
 import { useStatStore } from '@/stores/stats';
 
@@ -35,59 +37,53 @@ const maxElements = computed(() => {
   return max
 })
 
-const fontSize = ref(1.5)
 </script>
 
 <style scoped>
     .task-list {
         display: grid;
         justify-items: center;
-        row-gap: 2%;
+        row-gap: 1em;
     }
 
     .task-item {
-        grid-template-columns: 0.5fr 1fr 1px 2fr 1px 1fr;
         display: grid;
+        grid-template-columns: 1.5fr auto 2fr auto 1fr;        
         place-items : center;  
         border: solid 1px #ccc;
         border-radius: 10px;
-        padding: 1% 0;
-        padding-left: 2%;
-    }
-    .length4 {
-        width: 70%;
-    }
-    .length3 {
-        width: 50%;
+        padding: .5em 1em;
     }
 
+    .color-task {
+        display: flex;
+        gap: 1rem;
+        align-items: flex-end;
+    }
     .box-color {
-        width: 30px;
-        height: 30px;
+        width: 1.5em;
+        height: 1.5em;
         border-radius: 50%;
     }
 
     .task-name {
-        font-size: 1.5rem;
+        font-size: .9rem;
     }
 
     .separator {
         width: 1px;
-        height: 50px;
+        height: 50%;
+        margin: 0 .5rem;
         background-color: #FFFFFFFF;
     }
 
-    .time-display {
-        padding: 0 2%;
-    }
-
     .ratio {
-        font-size: 2rem;
+        font-size: .9rem;
         font-weight: 600;
     }
 
     .percent {
-        font-size: 1rem;
+        font-size: .8rem;
     }
 
     .task0 {
@@ -103,5 +99,23 @@ const fontSize = ref(1.5)
         background-color: yellowgreen
     }.task4 {
         background-color: yellow
+    }
+
+    @media screen and (min-width: 481px) {
+        .length3 {
+            width: 90%;
+        }
+    }
+
+    @media screen and (min-width: 794px) {
+        .length3 {
+            width: 70%;
+        }
+        .length4 {
+            width: 80%;
+        }
+        .task-list {
+            width: 100%;
+        }
     }
 </style>

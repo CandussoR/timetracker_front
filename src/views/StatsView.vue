@@ -1,6 +1,6 @@
 <template>
     <div id="stats-page">
-      <div id="main">
+      <div id="main" class="main-container">
         <h1>Stats</h1>
         <div id="time-span__header">
             <span id="left-arrow" class="material-symbols-outlined" @click="handleBack">arrow_back</span>
@@ -25,7 +25,7 @@
             </div>
             <div id="mean-card" class="card" v-if="resume.mean">
               <p>Mean {{ selector[selected] }}</p>
-              <TimeDisplay v-if="resume.mean.length" :time="resume.time" :font="'medium'"/>
+              <TimeDisplay v-if="resume.mean.length" :time="resume.mean" :font="'medium'"/>
               <p v-else>--</p>
             </div>
           </div>
@@ -414,8 +414,7 @@ async function refresh() {
   flex-direction: row;
 }
 
-#main {
-  width: 75%;
+.main-container {
   display: flex;
   flex-direction: column;
   margin: auto; 
@@ -448,13 +447,15 @@ async function refresh() {
 
 .cards-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
+  
 }
 .card {
   place-items: center;
   margin : 1em auto 2em;
-  /* border: 1px solid var(--text); */
-
+  padding: .5em 1em;
+  border: 1px solid var(--text);
+  border-radius : 5px;
 }
 
 #resume p {
@@ -469,4 +470,12 @@ async function refresh() {
   margin-top: 5%;
 }
 
+@media screen and (min-width: 480px) {
+  .cards-row {
+    grid-template-columns: 1fr 1fr;
+  }
+  .main-container {
+    width: 80%;
+  }
+}
 </style>
