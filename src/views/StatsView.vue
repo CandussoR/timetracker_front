@@ -20,14 +20,12 @@
           <div id="cards-row" class="cards-row">
             <div id="resume-card" class="card" v-if="resume.count && resume.time">
               <p id="resume__count">{{ resume.count }} {{ resume.count === 1 ? "timer" : "timers" }}</p>
-              <TimeDisplay v-if="resume.time.length === 4" :day="resume.time[0]" :hours="resume.time[1]" :mins="resume.time[2]" :secs="resume.time[3]" :font="'medium'"/>
-              <TimeDisplay v-else-if="resume.time.length === 3" :hours="resume.time[0]" :mins="resume.time[1]" :secs="resume.time[2]" :font="'medium'"/>
+              <TimeDisplay v-if="resume.time.length" :time="resume.time" :font="'medium'"/>
               <p v-else>--</p>
             </div>
             <div id="mean-card" class="card" v-if="resume.mean">
               <p>Mean {{ selector[selected] }}</p>
-              <TimeDisplay v-if="resume.mean.length === 4" :day="resume.mean[0]" :hours="resume.mean[1]" :mins="resume.mean[2]" :secs="resume.mean[3]" :font="'medium'"/>
-              <TimeDisplay v-else-if="resume.mean.length === 3" :hours="resume.mean[0]" :mins="resume.mean[1]" :secs="resume.mean[2]" :font="'medium'"/>
+              <TimeDisplay v-if="resume.mean.length" :time="resume.time" :font="'medium'"/>
               <p v-else>--</p>
             </div>
           </div>

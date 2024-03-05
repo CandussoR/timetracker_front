@@ -8,8 +8,7 @@
             <div class="separator"></div>
 
             <div id="time-display" class="time-display">
-              <TimeDisplay v-if="formatted.length === 4" :day="formatted[0]" :hours="formatted[1]" :mins="formatted[2]" :secs="formatted[3]" :font="'medium'"/>
-              <TimeDisplay v-else-if="formatted.length === 3" :hours="formatted[0]" :mins="formatted[1]" :secs="formatted[2]" :font="'medium'"/>
+              <TimeDisplay v-if="formatted.length" :time="formatted" :font="'medium'"/>
               <p v-else>--</p>
             </div>
 
