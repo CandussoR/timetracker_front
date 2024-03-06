@@ -22,7 +22,7 @@
     <div id="buttons" class="buttons">
         <button @click="redirect">New timer</button>
         <p v-if="success" id="success" class="success">{{ success }}</p>
-        <p v-if="error" id="error" class="error">{{ error }}</p>
+        <p v-else-if="error" id="error" class="error">{{ error }}</p>
         <button class="secondary" @click="handleUpdate()">Update last timer to now</button>
     </div>
 </template>
@@ -140,17 +140,17 @@ function redirect() {
 .buttons {
     display : flex ;
     flex-direction: column;
-    margin : 5%;
+}
+
+button {
+    margin: 1.5em auto;
+}
+button:last-of-type {
+    margin: 0 auto;
 }
 
 div#stats-link p {
     text-align: right;
 }
 
-.button__timer {
-    min-width: 100%;
-    font-size: 1.5rem;
-    border-radius: 10px;
-    margin-bottom: auto;
-}
 </style>

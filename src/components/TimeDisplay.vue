@@ -34,7 +34,7 @@ const timeUnits = computed(() => {
     text-align: center;
 }
 .num-medium {
-    --num-font: calc(var(--num-font) * .5);
+    font-size: calc(var(--num-font) * .5);
     text-align: center;
 }
 
@@ -53,13 +53,14 @@ const timeUnits = computed(() => {
   margin-right: 1em;
 }
 
-@media (min-width: 764px) {
+/* @media (min-width: 764px) {
     .num {
         --num-font: 4rem;
+        font-style: var(--num-font);
     }
     .num-medium {
-        --num-font: calc(var(--num-font) * .5);
+        font-size: calc(var(--num-font) * .5em);
     }
-    }
+    } */
 
 </style>

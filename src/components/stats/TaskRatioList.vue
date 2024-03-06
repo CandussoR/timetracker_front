@@ -53,6 +53,7 @@ const maxElements = computed(() => {
         border: solid 1px #ccc;
         border-radius: 10px;
         padding: .5em 1em;
+        width: 100%;
     }
 
     .color-task {
@@ -101,15 +102,9 @@ const maxElements = computed(() => {
         background-color: yellow
     }
 
-    @media screen and (min-width: 481px) {
-        .length3 {
-            width: 90%;
-        }
-    }
-
     @media screen and (min-width: 794px) {
         .length3 {
-            width: 70%;
+            width: 75%;
         }
         .length4 {
             width: 80%;

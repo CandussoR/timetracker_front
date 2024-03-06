@@ -12,10 +12,9 @@
             <span id="refresh" class="material-symbols-outlined" @click="refresh">refresh</span>
         </div>
     
-        <div v-if="loading">
+        <div v-if="loading" class="loader">
         </div>
 
-    
         <div v-else>
           <div id="cards-row" class="cards-row">
             <div id="resume-card" class="card" v-if="resume.count && resume.time">
@@ -30,8 +29,9 @@
             </div>
           </div>
 
-          <div id="resume" v-if="!resume.count || !resume.time">
-            <p>No timer yet ! Go do one !</p>
+          <div id="resume" v-if="!resume.count || resume.time.every((item) => item === '00')">
+            <p id="incite" class="incite">No timer yet ! Go do one !</p>
+            <button @click="redirect">New timer</button>
           </div>
     
         <CustomBar/>
@@ -71,7 +71,9 @@ import formatTime from '../utils/formatTime';
 import CustomBar from '@/components/stats/CustomBar.vue';
 import TaskRatioList from '@/components/stats/TaskRatioList.vue';
 import TimeDisplay from '@/components/TimeDisplay.vue';
+import { useRouter } from 'vue-router';
 
+const router = useRouter()
 const statStore = useStatStore()
 const loading = ref(true)
 const selected = ref("D")
@@ -404,15 +406,18 @@ async function refresh() {
     await statStore.getHomeStats()
     await statStore.getTaskTimeRatio(selector[selected.value])
     loading.value = false
-    console.log("Do you feel refreshed ? I sure do.")
+}
+
+function redirect() {
+    router.push("/new")
 }
 </script>
 
 <style scoped>
-#stats-page {
+/* #stats-page {
   display: flex;
   flex-direction: row;
-}
+} */
 
 .main-container {
   display: flex;
@@ -421,7 +426,7 @@ async function refresh() {
 }
 
 #time-span__header {
-  width: 75%;
+  width: 80%;
   display : flex;
   flex-direction: row;
   align-items: center;
@@ -452,14 +457,19 @@ async function refresh() {
 }
 .card {
   place-items: center;
-  margin : 1em auto 2em;
+  margin : 1em auto 1em;
   padding: .5em 1em;
   border: 1px solid var(--text);
   border-radius : 5px;
 }
+.card:last-child {
+  margin-bottom: 0;
+}
 
-#resume p {
-  text-align: center;
+#resume {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
 }
 
 #details {
@@ -470,12 +480,21 @@ async function refresh() {
   margin-top: 5%;
 }
 
+.incite {
+  font-size: 1.5rem;
+  margin: 1.5rem;
+  text-align: center;
+}
+
 @media screen and (min-width: 480px) {
   .cards-row {
     grid-template-columns: 1fr 1fr;
   }
   .main-container {
     width: 80%;
+  }
+  .card:last-child {
+    margin-bottom: 1rem;
   }
 }
 </style>
