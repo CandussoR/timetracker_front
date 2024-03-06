@@ -30,16 +30,16 @@ const timeUnits = computed(() => {
 }
 
 .num {
-    font-size: 4rem;
+    --num-font: 1rem;
     text-align: center;
 }
 .num-medium {
-    font-size: 2rem;
+    font-size: calc(var(--num-font) * .5);
     text-align: center;
 }
 
 .time {
-    font-size: 0.9rem;
+    font-size: 0.7rem;
 }
 
 .unit-card {
@@ -52,5 +52,15 @@ const timeUnits = computed(() => {
 #data-card-data__time-card:not(:last-child) {
   margin-right: 1em;
 }
+
+/* @media (min-width: 764px) {
+    .num {
+        --num-font: 4rem;
+        font-style: var(--num-font);
+    }
+    .num-medium {
+        font-size: calc(var(--num-font) * .5em);
+    }
+    } */
 
 </style>

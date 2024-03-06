@@ -1,6 +1,6 @@
 <template>
     <aside :class="[isExpanded ? 'menu is-expanded' : 'menu']">
-        <div id="menu-wrap" v-if="windowWidth > 480">
+        <div id="menu-wrap" v-if="windowWidth > 764">
             <button id="wrap" type="button" class="wrap" @click="isExpanded = !isExpanded">
                 <span class="material-symbols-outlined">keyboard_double_arrow_right</span>
             </button>
@@ -110,7 +110,7 @@ function handleResize() {
         border-style: none;
     }
 
-    @media (max-width: 480px) {
+    @media (max-width: 764px) {
         .menu {
             width: 100%;
             flex-direction: row;
