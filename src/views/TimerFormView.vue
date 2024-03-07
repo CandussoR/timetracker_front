@@ -1,59 +1,57 @@
 <template>
-    <h1>Let's set a new timer and do something !</h1>
+    <h1>New clock</h1>
 
     <div class="form-container">
         <form @submit.prevent="handleSubmit">
 
             <fieldset id="task__section">
-                <legend>Task</legend>
-               
-                <div class="inline">
-                    <div class="column">
-                        <TaskSelect :task="selectedTask" @selected="selectedTask = $event"/>
-                        <SubtaskSelect :task="selectedTask" @selected="selectedSubtask = $event" /> 
-                    </div>
+                <legend>Task
                     <!-- Using click.stop to prevent propagation of closeModal -->
                     <span id="add-task-button" class="material-symbols-outlined" v-if="!newTask" @click.stop="newTask = !newTask">add</span> 
-                </div>
-                
+                </legend>
                
+                <div class="section-inputs">
+                    <TaskSelect :task="selectedTask" @selected="selectedTask = $event"/>
+                    <SubtaskSelect :task="selectedTask" @selected="selectedSubtask = $event" /> 
+                </div>  
             </fieldset>
             
             <fieldset id="tag__section">
-                <legend>Tag</legend>
+                <legend>Tag
+                    <span class="material-symbols-outlined" v-if="!newTag" @click="newTag = !newTag">add</span>
+                </legend>
                 <div class="inline">
                     <TagSelect :tag="selectedTag" @selected="selectedTag = $event"/>
-                    <span class="material-symbols-outlined" v-if="!newTag" @click="newTag = !newTag">add</span>
                 </div>
 
             </fieldset>
 
             <fieldset id="clock__section">
                 <legend>Clock Type</legend>
-                <div>
-                    <button @click.prevent="clock = 'timer'">Timer</button>
-                    <button @click.prevent="clock = 'chrono'">Stopwatch</button> 
+                <div class="button-row">
+                    <button class="secondary" @click.prevent="clock = 'timer'">Timer</button>
+                    <button class="secondary" @click.prevent="clock = 'chrono'">Stopwatch</button> 
                 </div>
                 <div v-if="clock == 'timer'">
-                    <h2>Set your time</h2>
+                    <label for="duration">Set your time (in minutes):</label>
                     <input id="duration" name="duration" type="number" min="0" v-model="duration">
                 </div>
             </fieldset>
 
-            <button type="submit" 
+            <button id="set" type="submit" 
                     :disabled="clock == '' || (clock == 'timer' && duration=='0')">Set</button>
         </form>
      </div>
 
-    <Modal content="newTask" v-if="newTask" v-on-click-outside="closeModal"/>
-    <Modal content="newTag" v-if="newTag" v-on-click-outside="closeModal"/>
+    <ModalFrame content="newTask" v-if="newTask" v-on-click-outside="closeModal"/>
+    <ModalFrame content="newTag" v-if="newTag" v-on-click-outside="closeModal"/>
 </template>
 
 <script setup>
 import TaskSelect from '@/components/select/TaskSelect.vue'
 import SubtaskSelect from '@/components/select/SubtaskSelect.vue'
 import TagSelect from '@/components/select/TagSelect.vue'
-import Modal from '@/components/modals/Modal.vue';
+import ModalFrame from '@/components/modals/ModalFrame.vue';
 import { vOnClickOutside } from '@vueuse/components'
 import { useTaskStore } from '@/stores/task';
 import { useTagStore } from '@/stores/tag';
@@ -123,30 +121,7 @@ function handleSubmit() {
 </script>
 
 <style scoped>
-    .template {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-    }
-    .form_container {
-        display:block;
-        width: 75%;
-    }
-
-    .form {
-        justify-content: center;
-    }
-
-    .inline {
-        display: flex;
-    }
-
-    .column {
-        display: flex;
-        flex-direction: column;
-    }
-
-    #add-task-button {
-        margin: auto 0;
+    #set {
+        margin: auto;
     }
 </style>
