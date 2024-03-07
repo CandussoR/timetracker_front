@@ -1,11 +1,14 @@
 <template>
-    <label for="subtask">Subtask name (optional) : </label>
-    <select id="subtaskSelect" name="substask" v-model="selectedSubtask" @change="emit('selected', selectedSubtask)">
-        <option v-if="task" value="" disabled selected>Select a subtask (optional)</option>
-        <option v-for="subtask in taskStore.filterSubtask(task)" :key="subtask" :value="subtask">
-            {{ subtask }}
-        </option>
-    </select>
+    <div>
+        <label for="subtask">Subtask name (optional) : </label>
+
+        <select id="subtask-select" name="substask" v-model="selectedSubtask" @change="emit('selected', selectedSubtask)">
+            <option v-if="task" value="" disabled selected>Select a subtask (optional)</option>
+            <option v-for="subtask in taskStore.filterSubtask(task)" :key="subtask" :value="subtask">
+                {{ subtask }}
+            </option>
+        </select>
+    </div>
 </template>
 
 <script setup>
@@ -31,7 +34,5 @@ watch(
 </script>
 
 <style scoped>
-#subtaskSelect {
-    display: flex;
-}
+
 </style>

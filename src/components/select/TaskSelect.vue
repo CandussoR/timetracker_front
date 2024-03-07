@@ -1,11 +1,14 @@
 <template>
-    <label for="taskName">Task Name : </label>
-    <select id="taskNameSelect" name="taskName" v-model="selectedTask" @change="emit('selected', selectedTask)" required>
-        <option value="" disabled selected>Select a task</option>
-        <option v-for="task in taskStore.uniqueTasks" :key="task" :value="task">
-            {{ task }}
-        </option>
-    </select>
+    <div>
+        <label for="taskName">Task Name : </label>
+
+        <select id="taskNameSelect" name="taskName" v-model="selectedTask" @change="emit('selected', selectedTask)" required>
+            <option value="" disabled selected>Select a task</option>
+            <option v-for="task in taskStore.uniqueTasks" :key="task" :value="task">
+                {{ task }}
+            </option>
+        </select>
+    </div>
 </template>
 
 <script setup>
@@ -26,7 +29,5 @@ watch(
 </script>
 
 <style scoped>
-    #taskNameSelect {
-        display: flex;
-    }
+
 </style>
