@@ -1,9 +1,11 @@
 <template>
     <h1>Add an Old Timer</h1>
-    <form v-if="!record" @submit.prevent="handleSubmit">
+    <div class="form-container">
+        <form v-if="!record" @submit.prevent="handleSubmit">
         <div class="time-record-form">
 
-            <fieldset>
+            <fieldset id="date__section">
+                <legend>Date</legend>
                 <label class="bold" for="time-record-date">Date : </label>
                 <VueDatePicker id="time-record-date" 
                     name="time-record-date"
@@ -18,49 +20,73 @@
                     placeholder="Select a date"/>
             </fieldset>
 
-            <fieldset>
-                <TaskSelect @selected="formRecord.task_name = $event"/>
-                <SubtaskSelect :task="formRecord.task_name" @selected="formRecord.subtask = $event"/>
+            <fieldset id="task__section">
+                <legend>Task
+                    <!-- Using click.stop to prevent propagation of closeModal -->
+                    <span id="add-task-button" class="material-symbols-outlined" v-if="!newTask" @click.stop="newTask = !newTask">add</span> 
+                </legend>
+                <div class="section-inputs">
+                    <TaskSelect @selected="formRecord.task_name = $event"/>
+                    <SubtaskSelect :task="formRecord.task_name" @selected="formRecord.subtask = $event"/>
+                </div>
             </fieldset>
 
 
-            <fieldset>
+            <fieldset id="tag__section">
+                <legend>Tag
+                    <span class="material-symbols-outlined" v-if="!newTag" @click="newTag = !newTag">add</span>
+                </legend>
                 <TagSelect @selected="formRecord.tag = $event"/>
             </fieldset>
             
-            <fieldset>
-                <label class="bold" for="time-record-beginning">Time Beginning : </label>
-                <VueDatePicker id="time-record-beginning" 
-                                name="time-record-beginning"
-                                v-model="formRecord.timeBeginning"
-                                :model-value="formRecord.timeBeginning"
-                                model-type="HH:mm:ss" 
-                                format= "HH:mm:ss"
-                                time-picker
-                                enable-seconds
-                                />
-                <label class="bold" for="time-record-ending">Time Ending :</label>
-                <VueDatePicker id="time-record-ending"
-                                name="time-record-ending"
-                                v-model="formRecord.timeEnding"
-                                :model-value="formRecord.timeEnding"
-                                model-type="HH:mm:ss" 
-                                format= "HH:mm:ss"
-                                time-picker
-                                enable-seconds
-                                />
+            <fieldset id="time__section">
+                <legend>Time</legend>
+                <div class="section-inputs">
+                    <div id="time-beginning">
+                        <label class="bold" for="time-record-beginning">Time Beginning : </label>
+                        <div class="datepicker">
+                            <VueDatePicker id="time-record-beginning" 
+                                            name="time-record-beginning"
+                                            v-model="formRecord.timeBeginning"
+                                            :model-value="formRecord.timeBeginning"
+                                            model-type="HH:mm:ss" 
+                                            format= "HH:mm:ss"
+                                            time-picker
+                                            enable-seconds
+                                            />
+                        </div>
+                    </div>
+                    <div id="time-ending">
+                        <label class="bold" for="time-record-ending">Time Ending :</label>
+                        <div class="datepicker">
+                            <VueDatePicker id="time-record-ending"
+                                            name="time-record-ending"
+                                            v-model="formRecord.timeEnding"
+                                            :model-value="formRecord.timeEnding"
+                                            model-type="HH:mm:ss" 
+                                            format= "HH:mm:ss"
+                                            time-picker
+                                            enable-seconds
+                                            />
+                        </div>
+                    </div>
+                </div>
             </fieldset>
             
             <fieldset>
+                <legend>Log</legend>
                 <label class="bold" for="log">Log :</label> 
-                <textarea id="log" name="log" v-model="formRecord.log"/>
+                <textarea id="log" name="log" v-model="formRecord.log" rows="5" col="70" placeholder="Write something, if you want."></textarea>
             </fieldset>
         </div> 
         <div class="form-button">
             <button type="submit">Submit</button>
         </div>
     </form>
-    <div v-else>
+
+    </div>
+    
+    <div v-if="record">
         <TimeRecordCard :record="record" @updated="record = $event"/>
     </div>
 
@@ -68,11 +94,16 @@
         <button @click="handleAnother">Create another timer</button>
         <router-link to="/">Home</router-link>
     </div>
+
+    <ModalFrame content="newTask" v-if="newTask" v-on-click-outside="closeModal"/>
+    <ModalFrame content="newTag" v-if="newTag" v-on-click-outside="closeModal"/>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import VueDatePicker from '@vuepic/vue-datepicker';
+import { ref, watch } from 'vue';
+import ModalFrame from '@/components/modals/ModalFrame.vue';
+import VueDatePicker from '@vuepic/vue-datepicker'
+import { vOnClickOutside } from '@vueuse/components';
 import '@vuepic/vue-datepicker/dist/main.css';
 import TimeRecordCard from '@/components/TimeRecordCard.vue';
 import TaskSelect from '@/components/select/TaskSelect.vue';
@@ -83,7 +114,8 @@ import { useTaskStore } from '@/stores/task';
 import { useTagStore } from '@/stores/tag';
 import { useStatStore } from '@/stores/stats';
 
-
+const newTag = ref(false)
+const newTask = ref(false)
 const recordStore = useTimeRecordStore()
 const taskStore = useTaskStore()
 const tagStore = useTagStore()
@@ -110,6 +142,23 @@ const formRecord = ref({
         },
     log: null
 })
+
+
+watch(
+    () => taskStore.isCreated, 
+    (newValue) => {
+        if (newValue === true) {
+            closeModal()
+    }
+});
+
+watch(
+    () => tagStore.isCreated, 
+    (newValue) => {
+        if (newValue === true) {
+            closeModal()
+    }
+});
 
 async function handleSubmit() {
     try {
@@ -140,13 +189,13 @@ function handleAnother() {
     record.value = null
     errorMsg.value = ''
 }
+
+function closeModal() {
+    newTask.value = false;
+    newTag.value = false;
+}
 </script>
 
 <style scoped>
-#log {
-    display: flex;
-}
-button {
-    margin : auto 0;
-}
+
 </style>
