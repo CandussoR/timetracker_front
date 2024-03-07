@@ -23,6 +23,7 @@
   /* Realtime Colors */
   --text: #eaeaf0;
   --background: #050509;
+  --background-2: #0D0D13;
   --primary: #9798d1;
   --secondary: #272975;
   --accent: #5557d5;
@@ -33,6 +34,10 @@
   --radialPrimarySecondary: radial-gradient(#9798d1, #272975);
   --radialPrimaryAccent: radial-gradient(#9798d1, #5557d5);
   --radialSecondaryAccent: radial-gradient(#272975, #5557d5);
+
+  --text-800: #140c5a;
+  --text-900: #0a062d;
+  --text-950: #050316;
 }
 
 /* semantic color variables for this project */
@@ -48,11 +53,25 @@
   --color-text: var(--text);
 
   --section-gap: 160px;
-
-  font-size: calc(0.9rem + .3vw);
-
 }
 
+:root {
+  font-size: calc(0.9rem + .3vw);
+
+  --font-family : 'Poppins',
+  Inter,
+  -apple-system,
+  BlinkMacSystemFont,
+  'Segoe UI',
+  Roboto,
+  Oxygen,
+  Cantarell,
+  'Fira Sans',
+  'Droid Sans',
+  'Helvetica Neue',
+  Ubuntu,
+  sans-serif;
+}
 @media (prefers-color-scheme: dark) {
   :root {
     --color-background: var(--background);

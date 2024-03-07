@@ -14,6 +14,8 @@
 }
 
 h1 {
+  font-family: "Gilda Display", serif;
+  font-weight: 700;
   text-align: center;
   margin: 5% 0;
 }
@@ -43,15 +45,15 @@ a {
   font-weight: bold;
 }
 
-fieldset {
-  border : 0;
-  margin: 5% 0;
-}
 
 legend {
   font-size: 1.5rem;
 }
 
+label {
+  display: block;
+  margin-bottom: 0.2rem;
+}
 .form-button {
   display: flex;
   justify-content: space-evenly;
@@ -59,28 +61,20 @@ legend {
 }
 
 button {
-  font-family:
-    'Poppins',
-    Inter,
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    Oxygen,
-    Cantarell,
-    'Fira Sans',
-    'Droid Sans',
-    'Helvetica Neue',
-    Ubuntu,
-    sans-serif;
+  font-family: var(--font-family); 
   color: var(--background);
   width: fit-content;
-  padding: 2%;
+  min-width: 120px;
+  padding: 1em 2em;
   border-radius : 5px;
   background: var(--primary);
   margin : auto;
   margin-bottom: 1%;
   font-weight: 500;
+}
+
+button:hover {
+  scale: 1.1;
 }
 
 .primary {
@@ -91,10 +85,6 @@ button {
 .secondary {
   color: var(--text);
   background: var(--secondary);
-}
-
-button:hover {
-  scale: 1.1;
 }
 
 .svg {
@@ -110,41 +100,9 @@ button:hover {
 }
 
 input, select, textarea {
-  width: 100%;
   max-width: 300px;
-}
-
-select {
   border-radius: 5px;
   height: 2rem;
-}
-
-.modal {
-  background: var(--background)
-}
-
-.modalContent {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-}
-
-.modalInput {
-    width: 60%;
-    height: 160%;
-    margin: 3% auto;
-    padding: 2%;
-    border-radius: 5px;
-}
-
-.modalInput:focus {
-  border-color: #70CFFF;
-    border-color: hsla(160, 100%, 37%, 1);
-}
-
-.modalButton {
-    margin: 0 auto;
 }
 
 .loader {
@@ -167,10 +125,22 @@ select {
   }
 }
 
-@media (min-width: 1024px) {
+/* Inputs take all their space in little resolution because they are in columns,
+  they are are little more narrow when in rows. */
+@media screen and (max-width: 1024px) {
+  input, select {
+    width: 100%;
+  }
+}
+
+@media screen and (min-width: 1024px) {
   body {
     display: flex;
     place-items: center;
+  }
+
+  input, select {
+    width: 70%;
   }
 
   #app {

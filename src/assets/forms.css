@@ -1,0 +1,68 @@
+@import './base.css';
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    min-width: 90%;
+}
+
+fieldset {
+    margin-bottom: 2em; /* Add spacing between fieldsets */
+    border : 0;
+    border-radius: 15px;
+    background-color: var(--background-2);
+    padding: 1.5em;
+}
+
+legend {
+    display: flex;
+    margin-bottom: 10px; /* Add spacing between legend and content */
+    font-weight: bold;
+    align-items: center;
+}
+
+legend span {
+    margin-left: 1rem;
+}
+
+.section-inputs {
+    margin: auto;
+}
+
+div.button-row {
+    display: flex;
+    margin: 1em auto;  
+}
+
+/* Correcting a bug from vuejs-datepicker */
+.datepicker {
+    width: fit-content;
+}
+
+textarea {
+    min-width:100%;
+    font-family: var(--font-family);
+    border-radius: 5px;
+    height: 5em;
+}
+
+@media screen and (min-width: 768px) {
+    .form-container {
+        width: 90%;
+    }
+
+
+}
+@media screen and (min-width: 1024px) {
+    .section-inputs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+}
