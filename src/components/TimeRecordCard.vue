@@ -1,6 +1,9 @@
 <template>
-    <div class="time-record__card" v-if="!editing" @mouseenter="showEdit = true" @mouseleave="showEdit = false">
-        <span class="material-symbols-outlined" v-if="showEdit" @click="editing = !editing">edit</span>
+    <div id="time-record__card" class="time-record__card bg-2" 
+        v-if="!editing" 
+        @mouseenter="showEdit = true" 
+        @mouseleave="showEdit = false">
+        <span class="material-symbols-outlined icon-clear-gradient" v-if="showEdit" @click="editing = !editing">edit</span>
         <p class="bold">Date : {{ record.date }}</p>
         <p>Task name : {{ record.task_name }}</p>
         <p v-if="record.subtask">Subtask : {{ record.subtask }}</p>
@@ -16,53 +19,73 @@
         </div>
     </div>
 
-    <form @submit.prevent="handleSubmit">
-        <div class="time-record__card--edit" v-if="editing" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
-            <button type="submit" v-if="showDone"><span v-if="showDone" class="material-symbols-outlined"> done </span></button> 
-            <span v-if="showCancel" class="material-symbols-outlined" @click="editing = !editing"> cancel </span>
-            <label class="bold" for="time-record-date">Date : </label>
-            <VueDatePicker id="time-record-date" 
-                name="time-record-date"
-                v-model="formRecord.date" 
-                :maxDate="new Date()" 
-                locale="fr" 
-                :model-value="formRecord.date" 
-                model-type="yyyy-MM-dd" 
-                format='yyyy-MM-dd' 
-                auto-apply 
-                :enable-time-picker="false"
-                placeholder="Select a date"/>
-            <TaskSelect :task="formRecord.task_name" @selected="formRecord.task_name = $event"/>
-            <SubtaskSelect :task="formRecord.task_name" :subtask="formRecord.subtask" @selected="formRecord.subtask = $event"/>
-            <TagSelect :tag="formRecord.tag" @selected="formRecord.tag = $event"/>
-            <div>
-                <label class="bold" for="time-record-beginning">Time Beginning : </label>
-                <VueDatePicker id="time-record-beginning" 
-                                name="time-record-beginning"
-                                v-model="formRecord.timeBeginning"
-                                :model-value="formRecord.timeBeginning"
-                                model-type="HH:mm:ss" 
-                                format= "HH:mm:ss"
-                                time-picker
-                                enable-seconds
-                                />
-                <label class="bold" for="time-record-ending">Time Ending :</label>
-                <VueDatePicker id="time-record-ending"
-                                name="time-record-ending"
-                                v-model="formRecord.timeEnding"
-                                :model-value="formRecord.timeEnding"
-                                model-type="HH:mm:ss" 
-                                format= "HH:mm:ss"
-                                time-picker
-                                enable-seconds
-                                />
-            </div>
-            <fieldset>
-                <label class="bold" for="log">Log :</label> 
-                <textarea id="log" name="log" v-model="formRecord.log"/>
+    <div id="record-update__form" class="form-container bg-2">
+        <form @submit.prevent="handleSubmit">
+            <div class="time-record__card--edit" v-if="editing" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
+                <button type="submit" v-if="showDone"><span v-if="showDone" class="material-symbols-outlined">done </span></button> 
+                <button type="button" v-if="showCancel" class="material-symbols-outlined" @click="editing = !editing"><span class="material-symbols-outlined"> cancel </span></button>
+                <fieldset>
+                    <legend>Date & Time</legend>
+                    <label class="bold" for="time-record-date">Date : </label>
+                    <div class="datepicker">
+                        <VueDatePicker id="time-record-date" 
+                        name="time-record-date"
+                        v-model="formRecord.date" 
+                        :maxDate="new Date()" 
+                        locale="fr" 
+                        :model-value="formRecord.date" 
+                        model-type="yyyy-MM-dd" 
+                        format='yyyy-MM-dd' 
+                        auto-apply 
+                        :enable-time-picker="false"
+                        placeholder="Select a date"/>
+                    </div>
+                    <div class="section-inputs">
+                        <div class="datepicker">
+                        <label class="bold" for="time-record-beginning">Time Beginning : </label>
+                            <VueDatePicker id="time-record-beginning" 
+                                            name="time-record-beginning"
+                                            v-model="formRecord.timeBeginning"
+                                            :model-value="formRecord.timeBeginning"
+                                            model-type="HH:mm:ss" 
+                                            format= "HH:mm:ss"
+                                            time-picker
+                                            enable-seconds
+                                            />
+                        </div>
+                        <div class="datepicker">
+                        <label class="bold" for="time-record-ending">Time Ending :</label>
+                            <VueDatePicker id="time-record-ending"
+                                            name="time-record-ending"
+                                            v-model="formRecord.timeEnding"
+                                            :model-value="formRecord.timeEnding"
+                                            model-type="HH:mm:ss" 
+                                            format= "HH:mm:ss"
+                                            time-picker
+                                            enable-seconds
+                                            />
+                        </div>                    
+                    </div>
             </fieldset>
-        </div> 
-    </form>
+            <fieldset id="task_section">
+                <legend>Task</legend>
+                <div class="section-inputs">
+                    <TaskSelect :task="formRecord.task_name" @selected="formRecord.task_name = $event"/>
+                    <SubtaskSelect :task="formRecord.task_name" :subtask="formRecord.subtask" @selected="formRecord.subtask = $event"/>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>Tag</legend>
+                <TagSelect :tag="formRecord.tag" @selected="formRecord.tag = $event"/>
+            </fieldset>
+                <fieldset>
+                    <legend>Log</legend>
+                    <label class="bold" for="log" style="display: none">Log :</label> 
+                    <textarea id="log" name="log" v-model="formRecord.log"/>
+                </fieldset>
+            </div> 
+        </form>
+    </div>
 
 </template>
 
@@ -201,3 +224,22 @@ function handleMouseLeave() {
 }
 
 </script>
+
+<style>
+    #record-update__form fieldset {
+        margin-bottom: 0;
+    }
+    .time-record__card {
+        position: relative;
+        border-radius: 5px;
+        padding: 1em;
+    }
+    .time-record__card span {
+        position: absolute;
+        top: 1em;
+        right: 1em;
+    }
+    button {
+        all: unset;
+    }
+</style>

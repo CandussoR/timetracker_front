@@ -29,8 +29,8 @@
             <fieldset id="clock__section">
                 <legend>Clock Type</legend>
                 <div class="button-row">
-                    <button class="secondary" @click.prevent="clock = 'timer'">Timer</button>
-                    <button class="secondary" @click.prevent="clock = 'chrono'">Stopwatch</button> 
+                    <button class="button secondary" @click.prevent="clock = 'timer'">Timer</button>
+                    <button class="button secondary" @click.prevent="clock = 'chrono'">Stopwatch</button> 
                 </div>
                 <div v-if="clock == 'timer'">
                     <label for="duration">Set your time (in minutes):</label>
@@ -38,7 +38,7 @@
                 </div>
             </fieldset>
 
-            <button id="set" type="submit" 
+            <button id="set" type="submit" class="button" 
                     :disabled="clock == '' || (clock == 'timer' && duration=='0')">Set</button>
         </form>
      </div>

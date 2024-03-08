@@ -79,8 +79,8 @@
                 <textarea id="log" name="log" v-model="formRecord.log" rows="5" col="70" placeholder="Write something, if you want."></textarea>
             </fieldset>
         </div> 
-        <div class="form-button">
-            <button type="submit">Submit</button>
+        <div id="submit">
+            <button class="button" type="submit">Submit</button>
         </div>
     </form>
 
@@ -91,7 +91,7 @@
     </div>
 
     <div v-if="success">
-        <button @click="handleAnother">Create another timer</button>
+        <button class="button" @click="handleAnother">Create another timer</button>
         <router-link to="/">Home</router-link>
     </div>
 
@@ -197,5 +197,7 @@ function closeModal() {
 </script>
 
 <style scoped>
-
+#submit {
+    align-self: center;
+}
 </style>

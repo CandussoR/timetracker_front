@@ -20,10 +20,10 @@
     </div>
 
     <div id="buttons" class="buttons">
-        <button @click="redirect">New timer</button>
+        <button class="button" @click="redirect">New timer</button>
         <p v-if="success" id="success" class="success">{{ success }}</p>
         <p v-else-if="error" id="error" class="error">{{ error }}</p>
-        <button class="secondary" @click="handleUpdate()">Update last timer to now</button>
+        <button class="button secondary" @click="handleUpdate()">Update last timer to now</button>
     </div>
 </template>
 
@@ -118,6 +118,7 @@ function redirect() {
 .data-card-header {
     display: flex;
     flex-direction: row;
+    align-items: center;
 }
 
 .data-card-header__item {
@@ -141,11 +142,10 @@ function redirect() {
     display : flex ;
     flex-direction: column;
 }
-
-button {
+.buttons > button {
     margin: 1.5em auto;
 }
-button:last-of-type {
+.buttons > button:last-of-type {
     margin: 0 auto;
 }
 

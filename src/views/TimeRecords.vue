@@ -72,35 +72,26 @@
         </form>
         
         <div class="otherChoice">
-            <label for="criteriaSelect" name="criteriaSelect">Or use another criteria ! <br>You can even select multiple ones !</label>
+            <label for="criteriaSelect" name="criteriaSelect">Select your criteria(s)</label>
             <select id="criteriaSelect" name="criteriaSelect" v-model="criteria" @change="handleCriteria(criteria)">
                 <option v-for="pc in possibleCriteria" :key="pc" :value="pc">{{ pc[0].toUpperCase() + pc.slice(1) }}</option>
             </select>
         </div>
 
         <p v-if="errorMsg" class="error">{{ errorMsg }}</p>
-        <button type="submit" @click="handleParams()">Get'em all</button>
+        <button class="button" type="submit" @click="handleParams()">Get'em all</button>
+    </div>
     
-        <div v-if="requests">
-            <h2>Your old requests</h2>
-            <div v-for="(request, index) in requests" :key="index">
-                <div id="request" @mouseenter="showDelete = true" @mouseleave="showDelete = false">
-                    <span class="material-symbols-outlined" v-if="showDelete" @click="handleDelete(index)"> delete </span>
-                    <p id="request-records" v-if="records.length === 0" @click="redirect(request.id)">{{ request.id }}</p>
-                    <div id="request-params">
-                        <div id="param-list" v-for="(value, key) in request.params" :key="key" class="param-enum">
-                            <p id="param-item"><span class="param-key">{{ key }}</span> : {{ value }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <div id="records-results" class="records-results" v-if="records.length != 0">
+        <div v-for="(record, i) in records" :key="record">
+            <TimeRecordCard :record="record" @updated="handleRecordUpdate(i, $event)"/>
         </div>
     </div>
-   
     
 </template>
 
 <script setup>
+import TimeRecordCard from '@/components/TimeRecordCard.vue';
 import '@vuepic/vue-datepicker/dist/main.css';
 import TaskSelect from '@/components/select/TaskSelect.vue';
 import SubtaskSelect from '@/components/select/SubtaskSelect.vue';
@@ -109,12 +100,9 @@ import VueDatePicker from '@vuepic/vue-datepicker';
 import cleanObject from '../utils/cleanObject.js'
 import { onMounted, ref } from 'vue';
 import { useTimeRecordStore } from '@/stores/timeRecord';
-import { useRouter } from 'vue-router';
 
-const router = useRouter()
 const timeRecordStore = useTimeRecordStore()
 const maxDate = new Date().getFullYear()
-const showDelete = ref(false)
 const day = ref(null)
 const week = ref(null)
 const monthYear = ref(null)
@@ -123,7 +111,7 @@ const task = ref(null)
 const subtask = ref(null)
 const tag = ref(null)
 const criteria = ref(null)
-const selectedCriteria = ref(['day'])
+const selectedCriteria = ref([])
 const possibleCriteria = ['day', 'week', 'month', 'year', 'task', 'tag']
 const errorMsg = ref('')
 const requests = ref([])
@@ -174,6 +162,7 @@ function deleteSection(section) {
  * Creates a clean dictionary of params for the get request.
  */
 function handleParams() {
+    errorMsg.value = null
     let rangeBeginning = null
     let rangeEnd = null
     if (week.value) {
@@ -190,46 +179,26 @@ function handleParams() {
         "tag" : tag.value
     }
     const cleanedForm = cleanObject(form)
+
     timeRecordStore.getTimeRecords(cleanedForm)
-        .then((res) => { requests.value.push({ "id": res["id"], "params": res["params"] }) })
+        .then((res) => { records.value.push(...res.data.flat()) })
         .catch((e) => errorMsg.value = e)
 }
 
-function redirect(id) {
-    router.push({path : `time_records/search/${id}`})
-}
-
-function handleDelete(index) {
-    requests.value.splice(index, 1)
-    localStorage.setItem('requests', JSON.stringify(requests.value))
+function handleRecordUpdate(idx, timeRecord) {
+    records.value[idx] = timeRecord
 }
 
 </script>
 
 <style scoped>
-.dt {
-    display: flex;
-    flex-direction: row;
-}
-
 .otherChoice {
     display : flex;
     flex-direction: column;
+    width: 70%;
+    margin: auto;
+    margin-bottom: 1.5em;
 }
-
-select {
-    width: fit-content;
-    min-width: 10%;
-}
-
-.param-enum {
-    display: flex;
-}
-
-.param-key {
-    font-weight: bold
-}
-
 fieldset {
     position: relative;
 }
@@ -238,5 +207,9 @@ fieldset {
     font-size: 1.5em;
     top: -1.5em;
     right: 1em;
+}
+.records-results {
+    width: 80%;
+    margin: auto;
 }
 </style>

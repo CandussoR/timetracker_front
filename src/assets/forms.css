@@ -3,7 +3,7 @@
 .form-container {
     display: flex;
     flex-direction: column;
-    margin: auto;
+    margin: 1em auto;
 }
 
 form {
@@ -33,7 +33,7 @@ legend span {
 }
 
 .section-inputs {
-    margin: auto;
+    margin: 0 auto .5em;
 }
 
 div.button-row {
@@ -53,11 +53,16 @@ textarea {
     height: 5em;
 }
 
+form .button {
+    margin-top: 2rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 @media screen and (min-width: 768px) {
     .form-container {
         width: 90%;
     }
-
 
 }
 @media screen and (min-width: 1024px) {

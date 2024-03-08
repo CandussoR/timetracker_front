@@ -9,11 +9,15 @@
   place-items: center;
 }
 
+.bg-2 {
+  background-color: var(--background-2);
+}
+
 .material-symbols-outlined {
   cursor: pointer;
 }
 
-h1 {
+h1, h2, h3 {
   font-family: "Gilda Display", serif;
   font-weight: 700;
   text-align: center;
@@ -32,7 +36,7 @@ a {
   text-decoration: none;
   color: hsla(160, 100%, 37%, 1);
   transition: 0.4s;
-  padding: 3px;
+  padding: .2em;
 }
 
 .error {
@@ -54,13 +58,14 @@ label {
   display: block;
   margin-bottom: 0.2rem;
 }
+
 .form-button {
   display: flex;
   justify-content: space-evenly;
 
 }
 
-button {
+.button {
   font-family: var(--font-family); 
   color: var(--background);
   width: fit-content;
@@ -73,7 +78,7 @@ button {
   font-weight: 500;
 }
 
-button:hover {
+.button:hover {
   scale: 1.1;
 }
 
@@ -97,6 +102,17 @@ button:hover {
 .svg:hover {
   color: var(--text);
   background: var(--accent);
+}
+
+.icon-clear-gradient {
+  padding: 2%;
+  border-radius: 50%;
+  color: var(--text);
+  background: var(--other-gradient-2);
+  box-shadow: 1px 1px var(--primary);
+}
+.icon-clear-gradient:hover {
+  background: var(--a-wtf-gradient);
 }
 
 input, select, textarea {

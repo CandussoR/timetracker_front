@@ -31,6 +31,10 @@
   --linearPrimarySecondary: linear-gradient(#9798d1, #272975);
   --linearPrimaryAccent: linear-gradient(#9798d1, #5557d5);
   --linearSecondaryAccent: linear-gradient(#272975, #5557d5);
+  --wtf-gradient: linear-gradient(var(--text), var(--primary));
+  --a-wtf-gradient: linear-gradient(var(--primary), var(--text));
+  --other-gradient: linear-gradient(.45turn, var(--background), 90%, var(--primary));  
+  --other-gradient-2: linear-gradient(.45turn, var(--background-2), 90%, var(--primary));
   --radialPrimarySecondary: radial-gradient(#9798d1, #272975);
   --radialPrimaryAccent: radial-gradient(#9798d1, #5557d5);
   --radialSecondaryAccent: radial-gradient(#272975, #5557d5);
