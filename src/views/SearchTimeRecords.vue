@@ -1,6 +1,6 @@
 <template>
 
-    <h1>Your time records</h1>
+    <h1>Search time records</h1>
 
     <div class="form-container">
         <form>
@@ -81,9 +81,11 @@
         <p v-if="errorMsg" class="error">{{ errorMsg }}</p>
         <button class="button" type="submit" @click="handleParams()">Get'em all</button>
     </div>
+
+    <h2 v-if="records.length !== 0">Search Results</h2>
     
-    <div id="records-results" class="records-results" v-if="records.length != 0">
-        <div v-for="(record, i) in records" :key="record">
+    <div id="records-results" class="records-results" v-if="records.length !== 0">
+        <div id="record" v-for="(record, i) in records" :key="record">
             <TimeRecordCard :record="record" @updated="handleRecordUpdate(i, $event)"/>
         </div>
     </div>
@@ -118,7 +120,8 @@ const requests = ref([])
 const records = ref([])
 
 onMounted(() => {
-    requests.value = JSON.parse(localStorage.getItem('requests')).map(x => ({ "id": x.id, "params": x.params })) || [];
+    const storedRequests = localStorage.getItem('requests');
+    requests.value = storedRequests ? JSON.parse(localStorage.getItem('requests')).map(x => ({ "id": x.id, "params": x.params })) : [];
 })
 
 /**
@@ -162,6 +165,7 @@ function deleteSection(section) {
  * Creates a clean dictionary of params for the get request.
  */
 function handleParams() {
+    records.value = []
     errorMsg.value = null
     let rangeBeginning = null
     let rangeEnd = null
@@ -209,7 +213,15 @@ fieldset {
     right: 1em;
 }
 .records-results {
-    width: 80%;
     margin: auto;
+}
+#record {
+    margin-bottom: 1em;
+}
+
+@media screen and (min-width: 764px) {
+    .records-results {
+        width: 80%;
+    }
 }
 </style>
