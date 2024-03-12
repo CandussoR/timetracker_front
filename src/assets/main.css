@@ -65,6 +65,12 @@ label {
 
 }
 
+button {
+  padding-block: 0;
+  padding-inline: 0;
+  padding: 0;
+}
+
 .button {
   font-family: var(--font-family); 
   color: var(--background);
@@ -108,11 +114,12 @@ label {
   padding: 2%;
   border-radius: 50%;
   color: var(--text);
-  background: var(--other-gradient-2);
+  background: var(--linearBackground2Primary30-45-80);
   box-shadow: 1px 1px var(--primary);
 }
 .icon-clear-gradient:hover {
-  background: var(--a-wtf-gradient);
+  background: var(--radialBackground2Primary30);
+  box-shadow: 1px 1px var(--primary);
 }
 
 input, select, textarea {

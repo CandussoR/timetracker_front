@@ -23,18 +23,25 @@
   /* Realtime Colors */
   --text: #eaeaf0;
   --background: #050509;
-  --background-2: #0D0D13;
-  --primary: #9798d1;
-  --secondary: #272975;
-  --accent: #5557d5;
+  --primary: hsl(239, 39%, 71%);
+  --secondary: hsl(238, 50%, 31%);
+  --accent: hsl(239, 60%, 58%);
+  
+  /* Shades from colors */
+  --background-2: hsl(240, 19%, 6%);
+  --background-3: hsl(236, 18%, 16%);
+  --primary30: hsla(239, 39%, 71%, 0.5);
+  --secondary30: hsla(238, 50%, 31%, 0.30);
 
+  /* Effects from colors and shades*/
   --linearPrimarySecondary: linear-gradient(#9798d1, #272975);
   --linearPrimaryAccent: linear-gradient(#9798d1, #5557d5);
   --linearSecondaryAccent: linear-gradient(#272975, #5557d5);
   --wtf-gradient: linear-gradient(var(--text), var(--primary));
   --a-wtf-gradient: linear-gradient(var(--primary), var(--text));
-  --other-gradient: linear-gradient(.45turn, var(--background), 90%, var(--primary));  
-  --other-gradient-2: linear-gradient(.45turn, var(--background-2), 90%, var(--primary));
+  --linearBackgroundPrimary-45-90: linear-gradient(.45turn, var(--background), 90%, var(--primary));  
+  --linearBackground2Primary30-45-80: linear-gradient(.45turn, var(--background-2), 80%, var(--primary));
+  --radialBackground2Primary30 : radial-gradient(circle at center,var(--background-2), var(--primary30));
   --radialPrimarySecondary: radial-gradient(#9798d1, #272975);
   --radialPrimaryAccent: radial-gradient(#9798d1, #5557d5);
   --radialSecondaryAccent: radial-gradient(#272975, #5557d5);
@@ -60,7 +67,7 @@
 }
 
 :root {
-  font-size: calc(0.9rem + .3vw);
+  font-size: clamp(calc(0.9rem + .3vw), 2rem);
 
   --font-family : 'Poppins',
   Inter,
@@ -76,6 +83,7 @@
   Ubuntu,
   sans-serif;
 }
+
 @media (prefers-color-scheme: dark) {
   :root {
     --color-background: var(--background);
@@ -96,33 +104,18 @@
 *::before,
 *::after {
   box-sizing: border-box;
-  top: 0;
-  margin: 0;
   font-weight: normal;
 }
 
 body {
-  min-height: 100vh;
+  min-height: 10vh;
   color: var(--color-text);
   background: var(--color-background);
   transition:
     color 0.5s,
     background-color 0.5s;
   line-height: 1.6;
-  font-family:
-    'Poppins',
-    Inter,
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    Oxygen,
-    Ubuntu,
-    Cantarell,
-    'Fira Sans',
-    'Droid Sans',
-    'Helvetica Neue',
-    sans-serif;
+  font-family: var(--font-family);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

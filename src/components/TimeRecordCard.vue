@@ -3,27 +3,21 @@
         v-if="!editing" 
         @mouseenter="showEdit = true" 
         @mouseleave="showEdit = false">
-        <span class="material-symbols-outlined icon-clear-gradient" v-if="showEdit" @click="editing = !editing">edit</span>
-        <p class="bold">Date : {{ record.date }}</p>
-        <p>Task name : {{ record.task_name }}</p>
-        <p v-if="record.subtask">Subtask : {{ record.subtask }}</p>
-        <p v-if="record.tag">Tag : {{ record.tag }}</p>
-        <div>
-            <p>Time Beginning : {{ record.time_beginning ?? 'Unknown' }}</p>
-            <p>Time Ending : {{ record.time_ending ?? 'Unknown' }}</p>
-        </div>
+        <span class="material-symbols-outlined icon-clear-gradient" v-if="showEdit" @click="toggleEdit(true)">edit</span>
+        <p class="date">{{ record.date }}</p>
+        <p class="record-task" v-if="record.subtask && record.tag">{{ record.task_name }} ({{ record.subtask }}) : <span class="tag"># {{ record.tag }}</span></p>
+        <p class="record-task" v-else-if="record.tag">{{ record.task_name }} : <span class="tag"># {{ record.tag }}</span></p>
+        <p class="record-task" v-else>{{ record.task_name }}</p>
+        <p class="time-range">{{ record.time_beginning ?? 'Unknown' }} - {{ record.time_ending ?? 'Ongoing' }}</p>
         <!-- v-html is okay here because the log is sanitized. -->
         <div v-if="record.log">
-            <p>Log :</p>
-            <div v-html="mdParse(record.log)"></div>
+            <div class="log" v-html="mdParse(record.log)"></div>
         </div>
     </div>
 
     <div id="record-update__form" class="form-container bg-2">
         <form @submit.prevent="handleSubmit">
-            <div class="time-record__card--edit" v-if="editing" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
-                <button type="submit" v-if="showDone"><span v-if="showDone" class="material-symbols-outlined">done </span></button> 
-                <button type="button" v-if="showCancel" class="material-symbols-outlined" @click="editing = !editing"><span class="material-symbols-outlined"> cancel </span></button>
+            <div class="time-record__card--edit" v-if="editing">
                 <fieldset>
                     <legend>Date & Time</legend>
                     <label class="bold" for="time-record-date">Date : </label>
@@ -67,7 +61,7 @@
                         </div>                    
                     </div>
             </fieldset>
-            <fieldset id="task_section">
+            <fieldset id="task__section">
                 <legend>Task</legend>
                 <div class="section-inputs">
                     <TaskSelect :task="formRecord.task_name" @selected="formRecord.task_name = $event"/>
@@ -83,6 +77,10 @@
                     <label class="bold" for="log" style="display: none">Log :</label> 
                     <textarea id="log" name="log" v-model="formRecord.log"/>
                 </fieldset>
+                <div class="button-row">
+                    <button class="icon-clear-gradient" @click="handleSubmit()"><span class="material-symbols-outlined">done</span></button>
+                    <button class="icon-clear-gradient" @click="toggleEdit(false)"><span class="material-symbols-outlined">cancel</span></button>
+                </div>
             </div> 
         </form>
     </div>
@@ -141,6 +139,12 @@ onMounted(() => {
     formRecord.value.timeEnding = createDateFromTimeString(formRecord.value.timeEnding, 
                                                            ...time_ending)
 });
+
+function toggleEdit(truth) {
+    editing.value = truth
+    showCancel.value = truth
+    showDone.value = truth
+}
 
 function createDateFromTimeString(valueToUpdate, hour, minutes, seconds) {
     valueToUpdate = {
@@ -213,19 +217,9 @@ function areObjectEquals(obj1, obj2) {
     return true
 }
 
-function handleMouseEnter() {
-    showDone.value = true
-    showCancel.value = true
-}
-
-function handleMouseLeave() {
-    showDone.value = false
-    showCancel.value = false
-}
-
 </script>
 
-<style>
+<style scoped>
     #record-update__form fieldset {
         margin-bottom: 0;
     }
@@ -234,12 +228,38 @@ function handleMouseLeave() {
         border-radius: 5px;
         padding: 1em;
     }
-    .time-record__card span {
+    .time-record__card > span {
         position: absolute;
         top: 1em;
         right: 1em;
     }
+
     button {
-        all: unset;
+        border-width: 0;
+    }
+
+    .button-row {
+        display: flex;
+        justify-content: center;
+        gap: 2em;
+    }
+    
+    .log {
+        width: 80%;
+        margin: .5em auto;
+        background-color: var(--background-3);
+        border-radius: 5px;
+        padding: 1em 2em;
+    }
+
+    strong {
+        font-weight: bold;
+    }
+
+    .tag {
+        font-size: .8em; 
+        background: var(--accent);
+        border-radius: 25px;
+        padding: .2em 1em;
     }
 </style>

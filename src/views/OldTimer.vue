@@ -86,13 +86,15 @@
 
     </div>
     
-    <div v-if="record">
-        <TimeRecordCard :record="record" @updated="record = $event"/>
-    </div>
-
-    <div v-if="success">
-        <button class="button" @click="handleAnother">Create another timer</button>
-        <router-link to="/">Home</router-link>
+    <div class="record-display">
+        <div v-if="record">
+            <TimeRecordCard :record="record" @updated="record = $event"/>
+        </div>
+    
+        <div v-if="success">
+            <button class="button" @click="handleAnother">Create another timer</button>
+            <router-link to="/">Home</router-link>
+        </div>
     </div>
 
     <ModalFrame content="newTask" v-if="newTask" v-on-click-outside="closeModal"/>
@@ -199,5 +201,10 @@ function closeModal() {
 <style scoped>
 #submit {
     align-self: center;
+}
+
+.record-display {
+    margin: auto;
+    width: 80%;
 }
 </style>
