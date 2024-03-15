@@ -1,7 +1,7 @@
 <template>
-    <div>
+    <main id="stats-dive">
         Joe Mama
-    </div>
+    </main>
 </template>
 
 <script setup>

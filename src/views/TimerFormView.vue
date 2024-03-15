@@ -1,50 +1,52 @@
 <template>
-    <h1>New clock</h1>
-
-    <div class="form-container">
-        <form @submit.prevent="handleSubmit">
-
-            <fieldset id="task__section">
-                <legend>Task
-                    <!-- Using click.stop to prevent propagation of closeModal -->
-                    <span id="add-task-button" class="material-symbols-outlined" v-if="!newTask" @click.stop="newTask = !newTask">add</span> 
-                </legend>
-               
-                <div class="section-inputs">
-                    <TaskSelect :task="selectedTask" @selected="selectedTask = $event"/>
-                    <SubtaskSelect :task="selectedTask" @selected="selectedSubtask = $event" /> 
-                </div>  
-            </fieldset>
-            
-            <fieldset id="tag__section">
-                <legend>Tag
-                    <span class="material-symbols-outlined" v-if="!newTag" @click="newTag = !newTag">add</span>
-                </legend>
-                <div class="inline">
-                    <TagSelect :tag="selectedTag" @selected="selectedTag = $event"/>
-                </div>
-
-            </fieldset>
-
-            <fieldset id="clock__section">
-                <legend>Clock Type</legend>
-                <div class="button-row">
-                    <button class="button secondary" @click.prevent="clock = 'timer'">Timer</button>
-                    <button class="button secondary" @click.prevent="clock = 'chrono'">Stopwatch</button> 
-                </div>
-                <div v-if="clock == 'timer'">
-                    <label for="duration">Set your time (in minutes):</label>
-                    <input id="duration" name="duration" type="number" min="0" v-model="duration">
-                </div>
-            </fieldset>
-
-            <button id="set" type="submit" class="button" 
-                    :disabled="clock == '' || (clock == 'timer' && duration=='0')">Set</button>
-        </form>
-     </div>
-
-    <ModalFrame content="newTask" v-if="newTask" v-on-click-outside="closeModal"/>
-    <ModalFrame content="newTag" v-if="newTag" v-on-click-outside="closeModal"/>
+    <main id="new-clock">
+        <h1>New clock</h1>
+    
+        <div class="form-container">
+            <form @submit.prevent="handleSubmit">
+    
+                <fieldset id="task__section">
+                    <legend>Task
+                        <!-- Using click.stop to prevent propagation of closeModal -->
+                        <span id="add-task-button" class="material-symbols-outlined" v-if="!newTask" @click.stop="newTask = !newTask">add</span> 
+                    </legend>
+                   
+                    <div class="section-inputs">
+                        <TaskSelect :task="selectedTask" @selected="selectedTask = $event"/>
+                        <SubtaskSelect :task="selectedTask" @selected="selectedSubtask = $event" /> 
+                    </div>  
+                </fieldset>
+                
+                <fieldset id="tag__section">
+                    <legend>Tag
+                        <span class="material-symbols-outlined" v-if="!newTag" @click="newTag = !newTag">add</span>
+                    </legend>
+                    <div class="inline">
+                        <TagSelect :tag="selectedTag" @selected="selectedTag = $event"/>
+                    </div>
+    
+                </fieldset>
+    
+                <fieldset id="clock__section">
+                    <legend>Clock Type</legend>
+                    <div class="button-row">
+                        <button class="button secondary" @click.prevent="clock = 'timer'">Timer</button>
+                        <button class="button secondary" @click.prevent="clock = 'chrono'">Stopwatch</button> 
+                    </div>
+                    <div v-if="clock == 'timer'">
+                        <label for="duration">Set your time (in minutes):</label>
+                        <input id="duration" name="duration" type="number" min="0" v-model="duration">
+                    </div>
+                </fieldset>
+    
+                <button id="set" type="submit" class="button" 
+                        :disabled="clock == '' || (clock == 'timer' && duration=='0')">Set</button>
+            </form>
+         </div>
+    
+        <ModalFrame content="newTask" v-if="newTask" v-on-click-outside="closeModal"/>
+        <ModalFrame content="newTag" v-if="newTag" v-on-click-outside="closeModal"/>
+    </main>
 </template>
 
 <script setup>

@@ -1,5 +1,5 @@
 <template>
-    <div id="stats-page">
+    <main id="stats-page">
       <div id="main" class="main-container">
         <h1>Stats</h1>
         <div id="time-span__header">
@@ -60,7 +60,7 @@
           </div>
         </div>
       </div>
-  </div>
+  </main>
 
 </template>
 

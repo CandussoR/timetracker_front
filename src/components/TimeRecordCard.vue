@@ -4,11 +4,17 @@
         @mouseenter="showEdit = true" 
         @mouseleave="showEdit = false">
         <span class="material-symbols-outlined icon-clear-gradient" v-if="showEdit" @click="toggleEdit(true)">edit</span>
-        <p class="date">{{ record.date }}</p>
-        <p class="record-task" v-if="record.subtask && record.tag">{{ record.task_name }} ({{ record.subtask }}) : <span class="tag"># {{ record.tag }}</span></p>
-        <p class="record-task" v-else-if="record.tag">{{ record.task_name }} : <span class="tag"># {{ record.tag }}</span></p>
-        <p class="record-task" v-else>{{ record.task_name }}</p>
-        <p class="time-range">{{ record.time_beginning ?? 'Unknown' }} - {{ record.time_ending ?? 'Ongoing' }}</p>
+        <div id="date-time" class="date-time">
+            <p class="date">{{ record.date }}</p>
+        </div>
+        <p>{{ record.time_beginning ?? 'Unknown' }} → {{ record.time_ending ?? 'Ongoing' }}</p>
+        <div id="precisions" class="precisions">
+            <p id="task">
+                <span class="task" v-if="record.subtask">{{ record.task_name }} ({{ record.subtask }})</span>
+                <span class="task" v-else>{{ record.task_name }}</span>
+            </p>
+            <p id="tag" v-if="record.tag"><span class="tag"># {{ record.tag }}</span></p>
+        </div>
         <!-- v-html is okay here because the log is sanitized. -->
         <div v-if="record.log">
             <div class="log" v-html="mdParse(record.log)"></div>
@@ -173,7 +179,7 @@ async function handleSubmit() {
 
     if (!areObjectEquals(originalRecord, formRecord.value)) {
         // Continuation of the spring cleaning : format, guids.
-        if (formRecord.value.subtask !== '') formRecord.value.subtask = null
+        if (formRecord.value.subtask === '') formRecord.value.subtask = null
         formRecord.value.task_guid = taskStore.tasks.filter(x => x.task_name == formRecord.value.task_name 
                                                                 && x.subtask == formRecord.value.subtask)
                                                     .map(x => x.guid)[0]
@@ -252,14 +258,44 @@ function areObjectEquals(obj1, obj2) {
         padding: 1em 2em;
     }
 
-    strong {
-        font-weight: bold;
-    }
-
     .tag {
-        font-size: .8em; 
+        font-size: .9em; 
         background: var(--accent);
         border-radius: 25px;
         padding: .2em 1em;
+    }
+
+    .task {
+        border: none;
+        color: var(--background);
+        font-size: .9em;
+        font-weight: 500;
+        background: linear-gradient(.45turn, var(--text), 60%, var(--primary));
+        border-radius: 25px;
+        padding: .2em 1em;
+    }
+
+    .subtask {
+        font-size: .9em; 
+        color: var(--background);
+        background: linear-gradient(.55turn, var(--primary), 60%, var(--text));
+        border-radius: 25px;
+        padding: .2em 1em;
+        margin-left: .5em;
+    }
+
+    .precisions {
+        display: flex;
+        place-items: center;
+        gap: 1rem;
+    }
+
+    p:not(last-child) {
+        margin: 0;
+        margin-bottom: .5em;
+    }
+
+    .date {
+        font-size: 1.5rem;
     }
 </style>

@@ -30,7 +30,7 @@
   /* Shades from colors */
   --background-2: hsl(240, 19%, 6%);
   --background-3: hsl(236, 18%, 16%);
-  --primary30: hsla(239, 39%, 71%, 0.5);
+  --primary30: hsla(239, 39%, 71%, 0.3);
   --secondary30: hsla(238, 50%, 31%, 0.30);
 
   /* Effects from colors and shades*/
@@ -67,7 +67,7 @@
 }
 
 :root {
-  font-size: clamp(calc(0.9rem + .3vw), 2rem);
+  font-size: clamp(calc(0.9rem + .3vw), 1rem, 1.5rem);
 
   --font-family : 'Poppins',
   Inter,

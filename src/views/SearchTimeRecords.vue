@@ -71,7 +71,7 @@
         
         </form>
         
-        <div class="otherChoice">
+        <div class="other-choice">
             <label for="criteriaSelect" name="criteriaSelect">Select your criteria(s)</label>
             <select id="criteriaSelect" name="criteriaSelect" v-model="criteria" @change="handleCriteria(criteria)">
                 <option v-for="pc in possibleCriteria" :key="pc" :value="pc">{{ pc[0].toUpperCase() + pc.slice(1) }}</option>
@@ -196,12 +196,15 @@ function handleRecordUpdate(idx, timeRecord) {
 </script>
 
 <style scoped>
-.otherChoice {
+.other-choice {
     display : flex;
     flex-direction: column;
     width: 70%;
     margin: auto;
     margin-bottom: 1.5em;
+}
+.form-container {
+    gap: 3em;
 }
 fieldset {
     position: relative;
