@@ -13,5 +13,11 @@ import StickyMenu from './components/StickyMenu.vue';
 <style>
     .app {
         display: flex;
+        /* justify-content: center; */
+    }
+    @media (max-width: 764px) {
+        .app {
+            flex-direction: column;
+        }
     }
 </style>
