@@ -108,6 +108,10 @@ import { ref, watch } from 'vue';
 import ModalFrame from '@/components/modals/ModalFrame.vue';
 import VueDatePicker from '@vuepic/vue-datepicker'
 import { vOnClickOutside } from '@vueuse/components';
+import { ref, watch } from 'vue';
+import ModalFrame from '@/components/modals/ModalFrame.vue';
+import VueDatePicker from '@vuepic/vue-datepicker'
+import { vOnClickOutside } from '@vueuse/components';
 import '@vuepic/vue-datepicker/dist/main.css';
 import TimeRecordCard from '@/components/TimeRecordCard.vue';
 import TaskSelect from '@/components/select/TaskSelect.vue';
@@ -118,6 +122,8 @@ import { useTaskStore } from '@/stores/task';
 import { useTagStore } from '@/stores/tag';
 import { useStatStore } from '@/stores/stats';
 
+const newTag = ref(false)
+const newTask = ref(false)
 const newTag = ref(false)
 const newTask = ref(false)
 const recordStore = useTimeRecordStore()
@@ -164,6 +170,23 @@ watch(
     }
 });
 
+
+watch(
+    () => taskStore.isCreated, 
+    (newValue) => {
+        if (newValue === true) {
+            closeModal()
+    }
+});
+
+watch(
+    () => tagStore.isCreated, 
+    (newValue) => {
+        if (newValue === true) {
+            closeModal()
+    }
+});
+
 async function handleSubmit() {
     try {
         if (formRecord.value.subtask !== '') formRecord.value.subtask = null
@@ -192,6 +215,11 @@ function handleAnother() {
     success.value = false
     record.value = null
     errorMsg.value = ''
+}
+
+function closeModal() {
+    newTask.value = false;
+    newTag.value = false;
 }
 
 function closeModal() {

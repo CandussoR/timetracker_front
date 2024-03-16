@@ -54,6 +54,7 @@ import TaskSelect from '@/components/select/TaskSelect.vue'
 import SubtaskSelect from '@/components/select/SubtaskSelect.vue'
 import TagSelect from '@/components/select/TagSelect.vue'
 import ModalFrame from '@/components/modals/ModalFrame.vue';
+import ModalFrame from '@/components/modals/ModalFrame.vue';
 import { vOnClickOutside } from '@vueuse/components'
 import { useTaskStore } from '@/stores/task';
 import { useTagStore } from '@/stores/tag';
@@ -123,6 +124,8 @@ function handleSubmit() {
 </script>
 
 <style scoped>
+    #set {
+        margin: auto;
     #set {
         margin: auto;
     }
