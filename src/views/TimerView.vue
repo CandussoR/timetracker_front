@@ -1,26 +1,28 @@
 <template>
-    <button @click="launchRecord">See datetime</button>
-    <p>{{ formattedDuration }}</p>
-    <div id="error" class="error" v-if="err">
-        <p>{{ err }}</p>
-    </div>
-    <button v-if="!timerRunning && !stopwatchRunning && !isDone" 
-            @click="currentDuration ? beginTimeRecord('timer') : beginTimeRecord('stopwatch')">
-            Go !
-    </button>
-    <button v-else-if="(timerRunning || stopwatchRunning) && !isDone" 
-            @click="stopTheClock()">
-            Stop !
-    </button>
-    <div v-else>
-        <textarea v-model="log"></textarea>
-        <button @click="updateTimeRecord()">Send</button>
-        <p id="success" name="success" class="success">{{ success }}</p>
-        <div>
-            <p>In the end, you kept on going ? Don't worry !</p>
-            <button @click="console.log('Not implemented yet but I head that')">Update to now</button>
+    <main id="clock">
+        <button @click="launchRecord">See datetime</button>
+        <p>{{ formattedDuration }}</p>
+        <div id="error" class="error" v-if="err">
+            <p>{{ err }}</p>
         </div>
-    </div>
+        <button v-if="!timerRunning && !stopwatchRunning && !isDone" 
+                @click="currentDuration ? beginTimeRecord('timer') : beginTimeRecord('stopwatch')">
+                Go !
+        </button>
+        <button v-else-if="(timerRunning || stopwatchRunning) && !isDone" 
+                @click="stopTheClock()">
+                Stop !
+        </button>
+        <div v-else>
+            <textarea v-model="log"></textarea>
+            <button @click="updateTimeRecord()">Send</button>
+            <p id="success" name="success" class="success">{{ success }}</p>
+            <div>
+                <p>In the end, you kept on going ? Don't worry !</p>
+                <button @click="console.log('Not implemented yet but I head that')">Update to now</button>
+            </div>
+        </div>
+    </main>
 </template>
 
 <script setup>

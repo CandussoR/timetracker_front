@@ -1,68 +1,95 @@
 <template>
-    <div class="time-record__card" v-if="!editing" @mouseenter="showEdit = true" @mouseleave="showEdit = false">
-        <span class="material-symbols-outlined" v-if="showEdit" @click="editing = !editing">edit</span>
-        <p class="bold">Date : {{ record.date }}</p>
-        <p>Task name : {{ record.task_name }}</p>
-        <p v-if="record.subtask">Subtask : {{ record.subtask }}</p>
-        <p v-if="record.tag">Tag : {{ record.tag }}</p>
-        <div>
-            <p>Time Beginning : {{ record.time_beginning ?? 'Unknown' }}</p>
-            <p>Time Ending : {{ record.time_ending ?? 'Unknown' }}</p>
+    <div id="time-record__card" class="time-record__card bg-2" 
+        v-if="!editing" 
+        @mouseenter="showEdit = true" 
+        @mouseleave="showEdit = false">
+        <span class="material-symbols-outlined icon-clear-gradient" v-if="showEdit" @click="toggleEdit(true)">edit</span>
+        <div id="date-time" class="date-time">
+            <p class="date">{{ record.date }}</p>
+        </div>
+        <p>{{ record.time_beginning ?? 'Unknown' }} → {{ record.time_ending ?? 'Ongoing' }}</p>
+        <div id="precisions" class="precisions">
+            <p id="task">
+                <span class="task" v-if="record.subtask">{{ record.task_name }} ({{ record.subtask }})</span>
+                <span class="task" v-else>{{ record.task_name }}</span>
+            </p>
+            <p id="tag" v-if="record.tag"><span class="tag"># {{ record.tag }}</span></p>
         </div>
         <!-- v-html is okay here because the log is sanitized. -->
         <div v-if="record.log">
-            <p>Log :</p>
-            <div v-html="mdParse(record.log)"></div>
+            <div class="log" v-html="mdParse(record.log)"></div>
         </div>
     </div>
 
-    <form @submit.prevent="handleSubmit">
-        <div class="time-record__card--edit" v-if="editing" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
-            <button type="submit" v-if="showDone"><span v-if="showDone" class="material-symbols-outlined"> done </span></button> 
-            <span v-if="showCancel" class="material-symbols-outlined" @click="editing = !editing"> cancel </span>
-            <label class="bold" for="time-record-date">Date : </label>
-            <VueDatePicker id="time-record-date" 
-                name="time-record-date"
-                v-model="formRecord.date" 
-                :maxDate="new Date()" 
-                locale="fr" 
-                :model-value="formRecord.date" 
-                model-type="yyyy-MM-dd" 
-                format='yyyy-MM-dd' 
-                auto-apply 
-                :enable-time-picker="false"
-                placeholder="Select a date"/>
-            <TaskSelect :task="formRecord.task_name" @selected="formRecord.task_name = $event"/>
-            <SubtaskSelect :task="formRecord.task_name" :subtask="formRecord.subtask" @selected="formRecord.subtask = $event"/>
-            <TagSelect :tag="formRecord.tag" @selected="formRecord.tag = $event"/>
-            <div>
-                <label class="bold" for="time-record-beginning">Time Beginning : </label>
-                <VueDatePicker id="time-record-beginning" 
-                                name="time-record-beginning"
-                                v-model="formRecord.timeBeginning"
-                                :model-value="formRecord.timeBeginning"
-                                model-type="HH:mm:ss" 
-                                format= "HH:mm:ss"
-                                time-picker
-                                enable-seconds
-                                />
-                <label class="bold" for="time-record-ending">Time Ending :</label>
-                <VueDatePicker id="time-record-ending"
-                                name="time-record-ending"
-                                v-model="formRecord.timeEnding"
-                                :model-value="formRecord.timeEnding"
-                                model-type="HH:mm:ss" 
-                                format= "HH:mm:ss"
-                                time-picker
-                                enable-seconds
-                                />
-            </div>
-            <fieldset>
-                <label class="bold" for="log">Log :</label> 
-                <textarea id="log" name="log" v-model="formRecord.log"/>
+    <div id="record-update__form" class="form-container bg-2">
+        <form @submit.prevent="handleSubmit">
+            <div class="time-record__card--edit" v-if="editing">
+                <fieldset>
+                    <legend>Date & Time</legend>
+                    <label class="bold" for="time-record-date">Date : </label>
+                    <div class="datepicker">
+                        <VueDatePicker id="time-record-date" 
+                        name="time-record-date"
+                        v-model="formRecord.date" 
+                        :maxDate="new Date()" 
+                        locale="fr" 
+                        :model-value="formRecord.date" 
+                        model-type="yyyy-MM-dd" 
+                        format='yyyy-MM-dd' 
+                        auto-apply 
+                        :enable-time-picker="false"
+                        placeholder="Select a date"/>
+                    </div>
+                    <div class="section-inputs">
+                        <div class="datepicker">
+                        <label class="bold" for="time-record-beginning">Time Beginning : </label>
+                            <VueDatePicker id="time-record-beginning" 
+                                            name="time-record-beginning"
+                                            v-model="formRecord.timeBeginning"
+                                            :model-value="formRecord.timeBeginning"
+                                            model-type="HH:mm:ss" 
+                                            format= "HH:mm:ss"
+                                            time-picker
+                                            enable-seconds
+                                            />
+                        </div>
+                        <div class="datepicker">
+                        <label class="bold" for="time-record-ending">Time Ending :</label>
+                            <VueDatePicker id="time-record-ending"
+                                            name="time-record-ending"
+                                            v-model="formRecord.timeEnding"
+                                            :model-value="formRecord.timeEnding"
+                                            model-type="HH:mm:ss" 
+                                            format= "HH:mm:ss"
+                                            time-picker
+                                            enable-seconds
+                                            />
+                        </div>                    
+                    </div>
             </fieldset>
-        </div> 
-    </form>
+            <fieldset id="task__section">
+                <legend>Task</legend>
+                <div class="section-inputs">
+                    <TaskSelect :task="formRecord.task_name" @selected="formRecord.task_name = $event"/>
+                    <SubtaskSelect :task="formRecord.task_name" :subtask="formRecord.subtask" @selected="formRecord.subtask = $event"/>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>Tag</legend>
+                <TagSelect :tag="formRecord.tag" @selected="formRecord.tag = $event"/>
+            </fieldset>
+                <fieldset>
+                    <legend>Log</legend>
+                    <label class="bold" for="log" style="display: none">Log :</label> 
+                    <textarea id="log" name="log" v-model="formRecord.log"/>
+                </fieldset>
+                <div class="button-row">
+                    <button class="icon-clear-gradient" @click="handleSubmit()"><span class="material-symbols-outlined">done</span></button>
+                    <button class="icon-clear-gradient" @click="toggleEdit(false)"><span class="material-symbols-outlined">cancel</span></button>
+                </div>
+            </div> 
+        </form>
+    </div>
 
 </template>
 
@@ -119,6 +146,12 @@ onMounted(() => {
                                                            ...time_ending)
 });
 
+function toggleEdit(truth) {
+    editing.value = truth
+    showCancel.value = truth
+    showDone.value = truth
+}
+
 function createDateFromTimeString(valueToUpdate, hour, minutes, seconds) {
     valueToUpdate = {
         hours: hour | 0,
@@ -146,7 +179,7 @@ async function handleSubmit() {
 
     if (!areObjectEquals(originalRecord, formRecord.value)) {
         // Continuation of the spring cleaning : format, guids.
-        if (formRecord.value.subtask !== '') formRecord.value.subtask = null
+        if (formRecord.value.subtask === '') formRecord.value.subtask = null
         formRecord.value.task_guid = taskStore.tasks.filter(x => x.task_name == formRecord.value.task_name 
                                                                 && x.subtask == formRecord.value.subtask)
                                                     .map(x => x.guid)[0]
@@ -190,14 +223,79 @@ function areObjectEquals(obj1, obj2) {
     return true
 }
 
-function handleMouseEnter() {
-    showDone.value = true
-    showCancel.value = true
-}
-
-function handleMouseLeave() {
-    showDone.value = false
-    showCancel.value = false
-}
-
 </script>
+
+<style scoped>
+    #record-update__form fieldset {
+        margin-bottom: 0;
+    }
+    .time-record__card {
+        position: relative;
+        border-radius: 5px;
+        padding: 1em;
+    }
+    .time-record__card > span {
+        position: absolute;
+        top: 1em;
+        right: 1em;
+    }
+
+    button {
+        border-width: 0;
+    }
+
+    .button-row {
+        display: flex;
+        justify-content: center;
+        gap: 2em;
+    }
+    
+    .log {
+        width: 80%;
+        margin: .5em auto;
+        background-color: var(--background-3);
+        border-radius: 5px;
+        padding: 1em 2em;
+    }
+
+    .tag {
+        font-size: .9em; 
+        background: var(--accent);
+        border-radius: 25px;
+        padding: .2em 1em;
+    }
+
+    .task {
+        border: none;
+        color: var(--background);
+        font-size: .9em;
+        font-weight: 500;
+        background: linear-gradient(.45turn, var(--text), 60%, var(--primary));
+        border-radius: 25px;
+        padding: .2em 1em;
+    }
+
+    .subtask {
+        font-size: .9em; 
+        color: var(--background);
+        background: linear-gradient(.55turn, var(--primary), 60%, var(--text));
+        border-radius: 25px;
+        padding: .2em 1em;
+        margin-left: .5em;
+    }
+
+    .precisions {
+        display: flex;
+        place-items: center;
+        gap: 1rem;
+    }
+
+    p:not(last-child) {
+        margin: 0;
+        margin-bottom: .5em;
+    }
+
+    .date {
+        font-size: 1.5rem;
+    }
+</style>

@@ -1,11 +1,13 @@
 <template>
-  <h1>Your tasks</h1>
-  <div v-for="task in taskStore.tasks" :key="task.guid">
-    <div class="task" @click="taskStore.deleteTask(task.guid)">
-      <p> {{ task.task_name }}</p>
-      <p> {{ task.subtask }}</p>
+  <main id="tasks">
+    <h1>Your tasks</h1>
+    <div v-for="task in taskStore.tasks" :key="task.guid">
+      <div class="task" @click="taskStore.deleteTask(task.guid)">
+        <p> {{ task.task_name }}</p>
+        <p> {{ task.subtask }}</p>
+      </div>
     </div>
-  </div>
+  </main>
 </template>
 
 <script setup>

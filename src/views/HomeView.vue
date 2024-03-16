@@ -1,30 +1,32 @@
 <template>
-    <div>
-        <div class="data-card">
-            <div class="data-card-header">
-                <span class="material-symbols-outlined" @click="handleBack">arrow_back</span>
-                <div :class="selected === s ? 'data-card-header__item primary' : 'data-card-header__item secondary'" 
-                    v-for="s in selectors" :key="s" @click="selected = s">
-                    {{ s }}
+    <main id="home">
+        <div>
+            <div class="data-card">
+                <div class="data-card-header">
+                    <span class="material-symbols-outlined" @click="handleBack">arrow_back</span>
+                    <div :class="selected === s ? 'data-card-header__item primary' : 'data-card-header__item secondary'" 
+                        v-for="s in selectors" :key="s" @click="selected = s">
+                        {{ s }}
+                    </div>
+                    <span class="material-symbols-outlined" @click="handleForward">arrow_forward</span>
                 </div>
-                <span class="material-symbols-outlined" @click="handleForward">arrow_forward</span>
+                <div class="data-card-data" v-if="data">
+                    <p class="data-card-data__count">{{ data.count }} {{ data.count === 1 ? "timer" : "timers" }}</p>
+                    <TimeDisplay v-if="data.time" :time="data.time"/>
+                    <p v-else>--</p>
+                </div>
+                <div id="stats-link"><p><a @click="router.push('/stats')">More stats</a></p></div>
+                <div v-if="loading"><span class="loader"></span></div>
             </div>
-            <div class="data-card-data" v-if="data">
-                <p class="data-card-data__count">{{ data.count }} {{ data.count === 1 ? "timer" : "timers" }}</p>
-                <TimeDisplay v-if="data.time" :time="data.time"/>
-                <p v-else>--</p>
-            </div>
-            <div id="stats-link"><p><a @click="router.push('/stats')">More stats</a></p></div>
-            <div v-if="loading"><span class="loader"></span></div>
         </div>
-    </div>
 
-    <div id="buttons" class="buttons">
-        <button @click="redirect">New timer</button>
-        <p v-if="success" id="success" class="success">{{ success }}</p>
-        <p v-else-if="error" id="error" class="error">{{ error }}</p>
-        <button class="secondary" @click="handleUpdate()">Update last timer to now</button>
-    </div>
+        <div id="buttons" class="buttons">
+            <button class="button" @click="redirect">New timer</button>
+            <p v-if="success" id="success" class="success">{{ success }}</p>
+            <p v-else-if="error" id="error" class="error">{{ error }}</p>
+            <button class="button secondary" @click="handleUpdate()">Update last timer to now</button>
+        </div>
+    </main>
 </template>
 
 <script setup>
@@ -118,12 +120,14 @@ function redirect() {
 .data-card-header {
     display: flex;
     flex-direction: row;
+    align-items: center;
 }
 
 .data-card-header__item {
     width: 25%;
     text-align: center;
     cursor: pointer;
+    font-size: 0.8rem;
 }
 
 .data-card-data {
@@ -142,15 +146,16 @@ function redirect() {
     flex-direction: column;
 }
 
-button {
+.buttons > button {
     margin: 1.5em auto;
 }
-button:last-of-type {
+.buttons > button:last-of-type {
     margin: 0 auto;
 }
 
 div#stats-link p {
     text-align: right;
+    font-size: .8em;
 }
 
 </style>

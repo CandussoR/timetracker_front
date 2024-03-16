@@ -4,20 +4,33 @@
   max-width: 1280px;
   min-width: 80%;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 0 1rem;
   font-weight: normal;
   place-items: center;
+}
+
+main {
+  flex: 1 1 0;
+}
+
+strong {
+  font-weight: 700;
+  letter-spacing: .02rem;
+}
+
+.bg-2 {
+  background-color: var(--background-2);
 }
 
 .material-symbols-outlined {
   cursor: pointer;
 }
 
-h1 {
+h1, h2, h3 {
   font-family: "Gilda Display", serif;
   font-weight: 700;
   text-align: center;
-  margin: 5% 0;
+  margin: 2em 0;
 }
 
 a {
@@ -32,7 +45,7 @@ a {
   text-decoration: none;
   color: hsla(160, 100%, 37%, 1);
   transition: 0.4s;
-  padding: 3px;
+  padding: .2em;
 }
 
 .error {
@@ -54,6 +67,7 @@ label {
   display: block;
   margin-bottom: 0.2rem;
 }
+
 .form-button {
   display: flex;
   justify-content: space-evenly;
@@ -61,9 +75,17 @@ label {
 }
 
 button {
+  padding-block: 0;
+  padding-inline: 0;
+  padding: 0;
+}
+
+.button {
   font-family: var(--font-family); 
   color: var(--background);
   width: fit-content;
+  min-width: 120px;
+  padding: 1em 2em;
   min-width: 120px;
   padding: 1em 2em;
   border-radius : 5px;
@@ -73,7 +95,7 @@ button {
   font-weight: 500;
 }
 
-button:hover {
+.button:hover {
   scale: 1.1;
 }
 
@@ -97,6 +119,18 @@ button:hover {
 .svg:hover {
   color: var(--text);
   background: var(--accent);
+}
+
+.icon-clear-gradient {
+  padding: 2%;
+  border-radius: 50%;
+  color: var(--text);
+  background: var(--linearBackground2Primary30-45-80);
+  box-shadow: 1px 1px var(--primary);
+}
+.icon-clear-gradient:hover {
+  background: var(--radialBackground2Primary30);
+  box-shadow: 1px 1px var(--primary);
 }
 
 input, select, textarea {
@@ -134,9 +168,22 @@ input, select, textarea {
 }
 
 @media screen and (min-width: 1024px) {
+/* Inputs take all their space in little resolution because they are in columns,
+  they are are little more narrow when in rows. */
+@media screen and (max-width: 1024px) {
+  input, select {
+    width: 100%;
+  }
+}
+
+@media screen and (min-width: 1024px) {
   body {
     display: flex;
     place-items: center;
+  }
+
+  input, select {
+    width: 70%;
   }
 
   input, select {

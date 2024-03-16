@@ -1,13 +1,15 @@
 <template>
         <h3>New Tag</h3>
-        <form @submit.prevent="handleSubmit">
-            <div>
-                <label for="newTag" hidden="hidden">New Tag</label>
-                <input class="modalInput" id="newTag" type="text" placeholder="tag name" maxlength="30" v-model="tag" required/>
-            </div>
-            <p v-if="msg" class="success">{{ msg }}</p>
-            <button class="modalButton" type="submit">Create</button> 
-        </form>
+        <div id="form-container" class="form-container">
+            <form @submit.prevent="handleSubmit">
+                <div>
+                    <label for="newTag" class="hidden">New Tag</label>
+                    <input id="newTag" type="text" placeholder="tag name" maxlength="30" v-model="tag" required/>
+                </div>
+                <p v-if="msg" class="success">{{ msg }}</p>
+                <button class="button" type="submit">Create</button> 
+            </form>
+        </div>
 </template>
 
 <script setup>
@@ -26,12 +28,11 @@ async function handleSubmit() {
 }
 </script>
 
-<style scoped>
-form {
-    justify-content: space-evenly;
+<style>
+.hidden {
+    display: none;
 }
-.success {
-    color : #80ED99;
-    font-weight: bold;
+input {
+    width: 100%;
 }
 </style>
