@@ -108,7 +108,7 @@
 }
 
 body {
-  min-height: 10vh;
+  /* min-height: 10vh; */
   color: var(--color-text);
   background: var(--color-background);
   transition:
