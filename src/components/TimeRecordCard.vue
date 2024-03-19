@@ -144,6 +144,7 @@ onMounted(() => {
     let time_ending = props.record.time_ending === null ? [0,0,0] : props.record.time_ending.split(":");
     formRecord.value.timeEnding = createDateFromTimeString(formRecord.value.timeEnding, 
                                                            ...time_ending)
+    
 });
 
 function toggleEdit(truth) {
@@ -168,16 +169,17 @@ async function handleSubmit() {
     // Converts the time picker format to string if untouched
     if (typeof formRecord.value.timeBeginning !== "string") {
         const ftb = formRecord.value.timeBeginning
-        formRecord.value.timeBeginning = `${ftb.hours}:${ftb.minutes}:${ftb.seconds}`
+        formRecord.value.timeBeginning = `${String(ftb.hours).padStart(2, '0')}:${String(ftb.minutes).padStart(2, '0')}:${String(ftb.seconds).padStart(2, '0')}`;
     }
     if (typeof formRecord.value.timeEnding !== "string") {
         const fte = formRecord.value.timeEnding
-        formRecord.value.timeEnding = `${fte.hours}:${fte.minutes}:${fte.seconds}`
+        formRecord.value.timeEnding = `${String(fte.hours).padStart(2, '0')}:${String(fte.minutes).padStart(2, '0')}:${String(fte.seconds).padStart(2, '0')}`;
     }
 
     formRecord.value.guid = props.record.guid
 
     if (!areObjectEquals(originalRecord, formRecord.value)) {
+        // Question : bring this in the back service instead of here ?
         // Continuation of the spring cleaning : format, guids.
         if (formRecord.value.subtask === '') formRecord.value.subtask = null
         formRecord.value.task_guid = taskStore.tasks.filter(x => x.task_name == formRecord.value.task_name 
