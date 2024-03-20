@@ -3,7 +3,7 @@
 
     <h1>Your tasks</h1>
 
-    <div :id="task" v-for="task in uniqueTasks" :key="task">
+    <div :id="task" class="task-list-container" v-for="task in uniqueTasks" :key="task">
 
         <h2 :id="task + '-title'">{{ task[0].toUpperCase() + task.substring(1) }}</h2>
 
@@ -12,10 +12,10 @@
               v-for="item in taskStore.tasks.filter(i => i.task_name.toLowerCase() === task)" 
               :key="item.guid"
             >
-                <span class="task" v-if="item.subtask">{{ item.subtask }} <span class="material-symbols-outlined close-icon" @click="displayModal = true">close</span></span>
+                <span class="task" v-if="item.subtask">{{ item.subtask }} <span class="material-symbols-outlined close-icon" @click="handleModalForGuid(item.guid)">close</span></span>
                 <span class="task" v-else>{{ item.task_name }} <span class="material-symbols-outlined close-icon" @click="displayModal = true">close</span></span>
-                <ModalFrame v-if="displayModal" content="confirmDelete" v-on-click-outside="closeModal" @confirmed="console.log('confirmed')" @cancel="closeModal"/>
-            </li>
+                <ModalFrame v-if="displayModal" content="confirmDelete" v-on-click-outside="closeModal"/>            
+              </li>
         </ul>
 
     </div>
@@ -25,7 +25,7 @@
 </template>
 
 <script setup>
-import { computed, onBeforeMount, ref } from 'vue';
+import { computed, onBeforeMount, provide, ref } from 'vue';
 import { useTaskStore } from '@/stores/task';
 import { vOnClickOutside } from '@vueuse/components';
 import ModalFrame from '@/components/modals/ModalFrame.vue';
@@ -43,6 +43,7 @@ const uniqueTasks = computed(() => {
 })
 
 const displayModal = ref(false);
+const guidToDelete = ref(null)
 
 onBeforeMount(() => {
   taskStore.index()
@@ -51,9 +52,36 @@ onBeforeMount(() => {
 function closeModal() {
   displayModal.value = false
 }
+
+function handleModalForGuid(guid) {
+  displayModal.value = true
+  guidToDelete.value = guid
+}
+
+function handleDeleteChoice(choice) {
+  if (choice === 'confirm') {
+    taskStore.deleteTask(guidToDelete.value)
+      .then((res) => console.log(res))
+      .catch((error) => console.log(error))
+  } else if (choice === 'canceled') {
+    closeModal()
+  }
+}
+
+provide('confirmDelete', handleDeleteChoice);
+
 </script>
 
 <style>
+  h2 {
+    margin-top: 0;
+  }
+  .task-list-container {
+    background: var(--background-2);
+    margin-bottom: 1em;
+    padding: 1em;
+    border-radius: 5px;
+  }
   .task {
       display: flex;
       place-items: center;
@@ -75,6 +103,9 @@ function closeModal() {
   .subtask-list-container {
     display: flex;
     gap: 1em;
+    margin: 0 auto;
+    max-width: 75%;
+    flex-wrap: wrap;
   }
   p {
     display: inline;

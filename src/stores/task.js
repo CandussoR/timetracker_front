@@ -49,7 +49,6 @@ export const useTaskStore = defineStore('tasks', () => {
      * @param {string} guid 
      */
     function deleteTask(guid) {
-        console.log("before axios delete request")
         const res = axios.delete(`/task/${guid}`)
         if (res.status == 200) {
             tasks.value = tasks.value.filter((task) => task.guid != guid)
