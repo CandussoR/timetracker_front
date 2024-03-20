@@ -185,6 +185,7 @@ async function handleSubmit() {
         formRecord.value.task_guid = taskStore.tasks.filter(x => x.task_name == formRecord.value.task_name 
                                                                 && x.subtask == formRecord.value.subtask)
                                                     .map(x => x.guid)[0]
+        console.log(formRecord.value.task_guid)
         delete formRecord.value.subtask 
         delete formRecord.value.task_name
 

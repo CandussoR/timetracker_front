@@ -184,8 +184,9 @@ function closeMenu() {
         flex-direction: column;
     }
     .submenu-item {
+        display:flex;
         align-items: flex-end;
-        text-align: center;
+        justify-content: center;
         font-weight: 500;
         width: 75%;
         padding: 0;

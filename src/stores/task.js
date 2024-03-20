@@ -42,13 +42,21 @@ export const useTaskStore = defineStore('tasks', () => {
 
     /**
      * Deletes the task associated to the guid from the database.
+     * Throws a 400 if the task can't be deleted because used for a timer,
+     * and a 500 if any other problem occured.
      * Mutates the list silently.
      * 
      * @param {string} guid 
      */
     function deleteTask(guid) {
-        console.log(guid)
-        tasks.value = tasks.value.filter((task) => task.guid != guid)
+        const res = axios.delete(`/task/${guid}`)
+        if (res.status == 200) {
+            tasks.value = tasks.value.filter((task) => task.guid != guid)
+        } else if (res.status == 400) {
+            return 400, res.data
+        } else {
+            return 500, "An error occured."
+        }
     }
 
     /**
