@@ -72,7 +72,7 @@ provide('confirmDelete', handleDeleteChoice);
 
 </script>
 
-<style>
+<style scoped>
   h2 {
     margin-top: 0;
   }
@@ -94,7 +94,7 @@ provide('confirmDelete', handleDeleteChoice);
       border-radius: 25px;
       padding: .2em 1em;
   }
-.close-icon {
+  .close-icon {
         padding-left: .5em;
         font-size: 1em;
         color: var(--background);
@@ -107,6 +107,7 @@ provide('confirmDelete', handleDeleteChoice);
     max-width: 75%;
     flex-wrap: wrap;
   }
+
   p {
     display: inline;
     position: relative;

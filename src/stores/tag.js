@@ -31,5 +31,24 @@ export const useTagStore = defineStore('tags', () => {
         return res.status
     }
 
-    return {tags, createdTag, isCreated, index, createTag}
+    /**
+     * Deletes the tag associated to the guid from the database.
+     * Throws a 400 if the tag can't be deleted because used for a timer,
+     * and a 500 if any other problem occured.
+     * Mutates the list silently.
+     * 
+     * @param {string} guid 
+     */
+    function deleteTag(guid) {
+        const res = axios.delete(`/tag/${guid}`)
+        if (res.status == 200) {
+            tags.value = tags.value.filter((tag) => tag.guid != guid)
+        } else if (res.status == 400) {
+            return 400, res.data
+        } else {
+            return 500, "An error occured."
+        }
+    }
+
+   return {tags, createdTag, isCreated, index, createTag, deleteTag}
 })

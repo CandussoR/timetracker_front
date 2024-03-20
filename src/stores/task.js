@@ -59,6 +59,7 @@ export const useTaskStore = defineStore('tasks', () => {
         }
     }
 
+    
     /**
      * Returns an array of the possible subtasks associated to this task name
      * 

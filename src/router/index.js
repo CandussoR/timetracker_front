@@ -3,11 +3,11 @@ import TimerFormview from '../views/TimerFormView.vue'
 import HomeView from '../views/HomeView.vue'
 import TaskView from '../views/TaskView.vue'
 import TimerView from '../views/TimerView.vue'
-import TimeRecords from '../views/TimeRecords.vue'
-import RecordsSearchResult from '../views/RecordsSearchResult.vue'
+import SearchTimeRecords from '../views/SearchTimeRecords.vue'
 import OldTimer from '../views/OldTimer.vue'
 import StatsView from '../views/StatsView.vue'
 import StatDiveView from '../views/StatDiveView.vue'
+import TagView from '../views/TagView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -40,12 +40,7 @@ const router = createRouter({
     {
       path: '/time_records',
       name: 'timeRecords',
-      component: TimeRecords
-    },
-    {
-      path: '/time_records/search/:id',
-      name: 'RecordsSearchResult',
-      component: RecordsSearchResult
+      component: SearchTimeRecords
     },
     {
       path: '/stats',
@@ -56,6 +51,11 @@ const router = createRouter({
       path: '/stats/dive',
       name: 'StatDiveView',
       component: StatDiveView
+    },
+    {
+      path: '/tags',
+      name: 'TagView',
+      component: TagView
     }
   ]
 })
