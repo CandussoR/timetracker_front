@@ -41,8 +41,8 @@
             <div id="edit-menu-container">
                 <div id="edit-menu">
                     <div id="edit-menu__header" class="menu-item" 
-                    @click="toggleSubmenu"
-                    :class="{ active: route.path === ('/tasks' || '/tags') }">
+                    @click="toggleEditSubmenu"
+                    :class="{ active: route.path == '/tasks' || route.path === '/tags' }">
                         <span class="material-symbols-outlined svg">edit</span>
                         <p class="primary" v-show="isExpanded">Edit</p>
                     </div>
@@ -56,12 +56,26 @@
                     </div>
                 </div>
             </div>
-            <router-link to="/stats">
-                <div class="menu-item" :class="{ active: route.path === '/stats' }">
-                    <span class="material-symbols-outlined svg" @mouseover="stats = !stats" @mouseleave="stats = !stats">bar_chart</span>
-                    <p class="primary" v-show="isExpanded">Stats</p>
+            <!-- <div class="menu-item" :class="{ active: route.path === '/stats' }">
+                <span class="material-symbols-outlined svg" @mouseover="stats = !stats" @mouseleave="stats = !stats">bar_chart</span>
+                <p class="primary" v-show="isExpanded">Stats</p>
+            </div> -->
+            <div id="stats-menu">
+                    <div id="stats-menu__header" class="menu-item" 
+                    @click="toggleStatSubmenu"
+                    :class="{ active: route.path === '/stats' || route.path === '/stats/dive' }">
+                        <span class="material-symbols-outlined svg">bar_chart</span>
+                        <p class="primary" v-show="isExpanded">Stats</p>
+                    </div>
+                    <div id="edit-menu__submenu" class="submenu" v-if="statSubmenu">
+                        <router-link to="/stats">
+                            <p class="primary submenu-item" :class="{ active: route.path === '/stats' }">Resume</p>
+                        </router-link>
+                        <router-link to="/stats/dive">
+                            <p class="primary submenu-item" :class="{ active: route.path === '/stats/dive' }">Dive Into</p>
+                        </router-link>
+                    </div>
                 </div>
-            </router-link>   
         </div>
     </aside>
 </template>
@@ -74,6 +88,7 @@ import { vOnClickOutside } from '@vueuse/components';
 const route = useRoute();
 const router = useRouter();
 const editSubmenu = ref(false);
+const statSubmenu = ref(false);
 const isExpanded = ref(false)
 const isToggled = ref(false)
 
@@ -81,6 +96,7 @@ watch(router.currentRoute, () => {
     if (isExpanded.value) isExpanded.value = false;
     if (isToggled.value) isToggled.value = false;
     if (editSubmenu.value) editSubmenu.value = false;
+    if (statSubmenu.value) statSubmenu.value = false;
   });
 
 // Unmounts expand button from dom if width < 480 (portable)
@@ -100,13 +116,28 @@ function toggleMobileMenu() {
     }
 }
 
-function toggleSubmenu() {
-    editSubmenu.value = true
-    isExpanded.value = true
+function toggleEditSubmenu() {
+    if (editSubmenu.value) {
+        editSubmenu.value = false 
+    } else {
+        editSubmenu.value = true
+        isExpanded.value = true
+    }
+}
+
+function toggleStatSubmenu() {
+    if (statSubmenu.value) {
+        statSubmenu.value = false 
+    } else {
+        statSubmenu.value = true
+        isExpanded.value = true
+    }
 }
 
 function closeMenu() {
     isExpanded.value = false
+    editSubmenu.value = false
+    statSubmenu.value = false
 }
 </script>
 
