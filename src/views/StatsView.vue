@@ -31,7 +31,7 @@
 
           <div id="resume" v-if="!resume.count || resume.time.every((item) => item === '00')">
             <p id="incite" class="incite">No timer yet ! Go do one !</p>
-            <button @click="redirect">New timer</button>
+            <button @click="redirect" class="button primary">New timer</button>
           </div>
     
         <CustomBar/>

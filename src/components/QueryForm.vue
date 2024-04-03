@@ -68,15 +68,17 @@
 
             <fieldset id="stat__section" v-if="props.stats">
                 <legend>Stats elements</legend>
+                <p id="generic-info" v-if="!statForm">Not selecting any element will result in a generic stat page alike to those of the resume page.</p>
+                <p id="date-missing-error" v-if="!hasTimeValue && statForm" class="error">You have to select at least one date.</p>
 
-                <p>Not selecting any element will result in a generic stat page alike to those of the resume page.</p>
-
-                <p v-if="!isTimeCriteria && statForm" class="error">You have to select a period and dates.</p>
-
-                <div v-for="s, i in selectedStatElement" :key="i">
+                <div v-for="s, i in statForm" :key="i">
                     <div class="fieldset">
-                        <div class="legend">{{ statForm[i]['element'] }}</div>
-                        <PeriodSelect @selected="statForm[i]['period'] = $event"/>
+                        <div class="legend">{{ s['element'] }}</div>
+                        <p id='ratio-error' class="error" v-if="s['element'] == 'task-ratio' && !task">You must select a task.</p>
+                        <PeriodSelect 
+                            v-if="s['element'] != 'task-ratio' && s['element'] != 'subtask-ratio'" 
+                            :span="selectedCriteria.filter(x => (x == 'day') || (x == 'week') || (x == 'month'))[0]"
+                            @selected="s['column-period'] = $event"/>
                     </div>
                 </div>
 
@@ -109,7 +111,9 @@
 
         </div>
 
-        <button class="button" type="submit" @click="handleParams()">Get'em all</button>
+        <button id="submit" class="button" type="submit" 
+        @click="handleParams()"
+        :disabled="props.stats && allStatHavePeriod && hasTimeValue ? false : true">Get'em all</button>
     </div>
 </template>
 
@@ -139,9 +143,24 @@ const tag = ref(null)
 const statForm = ref([])
 const selectedCriteria = ref([])
 const isTimeCriteria = computed(() => selectedCriteria.value.some(item => ['day', 'week', 'month', 'year'].includes(item)))
+
+// Insures there is one time value selected
+const hasTimeValue = computed(() => {
+    return [day.value, week.value, monthYear.value, year.value].filter(i => i != null).length != 0
+})
+
+// Insures that every chart has a time unit specified
+const allStatHavePeriod = computed(() => { 
+   return statForm.value
+            .filter(e => e['element'] != 'task-ratio' && e['element'] != 'subtask-ratio')
+            .map(e => ['week', 'month', 'day'].includes(e["column-period"]))
+            .every(e => e == true)
+})
 /** [ {"element" : sth, "column"}] */
 const selectedStatElement = ref([])
+
 const getLogsWithStats = ref(false)
+
 const emit = defineEmits(['submitted'])
 
 /**
@@ -182,11 +201,15 @@ function deleteSection(section) {
     }
 }
 
+
 function handleChange(event) {
     selectedStatElement.value.push(event.target.value)
     // Fills the selectedStatElement array
-    statForm.value.push({"element": event.target.value, "period": "", "date" : null})
-    console.log(statForm.value)
+    if (['task-ratio', 'subtask-ratio'].includes(event.target.value)) {
+        statForm.value.push({"element" : event.target.value})
+    } else {
+        statForm.value.push({"element": event.target.value, "column-period": null, "date" : null})
+    }
     // Resets the selected value in case someone wants to times the same element with different units
     const select = document.getElementById("stats-element-select")
     select.selectedIndex = -1
@@ -197,12 +220,12 @@ function handleChange(event) {
  */
 function handleParams() {
     let rangeBeginning = null
-    let rangeEnd = null
+    let rangeEnding = null
     const form = {
         "day" : day.value,
         "week" : week.value,
         "rangeBeginning" : rangeBeginning,
-        "rangeEnd" : rangeEnd,
+        "rangeEnding" : rangeEnding,
         "year" : year.value,
         "month" : monthYear.value,
         "task" : task.value,
@@ -213,7 +236,8 @@ function handleParams() {
     const cleanedForm = cleanObject(form)
 
     if (props.stats && statForm.value.length !== 0) {
-        console.log("we'll need to do sth about the stats")
+        cleanedForm["stats"] = statForm.value
+        cleanedForm["logs"] = getLogsWithStats.value
     }
 
     emit('submitted', cleanedForm)
