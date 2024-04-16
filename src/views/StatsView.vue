@@ -34,9 +34,9 @@
             <button @click="redirect" class="button primary">New timer</button>
           </div>
     
-        <CustomBar/>
+        <CustomBar :data="statStore.taskRatio"/>
 
-        <TaskRatioList/> 
+        <TaskRatioList :data="statStore.taskRatio"/> 
     
           <div id="details" v-if="selected !== 'D'" @click="loadMore()">
             More details !<span class="material-symbols-outlined">arrow_drop_down</span>
