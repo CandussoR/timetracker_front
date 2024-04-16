@@ -1,12 +1,12 @@
 <template>
-    <apexchart type="bar" height="350" :options="weekTaskRatio.chartOptions" :series="weekTaskRatio.series" />
+    <apexchart type="bar" height="350" :options="taskRatio.chartOptions" :series="taskRatio.series" />
 </template>
 
 <script setup>
 import { ref } from 'vue';
 
 const props = defineProps(["options", "series", "title"])
-const weekTaskRatio = ref({
+const taskRatio = ref({
           series: props.series,
           chartOptions: {
             chart: {

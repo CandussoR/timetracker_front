@@ -24,9 +24,7 @@
 <script setup>
 import { computed } from 'vue';
 import TimeDisplay from '../TimeDisplay.vue';
-// import { useStatStore } from '@/stores/stats';
 
-// const statStore = useStatStore()
 const props = defineProps(["data"])
 const maxElements = computed(() => {
   let max = 3

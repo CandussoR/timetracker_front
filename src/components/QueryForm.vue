@@ -74,7 +74,7 @@
                 <div v-for="s, i in statForm" :key="i">
                     <div class="fieldset">
                         <div class="legend">{{ s['element'] }}</div>
-                        <p id='ratio-error' class="error" v-if="s['element'] == 'task-ratio' && !task">You must select a task.</p>
+                        <p id='ratio-error' class="error" v-if="s['element'] == 'subtask-ratio' && !task">You must select a task.</p>
                         <PeriodSelect 
                             v-if="s['element'] != 'task-ratio' && s['element'] != 'subtask-ratio'" 
                             :span="selectedCriteria.filter(x => (x == 'day') || (x == 'week') || (x == 'month'))[0]"
@@ -123,7 +123,7 @@ import SubtaskSelect from '@/components/select/SubtaskSelect.vue';
 import TagSelect from '@/components/select/TagSelect.vue';
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
-import { ref, defineEmits, computed } from 'vue';
+import { ref, computed } from 'vue';
 import cleanObject from '../utils/cleanObject.js'
 import PeriodSelect from '@/components/select/PeriodSelect.vue';
 
@@ -235,8 +235,8 @@ function handleParams() {
     // Cleaning entries with null values
     const cleanedForm = cleanObject(form)
 
-    if (props.stats && statForm.value.length !== 0) {
-        cleanedForm["stats"] = statForm.value
+    if (props.stats) {
+        if (statForm.value.length !== 0) cleanedForm["stats"] = statForm.value
         cleanedForm["logs"] = getLogsWithStats.value
     }
 
