@@ -22,13 +22,14 @@
 
   /* Realtime Colors */
   --text: #eaeaf0;
-  --background: #050509;
+  --background: hsl(240, 29%, 3%);
   --primary: hsl(239, 39%, 71%);
   --secondary: hsl(238, 50%, 31%);
   --accent: hsl(239, 60%, 58%);
   
   /* Shades from colors */
   --background-2: hsl(240, 19%, 6%);
+  --background-15: hsla(239, 39%, 71%, 0.05);
   --background-3: hsl(236, 18%, 16%);
   --primary30: hsla(239, 39%, 71%, 0.3);
   --secondary30: hsla(238, 50%, 31%, 0.30);

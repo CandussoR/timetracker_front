@@ -1,0 +1,19 @@
+@import './base.css';
+
+
+.card {
+  place-items: center;
+  margin : 1em auto 1em;
+  padding: .5em 1em;
+  border: 1px solid var(--text);
+  border-radius : 5px;
+}
+.card:last-child {
+  margin-bottom: 0;
+}
+
+@media screen and (min-width: 480px) {
+  .card:last-child {
+    margin-bottom: 1rem;
+  }
+}

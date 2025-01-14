@@ -93,10 +93,16 @@ button {
   margin : auto;
   margin-bottom: 1%;
   font-weight: 500;
+  cursor: pointer;
 }
 
-.button:hover {
+.button:not(:disabled):hover {
   scale: 1.1;
+}
+
+.button:disabled {
+  background-color: grey;
+  cursor: default;
 }
 
 .primary {

@@ -38,7 +38,7 @@
                     <p class="primary" v-show="isExpanded">New search</p>
                 </div>
             </router-link>
-            <div id="edit-menu-container">
+            <!-- <div id="edit-menu-container"> -->
                 <div id="edit-menu">
                     <div id="edit-menu__header" class="menu-item" 
                     @click="toggleEditSubmenu"
@@ -55,27 +55,27 @@
                         </router-link>
                     </div>
                 </div>
-            </div>
+            <!-- </div> -->
             <!-- <div class="menu-item" :class="{ active: route.path === '/stats' }">
                 <span class="material-symbols-outlined svg" @mouseover="stats = !stats" @mouseleave="stats = !stats">bar_chart</span>
                 <p class="primary" v-show="isExpanded">Stats</p>
             </div> -->
-            <div id="stats-menu">
-                    <div id="stats-menu__header" class="menu-item" 
-                    @click="toggleStatSubmenu"
-                    :class="{ active: route.path === '/stats' || route.path === '/stats/dive' }">
-                        <span class="material-symbols-outlined svg">bar_chart</span>
-                        <p class="primary" v-show="isExpanded">Stats</p>
+                <div id="stats-menu">
+                        <div id="stats-menu__header" class="menu-item" 
+                        @click="toggleStatSubmenu"
+                        :class="{ active: route.path === '/stats' || route.path === '/stats/dive' }">
+                            <span class="material-symbols-outlined svg">bar_chart</span>
+                            <p class="primary" v-show="isExpanded">Stats</p>
+                        </div>
+                        <div id="edit-menu__submenu" class="submenu" v-if="statSubmenu">
+                            <router-link to="/stats">
+                                <p class="primary submenu-item" :class="{ active: route.path === '/stats' }">Resume</p>
+                            </router-link>
+                            <router-link to="/stats/dive">
+                                <p class="primary submenu-item" :class="{ active: route.path === '/stats/dive' }">Dive Into</p>
+                            </router-link>
+                        </div>
                     </div>
-                    <div id="edit-menu__submenu" class="submenu" v-if="statSubmenu">
-                        <router-link to="/stats">
-                            <p class="primary submenu-item" :class="{ active: route.path === '/stats' }">Resume</p>
-                        </router-link>
-                        <router-link to="/stats/dive">
-                            <p class="primary submenu-item" :class="{ active: route.path === '/stats/dive' }">Dive Into</p>
-                        </router-link>
-                    </div>
-                </div>
         </div>
     </aside>
 </template>
@@ -165,11 +165,14 @@ function closeMenu() {
         z-index: 99;
         height: 100vh;
     }
-    .menu-item {
+    .menu-item{
             display: flex; 
             flex-grow: 1;
             align-items: center;
             margin-bottom: 1%;
+    }
+    .edit-menu-container {
+        padding: 3px
     }
     .menu-item p {
             padding: 0 1rem;

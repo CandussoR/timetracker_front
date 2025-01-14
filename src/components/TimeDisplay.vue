@@ -1,7 +1,7 @@
 <template>
     <div id="data-card-row">
         <div id="data-card-data__time-card" class="unit-card" v-for="(num, i) in props.time" :key="num">
-            <p id="num" :class="{'num-medium': font === 'medium', 'num': props.font !== 'medium'}">{{ num }}</p>
+            <p id="num" :class="{'num-medium': props.font === 'medium', 'num-big': props.font === 'big', 'num': props.font === ''}">{{ num }}</p>
             <p id="time" class="time">{{ timeUnits[i] }}</p>
         </div>
     </div>
@@ -30,16 +30,24 @@ const timeUnits = computed(() => {
 }
 
 .num {
-    --num-font: 1rem;
+    --num-font: 2rem;
+    font-size : var(--num-font);
     text-align: center;
+    margin: 0;
 }
 .num-medium {
-    font-size: calc(var(--num-font) * .5);
+    font-size: calc(2rem * .5);
     text-align: center;
+    margin: 0;
 }
-
+.num-big {
+    font-size : calc(2rem * 1.7);
+    text-align: center;
+    margin: 0;
+}
 .time {
     font-size: 0.7rem;
+    margin: 0;
 }
 
 .unit-card {

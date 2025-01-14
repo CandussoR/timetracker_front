@@ -33,6 +33,9 @@ legend span {
 }
 
 .section-inputs {
+    display : flex;
+    flex-direction: column;
+    gap: 1em;
     margin: 0 auto .5em;
 }
 
@@ -70,7 +73,7 @@ form .button {
     }
 
 }
-@media screen and (min-width: 1024px) {
+@media screen and (min-width: 720px) {
     .section-inputs {
         display: grid;
         grid-template-columns: 1fr 1fr;

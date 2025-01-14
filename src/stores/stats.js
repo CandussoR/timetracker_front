@@ -2,8 +2,16 @@ import axios from "../utils/apiRequester";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
+/**
+ * @typedef {Object} HomeStats
+ * @property {Number} count - number of timers
+ * @property {List[String]} time - a list of (day), hour, min, sec
+ * @property {List[String]} mean - a list of (day), hour, min, sec
+ */
+
 export const useStatStore = defineStore("stats", () => {
     const updated = ref(true)
+    /** @type {HomeStats} */
     const daily = ref(null)
     const weekly = ref(null)
     const monthly = ref(null)
@@ -38,7 +46,9 @@ export const useStatStore = defineStore("stats", () => {
     }
 
     /**
-     * 
+     * Makes an API call to get the task time and ratio if updated is true,
+     * else go fetch the values in the local Storage.
+     *  
      * @param {String|List[String]} period -- a date string or array of date strings for range
      */
     async function getTaskTimeRatio(period) {
@@ -62,12 +72,6 @@ export const useStatStore = defineStore("stats", () => {
 
             if (!stats) {
                 data[period] = res.data
-                // Splitting the formatted time for display ?
-                for (let i=0; i < data[period].length; i++) {
-
-                data[period][i]["formatted"] = data[period][i]["formatted"].split(":")
-                console.log(data[period][i])
-                }
                 sessionStorage.setItem('stats', JSON.stringify(data))
                 return;
             }
@@ -78,7 +82,6 @@ export const useStatStore = defineStore("stats", () => {
             for (let i=0; i < data[period].length; i++) {
 
                 data[period][i]["formatted"] = data[period][i]["formatted"].split(":")
-                console.log(data[period][i])
             }
             sessionStorage.setItem('stats', JSON.stringify(data))
 
@@ -116,7 +119,7 @@ export const useStatStore = defineStore("stats", () => {
         }
     }
     
-    async function getGenericMonthStats () {
+    async function getGenericMonthStats() {
         try {
             const res = await axios.get('stats/generic/month')
             return res.data
@@ -134,6 +137,35 @@ export const useStatStore = defineStore("stats", () => {
         }
     }
 
+    // /**
+    //  * 
+    //  * @param {Object} cleanedForm - a dynamic JSON object
+    //  */
+
+    /**
+     * 
+     * @param {{day? : string, 
+     *          month?: string, 
+     *          week? : Array,
+     *          rangeBeginning? : string,
+     *          rangeEnding? : string,
+     *          task? : string,
+     *          subtask? : string,
+     *          tag? : string,
+     *          logs? : boolean}} cleanedForm 
+     * @returns 
+     */
+    async function getQueriedStats(cleanedForm) {
+        try {
+            const res = await axios.post('stats/generic/custom', {
+                params: cleanedForm
+            })
+            return res
+        } catch (e) {
+            throw new Error(e);
+        }
+    }
+
     return { updated, 
         daily, 
         weekly, 
@@ -147,6 +179,7 @@ export const useStatStore = defineStore("stats", () => {
         handleUpdated, 
         getGenericWeekStats, 
         getGenericMonthStats, 
-        getGenericYearStats
+        getGenericYearStats,
+        getQueriedStats
     }
 })

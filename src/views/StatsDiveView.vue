@@ -7,10 +7,11 @@
         <div id="stats-section" v-if="stats">
             <div v-for="(el, i) in stats" :key="i">
                 <div v-for="(value, key) in el" :key="key">
+                    <TimerCountCard :count="value.count" :time="value.time" />
                     <CustomBar v-if="['task-ratio', 'subtask-ratio'].includes(key)" :data="value"/>
                     <TaskRatioList v-if="['task-ratio', 'subtask-ratio'].includes(key)" :data="value"/>
-                    <ApexBarChart v-if="key == 'stack-column-chart'"/>
-                    <ApexLineChart v-if="key == 'line-chart'"/>
+                    <ApexBarChart v-if="key == 'stacked-column-chart'" :options="value.labels" :series="value.series" :title="value.title"/>
+                    <ApexLineChart v-if="key == 'line-chart'" :options="value.labels" :series="[value.series]" :title="value.title"/>
                 </div>
             </div>
         </div>
@@ -29,6 +30,7 @@ import ApexBarChart from '@/components/stats/ApexBarChart.vue';
 import ApexLineChart from '@/components/stats/ApexLineChart.vue';
 import CustomBar from '@/components/stats/CustomBar.vue';
 import TaskRatioList from '@/components/stats/TaskRatioList.vue';
+import TimerCountCard from '@/components/stats/TimerCountCard.vue';
 import { useStatStore } from '@/stores/stats';
 import { ref } from 'vue';
 

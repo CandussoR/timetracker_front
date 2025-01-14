@@ -1,11 +1,12 @@
 <template>
     <main id="clock">
-        <button @click="launchRecord">See datetime</button>
-        <p>{{ formattedDuration }}</p>
+        <!--<button @click="launchRecord">See datetime</button>-->
+        <p>{{timeRecord.tag_guid}}</p>
+        <p class="formatted_time">{{ formattedDuration }}</p>
         <div id="error" class="error" v-if="err">
             <p>{{ err }}</p>
         </div>
-        <button v-if="!timerRunning && !stopwatchRunning && !isDone" 
+        <button class="button" v-if="!timerRunning && !stopwatchRunning && !isDone" 
                 @click="currentDuration ? beginTimeRecord('timer') : beginTimeRecord('stopwatch')">
                 Go !
         </button>

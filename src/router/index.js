@@ -6,7 +6,7 @@ import TimerView from '../views/TimerView.vue'
 import SearchTimeRecords from '../views/SearchTimeRecords.vue'
 import OldTimer from '../views/OldTimer.vue'
 import StatsView from '../views/StatsView.vue'
-import StatDiveView from '../views/StatDiveView.vue'
+import StatsDiveView from '../views/StatsDiveView.vue'
 import TagView from '../views/TagView.vue'
 
 const router = createRouter({
@@ -49,8 +49,8 @@ const router = createRouter({
     },
     {
       path: '/stats/dive',
-      name: 'StatDiveView',
-      component: StatDiveView
+      name: 'StatsDiveView',
+      component: StatsDiveView
     },
     {
       path: '/tags',

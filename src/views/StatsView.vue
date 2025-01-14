@@ -17,16 +17,8 @@
 
         <div v-else>
           <div id="cards-row" class="cards-row">
-            <div id="resume-card" class="card" v-if="resume.count && resume.time">
-              <p id="resume__count">{{ resume.count }} {{ resume.count === 1 ? "timer" : "timers" }}</p>
-              <TimeDisplay v-if="resume.time != 0" :time="resume.time" :font="'medium'"/>
-              <p v-else>--</p>
-            </div>
-            <div id="mean-card" class="card" v-if="resume.mean">
-              <p>Mean {{ selector[selected] }}</p>
-              <TimeDisplay v-if="resume.mean.length" :time="resume.mean" :font="'medium'"/>
-              <p v-else>--</p>
-            </div>
+            <TimerCountCard v-if="resume.count && resume.time" :count="resume.count" :time="resume.time"/>
+            <MeanTimeCard v-if="resume.mean" :mean="resume.mean" :selected="selector[selected]"/>
           </div>
 
           <div id="resume" v-if="!resume.count || (resume.time === 0)">
@@ -53,7 +45,6 @@
               </div>
               <div v-else-if="selected === 'Y'" id="chart">
                 <ApexLineChart :options="monthsLineChart['options']" :series="monthsLineChart['series']" :title="monthsLineChart['title']"/>
-                <!-- <apexchart type="line" height="350" :options="monthsLineChart.chartOptions" :series="monthsLineChart.series"/> -->
                 <ApexBarChart :options="yearTaskRatio['options']" :series="yearTaskRatio['series']" :title="yearTaskRatio['title']"/>
                 <label class="chart-title" for="bar-chart__week">Time per week</label>
                 <apexchart id="bar-chart__week" type="bar" width="550" height="450" :options="weekBar.chartOptions" :series="weekBar.series"/>
@@ -71,7 +62,8 @@ import { useStatStore } from '../stores/stats';
 import formatTime from '../utils/formatTime';
 import CustomBar from '@/components/stats/CustomBar.vue';
 import TaskRatioList from '@/components/stats/TaskRatioList.vue';
-import TimeDisplay from '@/components/TimeDisplay.vue';
+import TimerCountCard from '@/components/stats/TimerCountCard.vue';
+import MeanTimeCard from '@/components/stats/MeanTimeCard.vue';
 import { useRouter } from 'vue-router';
 import ApexBarChart from '@/components/stats/ApexBarChart.vue';
 import ApexLineChart from '@/components/stats/ApexLineChart.vue';
@@ -251,16 +243,6 @@ function redirect() {
   grid-template-columns: 1fr;
   
 }
-.card {
-  place-items: center;
-  margin : 1em auto 1em;
-  padding: .5em 1em;
-  border: 1px solid var(--text);
-  border-radius : 5px;
-}
-.card:last-child {
-  margin-bottom: 0;
-}
 
 #resume {
   display: flex;
@@ -288,9 +270,6 @@ function redirect() {
   }
   .main-container {
     width: 80%;
-  }
-  .card:last-child {
-    margin-bottom: 1rem;
   }
 }
 </style>

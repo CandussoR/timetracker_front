@@ -61,7 +61,6 @@ function handleSubmit(cleanedForm) {
         position: relative;
     }
     .close-icon {
-        position: absolute;
         font-size: 1.5em;
         top: -1.5em;
         right: 1em;
