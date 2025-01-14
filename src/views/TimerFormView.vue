@@ -13,7 +13,7 @@
                    
                     <div class="section-inputs">
                         <TaskSelect :task="selectedTask" @selected="selectedTask = $event"/>
-                        <SubtaskSelect :task="selectedTask" @selected="selectedSubtask = $event" /> 
+                        <SubtaskSelect v-if="selectedTask" :task="selectedTask" @selected="selectedSubtask = $event" /> 
                     </div>  
                 </fieldset>
                 
