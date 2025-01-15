@@ -38,16 +38,11 @@ const selectedSubtask = ref(null);
 
 
 // Same thing on mounted and on change of prop.
-onMounted(() => {
-    subtasks.value = filterSubtask(props.task)
-    selectedSubtask.value = getSelectedSubtaskValue()
-})
+onMounted(() => getSubtasksAndSelect(props.task))
 watch(
     () => props.task,
-    () => {
-    subtasks.value = filterSubtask(props.task)
-    selectedSubtask.value = getSelectedSubtaskValue()
-})
+    () => getSubtasksAndSelect(props.task)
+)
 
 
 // Watches for the change of value on creation,
@@ -61,6 +56,18 @@ watch(
     }
 });
 
+/**
+ * Is used by hooks for setting up the select input.
+ * @param {string} task_name
+ *
+ */
+function getSubtasksAndSelect(task_name) {
+    subtasks.value = filterSubtask(props.task)
+    selectedSubtask.value = getSelectedSubtaskValue()
+    if (selectedSubtask.value) {
+        emit('selected', selectedSubtask.value)
+    }
+}
 
 /**
  * Returns an array of the possible subtasks associated to this task name

@@ -59,17 +59,5 @@ export const useTaskStore = defineStore('tasks', () => {
         }
     }
 
-    
-    /**
-     * Returns an array of the possible subtasks associated to this task name
-     * 
-     * @param {string} task_name 
-     * @returns {Array<String>}
-     */
-    function filterSubtask(task_name) {
-        const task_items = tasks.value.filter((task) => (task.task_name == task_name) && task.subtask )
-        return task_items.map(t => t.subtask)
-    }
-
-    return {tasks, uniqueTasks, createdTask, createdSubtask, isCreated, index, createTask, deleteTask, filterSubtask}
+    return {tasks, uniqueTasks, createdTask, createdSubtask, isCreated, index, createTask, deleteTask}
 })
