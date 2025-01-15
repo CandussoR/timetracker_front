@@ -1,15 +1,27 @@
 <template>
     <main id="clock">
-        <button @click="launchRecord">See datetime</button>
-        <p>{{ formattedDuration }}</p>
+        <h1>{{timeRecordStore.displayOngoingInfos.clock}}</h1>
+
+        <div id="record__info" v-if="timeRecordStore.displayOngoingInfos">
+            <p id="record__info-task" class="task" v-if="timeRecordStore.displayOngoingInfos.task_name">{{timeRecordStore.displayOngoingInfos.task_name}}
+                <span id="record__info-subtask" class="task" v-if="timeRecordStore.displayOngoingInfos.subtask">({{timeRecordStore.displayOngoingInfos.subtask}})</span>
+            </p>
+            <p id="record__info-tag" class="tag" v-if="timeRecordStore.displayOngoingInfos.tag">{{timeRecordStore.displayOngoingInfos.tag}}</p>
+        </div>
+
+        <p id="duration">{{ formattedDuration }}</p>
+
         <div id="error" class="error" v-if="err">
             <p>{{ err }}</p>
         </div>
-        <button v-if="!timerRunning && !stopwatchRunning && !isDone" 
+
+        <button v-if="!timerRunning && !stopwatchRunning && !isDone"
+                class="button"
                 @click="currentDuration ? beginTimeRecord('timer') : beginTimeRecord('stopwatch')">
                 Go !
         </button>
         <button v-else-if="(timerRunning || stopwatchRunning) && !isDone" 
+                class="button"
                 @click="stopTheClock()">
                 Stop !
         </button>

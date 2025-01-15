@@ -14,7 +14,8 @@
                     <div class="section-inputs">
                         <TaskSelect :task="selectedTask" @selected="selectedTask = $event"/>
                         <SubtaskSelect v-if="selectedTask" :task="selectedTask" @selected="selectedSubtask = $event" /> 
-                    </div>  
+                    </div>
+                    <p class="error" v-if="error">Couldn't retrieve the task : be sure to select a subtask.</p>
                 </fieldset>
                 
                 <fieldset id="tag__section">
@@ -30,17 +31,17 @@
                 <fieldset id="clock__section">
                     <legend>Clock Type</legend>
                     <div class="button-row">
-                        <button class="button secondary" @click.prevent="clock = 'timer'">Timer</button>
-                        <button class="button secondary" @click.prevent="clock = 'chrono'">Stopwatch</button> 
+                        <button class="button secondary" @click.prevent="clock = 'Timer'">Timer</button>
+                        <button class="button secondary" @click.prevent="clock = 'Stopwatch'">Stopwatch</button> 
                     </div>
-                    <div v-if="clock == 'timer'">
+                    <div v-if="clock == 'Timer'">
                         <label for="duration">Set your time (in minutes):</label>
                         <input id="duration" name="duration" type="number" min="0" v-model="duration">
                     </div>
                 </fieldset>
     
                 <button id="set" type="submit" class="button" 
-                        :disabled="clock == '' || (clock == 'timer' && duration=='0')">Set</button>
+                        :disabled="clock == '' || (clock == 'Timer' && duration=='0')">Set</button>
             </form>
          </div>
     
@@ -59,9 +60,11 @@ import { useTaskStore } from '@/stores/task';
 import { useTagStore } from '@/stores/tag';
 import { ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
+import { useTimeRecordStore } from '@/stores/timeRecord';
 
 const taskStore = useTaskStore()
 const tagStore = useTagStore()
+const timeRecordStore = useTimeRecordStore()
 const router = useRouter()
 
 const newTask = ref(false)
@@ -71,6 +74,8 @@ const selectedSubtask = ref(null)
 const selectedTag = ref(null)
 const clock = ref('')
 const duration = ref(0)
+
+const error = ref(false)
 
 function closeModal() {
     newTask.value = false;
@@ -96,12 +101,18 @@ watch(
 function handleSubmit() {
     const task_guid = taskStore.tasks.filter((task) => task.task_name == selectedTask.value && task.subtask == selectedSubtask.value)
                                      .map((task) => task.guid)[0]
+    if (!task_guid) {
+        error.value = true
+        return
+    }
     
     let tag_guid = null
     if (selectedTag.value) {
         tag_guid = tagStore.tags.filter((tag) => tag.tag == selectedTag.value)
                                 .map((tag) => tag.guid)[0]
     }
+
+    timeRecordStore.displayOngoingInfos = {"clock": clock.value, "task_name" : selectedTask.value, "subtask" : selectedSubtask.value, "tag" : selectedTag.value}
 
     sessionStorage.setItem('time_record',
         JSON.stringify(
