@@ -261,32 +261,6 @@ function areObjectEquals(obj1, obj2) {
         padding: 1em 2em;
     }
 
-    .tag {
-        font-size: .9em; 
-        background: var(--accent);
-        border-radius: 25px;
-        padding: .2em 1em;
-    }
-
-    .task {
-        border: none;
-        color: var(--background);
-        font-size: .9em;
-        font-weight: 500;
-        background: linear-gradient(.45turn, var(--text), 60%, var(--primary));
-        border-radius: 25px;
-        padding: .2em 1em;
-    }
-
-    .subtask {
-        font-size: .9em; 
-        color: var(--background);
-        background: linear-gradient(.55turn, var(--primary), 60%, var(--text));
-        border-radius: 25px;
-        padding: .2em 1em;
-        margin-left: .5em;
-    }
-
     .precisions {
         display: flex;
         place-items: center;
