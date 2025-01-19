@@ -5,6 +5,7 @@
     background: var(--accent);
     border-radius: 25px;
     padding: .2em 1em;
+    width: fit-content;
 }
 
 .task {
@@ -15,13 +16,5 @@
     background: linear-gradient(.45turn, var(--text), 60%, var(--primary));
     border-radius: 25px;
     padding: .2em 1em;
-}
-
-.subtask {
-    font-size: .9em; 
-    color: var(--background);
-    background: linear-gradient(.55turn, var(--primary), 60%, var(--text));
-    border-radius: 25px;
-    padding: .2em 1em;
-    margin-left: .5em;
+    width: fit-content;
 }
