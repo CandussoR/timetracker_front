@@ -1,0 +1,20 @@
+@import './base.css';
+
+.tag {
+    font-size: .9em; 
+    background: var(--accent);
+    border-radius: 25px;
+    padding: .2em 1em;
+    width: fit-content;
+}
+
+.task {
+    border: none;
+    color: var(--background);
+    font-size: .9em;
+    font-weight: 500;
+    background: linear-gradient(.45turn, var(--text), 60%, var(--primary));
+    border-radius: 25px;
+    padding: .2em 1em;
+    width: fit-content;
+}

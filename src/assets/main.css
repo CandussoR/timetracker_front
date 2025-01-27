@@ -136,6 +136,7 @@ button {
 input, select, textarea {
   max-width: 300px;
   border-radius: 5px;
+  padding: .5rem;
   height: 2rem;
 }
 
@@ -162,6 +163,10 @@ input, select, textarea {
 /* Inputs take all their space in little resolution because they are in columns,
   they are are little more narrow when in rows. */
 @media screen and (max-width: 1024px) {
+  h1,h2,h3 {
+    margin : 1em 0;
+  }
+  
   input, select {
     width: 100%;
   }
@@ -183,5 +188,11 @@ input, select, textarea {
 
   #app {
     padding: 0 2rem;
+  }
+}
+
+@media screen and (max-height : 500px) {
+  h1, h2, h3 {
+    margin : .5em auto;
   }
 }

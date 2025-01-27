@@ -1,6 +1,6 @@
 <template>
     <div id="task-list" class="task-list">
-          <div id="task-item" class="task-item" :class="{ 'length3': maxElements === 3, 'length4': maxElements === 4 }" v-for="({ task, formatted, ratio }, index) in statStore.taskRatio" :key="task">
+          <div id="task-item" class="task-item" :class="{ 'length3': maxElements === 3, 'length4': maxElements === 4 }" v-for="({ task, formatted, ratio }, index) in props.data" :key="task">
             
             <div id="color-task" class="color-task">
                 <div class="box-color" :class="['box-color', 'task' + index]"></div>
@@ -24,14 +24,12 @@
 <script setup>
 import { computed } from 'vue';
 import TimeDisplay from '../TimeDisplay.vue';
-import { useStatStore } from '@/stores/stats';
 
-const statStore = useStatStore()
-
+const props = defineProps(["data"])
 const maxElements = computed(() => {
   let max = 3
-  for (let i=0 ; i < statStore.taskRatio.length ; i++) {
-    let len = statStore.taskRatio[i].formatted.length;
+  for (let i=0 ; i < props.data.length ; i++) {
+    let len = props.data[i].formatted.length;
     if (len > max) return len
   }
   return max

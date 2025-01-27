@@ -30,7 +30,7 @@ const timeUnits = computed(() => {
 }
 
 .num {
-    --num-font: 1rem;
+    --num-font: 4rem;
     text-align: center;
 }
 .num-medium {
@@ -52,15 +52,5 @@ const timeUnits = computed(() => {
 #data-card-data__time-card:not(:last-child) {
   margin-right: 1em;
 }
-
-/* @media (min-width: 764px) {
-    .num {
-        --num-font: 4rem;
-        font-style: var(--num-font);
-    }
-    .num-medium {
-        font-size: calc(var(--num-font) * .5em);
-    }
-    } */
 
 </style>

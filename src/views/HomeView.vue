@@ -158,4 +158,11 @@ div#stats-link p {
     font-size: .8em;
 }
 
+@media screen and (max-width: 720px) {
+    .data-card {
+        min-width: 60%;
+        max-width: 80%;
+    }
+}
+
 </style>

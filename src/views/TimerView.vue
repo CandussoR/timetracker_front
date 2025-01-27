@@ -1,25 +1,38 @@
 <template>
     <main id="clock">
-        <button @click="launchRecord">See datetime</button>
-        <p>{{ formattedDuration }}</p>
-        <div id="error" class="error" v-if="err">
-            <p>{{ err }}</p>
+        <h1>{{timeRecordStore.displayOngoingInfos.clock || 'Timer'}}</h1>
+
+        <div id="record__info" v-if="timeRecordStore.displayOngoingInfos">
+            <p id="record__info-task" class="task" v-if="timeRecordStore.displayOngoingInfos.task_name">{{timeRecordStore.displayOngoingInfos.task_name}}
+                <span id="record__info-subtask" v-if="timeRecordStore.displayOngoingInfos.subtask">({{timeRecordStore.displayOngoingInfos.subtask}})</span>
+            </p>
+            <p id="record__info-tag" class="tag" v-if="timeRecordStore.displayOngoingInfos.tag">{{timeRecordStore.displayOngoingInfos.tag}}</p>
         </div>
-        <button v-if="!timerRunning && !stopwatchRunning && !isDone" 
+
+        <div id="timer-main">
+
+            <p id="duration" class="num">{{ formattedDuration }}</p>
+
+            <div id="error" class="error" v-if="err">
+                <p>{{ err }}</p>
+            </div>
+
+            <button v-if="!timerRunning && !stopwatchRunning && !isDone" class="button"
                 @click="currentDuration ? beginTimeRecord('timer') : beginTimeRecord('stopwatch')">
                 Go !
-        </button>
-        <button v-else-if="(timerRunning || stopwatchRunning) && !isDone" 
-                @click="stopTheClock()">
+            </button>
+            <button v-else-if="(timerRunning || stopwatchRunning) && !isDone" class="button" @click="stopTheClock()">
                 Stop !
-        </button>
-        <div v-else>
-            <textarea v-model="log"></textarea>
-            <button @click="updateTimeRecord()">Send</button>
-            <p id="success" name="success" class="success">{{ success }}</p>
-            <div>
-                <p>In the end, you kept on going ? Don't worry !</p>
-                <button @click="console.log('Not implemented yet but I head that')">Update to now</button>
+            </button>
+            <div id="log-form" v-else>
+                <h3>Log</h3>
+                <textarea v-model="log"></textarea>
+                <button class="button" @click="updateTimeRecord()">Send</button>
+                <p id="success" name="success" class="success">{{ success }}</p>
+                <div id="update-time">
+                    <p>In the end, you kept on going ? Don't worry !</p>
+                    <button class="button" @click="console.log('Not implemented yet but I head that')">Update to now</button>
+                </div>
             </div>
         </div>
     </main>
@@ -45,10 +58,15 @@ const currentDuration = ref(0)
 const err = ref('')
 const success = ref('')
 const formattedDuration = computed(() => {
-    const hours = Math.floor(currentDuration.value / 3600)
     const minutes = Math.floor((currentDuration.value % 3600) / 60);
     const seconds = Math.floor(currentDuration.value % 60);
-    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+    if (currentDuration.value >= 3600) {
+        const hours = Math.floor(currentDuration.value / 3600)
+        return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 })
 
 
@@ -140,4 +158,36 @@ function updateTimeRecord() {
 </script>
 
 <style scoped>
+main {
+    display : flex;
+    flex-direction : column;
+    place-items : center;
+}
+
+#timer-main, #log-form, #update-time {
+    display : flex;
+    flex-direction: column;
+    place-items : center;
+}
+
+/* Doubled with the class in TimeDisplay */
+.num {
+    font-size: 5em;
+    text-align: center;
+}
+
+textarea {
+    margin-bottom: 1em;
+}
+
+@media screen and (max-height : 300px) {
+    h1, p.task {
+        display : none;
+    }
+}
+@media screen and (max-height : 500px) {
+    p.num, p.task {
+        margin : .5rem auto;
+    }
+}
 </style>

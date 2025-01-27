@@ -2,7 +2,7 @@
     <div id="custom-bar-chart">
         <div class="bar"
             :style="{ width: item.ratio + '%' }"
-            v-for="(item, index) in statStore.taskRatio" 
+            v-for="(item, index) in props.data" 
             :key="index" 
             :class="['bar', 'task' + index]">
         </div>
@@ -10,9 +10,7 @@
 </template>
 
 <script setup>
-import { useStatStore } from '@/stores/stats';
-
-const statStore = useStatStore()
+const props = defineProps(["data"])
 </script>
 
 <style scoped>

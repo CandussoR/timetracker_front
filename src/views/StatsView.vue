@@ -19,7 +19,7 @@
           <div id="cards-row" class="cards-row">
             <div id="resume-card" class="card" v-if="resume.count && resume.time">
               <p id="resume__count">{{ resume.count }} {{ resume.count === 1 ? "timer" : "timers" }}</p>
-              <TimeDisplay v-if="resume.time.length" :time="resume.time" :font="'medium'"/>
+              <TimeDisplay v-if="resume.time != 0" :time="resume.time" :font="'medium'"/>
               <p v-else>--</p>
             </div>
             <div id="mean-card" class="card" v-if="resume.mean">
@@ -29,14 +29,14 @@
             </div>
           </div>
 
-          <div id="resume" v-if="!resume.count || resume.time.every((item) => item === '00')">
+          <div id="resume" v-if="!resume.count || (resume.time === 0)">
             <p id="incite" class="incite">No timer yet ! Go do one !</p>
-            <button @click="redirect">New timer</button>
+            <button @click="redirect" class="button primary">New timer</button>
           </div>
     
-        <CustomBar/>
+        <CustomBar :data="statStore.taskRatio"/>
 
-        <TaskRatioList/> 
+        <TaskRatioList :data="statStore.taskRatio"/> 
     
           <div id="details" v-if="selected !== 'D'" @click="loadMore()">
             More details !<span class="material-symbols-outlined">arrow_drop_down</span>
@@ -44,16 +44,17 @@
     
           <div id="generic-stat" class="generic-stat" v-if="generic">
               <div v-if="selected === 'W'" id="chart">
-                <apexchart type="line" height="350" :options="daysLineChart.chartOptions" :series="daysLineChart.series"/>
-                <apexchart type="bar" height="350" :options="weekTaskRatio.chartOptions" :series="weekTaskRatio.series" />
+                <ApexLineChart :options="daysLineChart['options']" :series="daysLineChart['series']" :title="daysLineChart['title']"/>
+                <ApexBarChart :options="weekTaskRatio['options']" :series="weekTaskRatio['series']" :title="weekTaskRatio['title']"/>
               </div>
               <div v-else-if="selected === 'M'" id="chart">
-                <apexchart type="line" height="350" :options="weeksLineChart.chartOptions" :series="weeksLineChart.series"/>
-                <apexchart type="bar" height="350" :options="monthTaskRatio.chartOptions" :series="monthTaskRatio.series" />
+                <ApexLineChart :options="weeksLineChart['options']" :series="weeksLineChart['series']" :title="weeksLineChart['title']"/>
+                <ApexBarChart :options="monthTaskRatio['options']" :series="monthTaskRatio['series']" :title="monthTaskRatio['title']"/>
               </div>
               <div v-else-if="selected === 'Y'" id="chart">
-                <apexchart type="line" height="350" :options="monthsLineChart.chartOptions" :series="monthsLineChart.series"/>
-                <apexchart type="bar" height="350" :options="yearTaskRatio.chartOptions" :series="yearTaskRatio.series" />
+                <ApexLineChart :options="monthsLineChart['options']" :series="monthsLineChart['series']" :title="monthsLineChart['title']"/>
+                <!-- <apexchart type="line" height="350" :options="monthsLineChart.chartOptions" :series="monthsLineChart.series"/> -->
+                <ApexBarChart :options="yearTaskRatio['options']" :series="yearTaskRatio['series']" :title="yearTaskRatio['title']"/>
                 <label class="chart-title" for="bar-chart__week">Time per week</label>
                 <apexchart id="bar-chart__week" type="bar" width="550" height="450" :options="weekBar.chartOptions" :series="weekBar.series"/>
               </div>
@@ -72,6 +73,8 @@ import CustomBar from '@/components/stats/CustomBar.vue';
 import TaskRatioList from '@/components/stats/TaskRatioList.vue';
 import TimeDisplay from '@/components/TimeDisplay.vue';
 import { useRouter } from 'vue-router';
+import ApexBarChart from '@/components/stats/ApexBarChart.vue';
+import ApexLineChart from '@/components/stats/ApexLineChart.vue';
 
 const router = useRouter()
 const statStore = useStatStore()
@@ -97,222 +100,14 @@ const resume = computed(() => {
 })
 
 const generic = ref(false)
-// Week-related generic stats
-const weekTaskRatio = ref({
-          series: null,
-          chartOptions: {
-            chart: {
-              type: 'bar',
-              height: 350,
-              stacked: true,
-              stackType: '100%'
-            },
-            responsive: [{
-              breakpoint: 480,
-              options: {
-                legend: {
-                  position: 'bottom',
-                  offsetX: -10,
-                  offsetY: 0
-                }
-              }
-            }],
-            xaxis: {
-              categories: null,
-            },
-            title: {
-              text: 'Task ratio per day',
-              align: 'left'
-            },
-            legend: {
-              position: 'right',
-              offsetY: 40
-            },
-            fill: {
-              opacity: 1
-            }
-          }
-        })
-
-const daysLineChart = ref(
-  {
-    series: null,
-    chartOptions: {
-      chart: {
-        height: 350,
-        type: 'line',
-        zoom: {
-          enabled: false
-        }
-      },
-      dataLabels: {
-        enabled: true,
-        position: 'top',
-        offsetY: -10,
-        formatter: function (val) {
-          return formatTime(val)
-        }
-      },
-      stroke: {
-        curve: 'straight'
-      },
-      title: {
-        text: 'Total time per day',
-        align: 'left'
-      },
-      xaxis: {
-        categories: null,
-      }
-    }
-  }
-  )
-
-  // Month-related generic stats
-  const monthTaskRatio = ref({
-          series: null,
-          chartOptions: {
-            chart: {
-              type: 'bar',
-              height: 350,
-              stacked: true,
-              stackType: '100%',
-            },
-            responsive: [{
-              breakpoint: 480,
-              options: {
-                legend: {
-                  position: 'bottom',
-                  offsetX: -10,
-                  offsetY: 0
-                }
-              }
-            }],
-            xaxis: {
-              categories: null,
-            },
-            title: {
-              text: 'Task ratio per week',
-              align: 'left'
-            },
-            legend: {
-              position: 'right',
-              offsetY: 40
-            },
-            fill: {
-              opacity: 1
-            }
-          }
-        })
-
-  const weeksLineChart = ref(
-  {
-    series: null,
-    chartOptions: {
-      chart: {
-        height: 350,
-        type: 'line',
-        zoom: {
-          enabled: false
-        }
-      },
-      dataLabels: {
-        enabled: true,
-        position: 'top',
-        offsetY: -10,
-        formatter: function (val) {
-          return formatTime(val)
-        }
-      },
-      stroke: {
-        curve: 'straight'
-      },
-      title: {
-        text: 'Total time per weeks',
-        align: 'left'
-      },
-      xaxis: {
-        categories: null,
-      },
-      yaxis: {
-        labels: {
-          formatter: function (val) {
-          return formatTime(val)
-          }
-        }
-      },
-    }
-  }
-  )
-
-  // year-related generic stats
-const yearTaskRatio = ref({
-  series: null,
-  chartOptions: {
-    chart: {
-      type: 'bar',
-      height: 350,
-      stacked: true,
-      stackType: '100%'
-    },
-    responsive: [{
-      breakpoint: 480,
-      options: {
-        legend: {
-          position: 'bottom',
-          offsetX: -10,
-          offsetY: 0
-        }
-      }
-    }],
-    xaxis: {
-      categories: null,
-    },
-    title: {
-      text: 'Task ratio per month',
-      align: 'left'
-    },
-    legend: {
-      position: 'right',
-      offsetY: 40
-    },
-    fill: {
-      opacity: 1
-    }
-  }
-      })
-
-const monthsLineChart = ref(
-{
-  series: null,
-  chartOptions: {
-    chart: {
-      height: 350,
-      type: 'line',
-      zoom: {
-        enabled: false
-      }
-    },
-    dataLabels: {
-      enabled: true,
-      position: 'top',
-      offsetY: -10,
-      formatter: function (val) {
-        return formatTime(val) 
-      }
-    },
-    stroke: {
-      curve: 'straight'
-    },
-    title: {
-      text: 'Total time per month',
-      align: 'left'
-    },
-    xaxis: {
-      categories: null,
-    }
-  }
-}
-)
+// Each time we get the period inferior to the one for which we do the ratio
+const weekTaskRatio = ref({"options" : null, "series" : null, "title" : "Task ratio per day"})
+const monthTaskRatio = ref({"options" : null, "series" : null, "title" : "Task ratio per week"})
+const yearTaskRatio = ref({"options" : null, "series" : null, "title" : "Task ratio per month"})
+// Line charts
+const daysLineChart = ref({"options" : null, "series" : null, "title" : "Total time per day"})
+const weeksLineChart = ref({"options" : null, "series" : null, "title" : "Total time per week"})
+const monthsLineChart = ref({"options" : null, "series" : null, "title" : "Total time per month"})
 
 const weekBar = ref({
   series : [],
@@ -374,24 +169,25 @@ async function handleForward() {
 async function loadMore() {
     if (selected.value === "W") {
       const res = await statStore.getGenericWeekStats()
-      weekTaskRatio.value.chartOptions.xaxis.categories = res.dates
-      weekTaskRatio.value.series = res.stackedBarChart
-      daysLineChart.value.chartOptions.xaxis.categories = res.dates
-      daysLineChart.value.series = [res.daysLineChart]
+      weekTaskRatio.value["options"] = res.dates
+      weekTaskRatio.value["series"] = res.stackedBarChart
+      daysLineChart.value["options"] = res.dates
+      daysLineChart.value["series"] = [res.daysLineChart]
       generic.value = true
     } else if (selected.value === 'M') {
       const res = await statStore.getGenericMonthStats()
-      monthTaskRatio.value.chartOptions.xaxis.categories = res.weeks
-      monthTaskRatio.value.series = res.stackedBarChart
-      weeksLineChart.value.chartOptions.xaxis.categories = res.weeks
-      weeksLineChart.value.series = [res.weeksLineChart]
+      monthTaskRatio.value["options"] = res.weeks
+      monthTaskRatio.value["series"] = res.stackedBarChart
+      weeksLineChart.value["options"] = res.weeks
+      weeksLineChart.value["series"] = [res.weeksLineChart]
+      console.log(weeksLineChart.value)
       generic.value = true
     } else if (selected.value === 'Y') {
       const res = await statStore.getGenericYearStats()
-      yearTaskRatio.value.chartOptions.xaxis.categories = res.months
-      yearTaskRatio.value.series = res.stackedBarChart
-      monthsLineChart.value.chartOptions.xaxis.categories = res.months
-      monthsLineChart.value.series = [res.monthsLineChart]
+      yearTaskRatio.value["options"] = res.months
+      yearTaskRatio.value["series"] = res.stackedBarChart
+      monthsLineChart.value["options"] = res.months
+      monthsLineChart.value["series"] = [res.monthsLineChart]
       for (let i=0; i < Object.entries(res.weekLineChart).length; i++) {
         const [year, weeks] = Object.entries(res.weekLineChart)[i]
         weekBar.value.series.push({name : year, data : weeks})
