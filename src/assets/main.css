@@ -10,7 +10,7 @@
 }
 
 main {
-  flex: 1 1 0;
+  min-width: 100%;
 }
 
 strong {
@@ -161,7 +161,7 @@ input, select, textarea {
 }
 
 /* Inputs take all their space in little resolution because they are in columns,
-  they are are little more narrow when in rows. */
+  they are a little more narrow when in rows. */
 @media screen and (max-width: 1024px) {
   h1,h2,h3 {
     margin : 1em 0;
