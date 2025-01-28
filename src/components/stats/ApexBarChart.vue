@@ -28,10 +28,6 @@ const taskRatio = ref({
             xaxis: {
               categories: props.options
             },
-            title: {
-              text: props.title,
-              align: 'left'
-            },
             legend: {
               position: 'right',
               offsetY: 40

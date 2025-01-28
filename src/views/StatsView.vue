@@ -1,66 +1,74 @@
 <template>
-    <main id="stats-page">
-      <div id="main" class="main-container">
-        <h1>Stats</h1>
-        <div id="time-span__header">
-            <span id="left-arrow" class="material-symbols-outlined" @click="handleBack">arrow_back</span>
-            <h2 v-if="selected === 'D'">Today</h2>
-            <h2 v-else-if="selected === 'W'">This Week</h2>
-            <h2 v-else-if="selected === 'M'">This Month</h2>
-            <h2 v-else>This Year</h2>
-            <span id="right-arrow" class="material-symbols-outlined" @click="handleForward">arrow_forward</span>
-            <span id="refresh" class="material-symbols-outlined" @click="refresh">refresh</span>
+  <main id="stats-page">
+    <div id="main" class="main-container">
+      <h1>Stats</h1>
+      <div id="time-span__header">
+        <span id="left-arrow" class="material-symbols-outlined" @click="handleBack">arrow_back</span>
+        <h2 v-if="selected === 'D'">Today</h2>
+        <h2 v-else-if="selected === 'W'">This Week</h2>
+        <h2 v-else-if="selected === 'M'">This Month</h2>
+        <h2 v-else>This Year</h2>
+        <span id="right-arrow" class="material-symbols-outlined" @click="handleForward">arrow_forward</span>
+        <span id="refresh" class="material-symbols-outlined" @click="refresh">refresh</span>
+      </div>
+
+      <div v-if="loading" class="loader">
+      </div>
+
+      <div v-else>
+        <div id="cards-row" class="cards-row">
+          <div id="resume-card" class="card" v-if="resume.count && resume.time">
+            <p id="resume__count">{{ resume.count }} {{ resume.count === 1 ? "timer" : "timers" }}</p>
+            <TimeDisplay v-if="resume.time != 0" :time="resume.time" :font="'medium'" />
+            <p v-else>--</p>
+          </div>
+          <div id="mean-card" class="card" v-if="resume.mean">
+            <p>Mean {{ selector[selected] }}</p>
+            <TimeDisplay v-if="resume.mean.length" :time="resume.mean" :font="'medium'" />
+            <p v-else>--</p>
+          </div>
         </div>
-    
-        <div v-if="loading" class="loader">
+
+        <div id="resume" v-if="!resume.count || (resume.time === 0)">
+          <p id="incite" class="incite">No timer yet ! Go do one !</p>
+          <button @click="redirect" class="button primary">New timer</button>
         </div>
 
-        <div v-else>
-          <div id="cards-row" class="cards-row">
-            <div id="resume-card" class="card" v-if="resume.count && resume.time">
-              <p id="resume__count">{{ resume.count }} {{ resume.count === 1 ? "timer" : "timers" }}</p>
-              <TimeDisplay v-if="resume.time != 0" :time="resume.time" :font="'medium'"/>
-              <p v-else>--</p>
-            </div>
-            <div id="mean-card" class="card" v-if="resume.mean">
-              <p>Mean {{ selector[selected] }}</p>
-              <TimeDisplay v-if="resume.mean.length" :time="resume.mean" :font="'medium'"/>
-              <p v-else>--</p>
-            </div>
-          </div>
+        <CustomBar :data="statStore.taskRatio" />
 
-          <div id="resume" v-if="!resume.count || (resume.time === 0)">
-            <p id="incite" class="incite">No timer yet ! Go do one !</p>
-            <button @click="redirect" class="button primary">New timer</button>
-          </div>
-    
-        <CustomBar :data="statStore.taskRatio"/>
+        <TaskRatioList :data="statStore.taskRatio" />
 
-        <TaskRatioList :data="statStore.taskRatio"/> 
-    
-          <div id="details" v-if="selected !== 'D'" @click="loadMore()">
-            More details !<span class="material-symbols-outlined">arrow_drop_down</span>
+        <div id="details" v-if="selected !== 'D'" @click="loadMore()">
+          More details !<span class="material-symbols-outlined">arrow_drop_down</span>
+        </div>
+
+        <div id="generic-stat" class="generic-stat" v-if="generic">
+          <div v-if="selected === 'W'" id="chart">
+            <ApexLineChart :options="daysLineChart['options']" :series="daysLineChart['series']"
+              :title="daysLineChart['title']" />
+            <ApexBarChart :options="weekTaskRatio['options']" :series="weekTaskRatio['series']"
+              :title="weekTaskRatio['title']" />
           </div>
-    
-          <div id="generic-stat" class="generic-stat" v-if="generic">
-              <div v-if="selected === 'W'" id="chart">
-                <ApexLineChart :options="daysLineChart['options']" :series="daysLineChart['series']" :title="daysLineChart['title']"/>
-                <ApexBarChart :options="weekTaskRatio['options']" :series="weekTaskRatio['series']" :title="weekTaskRatio['title']"/>
-              </div>
-              <div v-else-if="selected === 'M'" id="chart">
-                <ApexLineChart :options="weeksLineChart['options']" :series="weeksLineChart['series']" :title="weeksLineChart['title']"/>
-                <ApexBarChart :options="monthTaskRatio['options']" :series="monthTaskRatio['series']" :title="monthTaskRatio['title']"/>
-              </div>
-              <div v-else-if="selected === 'Y'" id="chart">
-                <ApexLineChart :options="monthsLineChart['options']" :series="monthsLineChart['series']" :title="monthsLineChart['title']"/>
-                <!-- <apexchart type="line" height="350" :options="monthsLineChart.chartOptions" :series="monthsLineChart.series"/> -->
-                <ApexBarChart :options="yearTaskRatio['options']" :series="yearTaskRatio['series']" :title="yearTaskRatio['title']"/>
-                <label class="chart-title" for="bar-chart__week">Time per week</label>
-                <apexchart id="bar-chart__week" type="bar" width="550" height="450" :options="weekBar.chartOptions" :series="weekBar.series"/>
-              </div>
+          <div v-else-if="selected === 'M'" id="chart">
+            <ApexLineChart :options="weeksLineChart['options']" :series="weeksLineChart['series']"
+              :title="weeksLineChart['title']" />
+            <ApexBarChart :options="monthTaskRatio['options']" :series="monthTaskRatio['series']"
+              :title="monthTaskRatio['title']" />
+          </div>
+          <div v-else-if="selected === 'Y'" id="chart">
+            <label class="chart-title" for="line-chart__month">Time per month</label>
+            <ApexLineChart id="line-chart__month" :options="monthsLineChart['options']" :series="monthsLineChart['series']"
+              :title="monthsLineChart['title']" />
+            <label class="chart-title" for="bar-chart__month">Time per month</label>
+            <ApexBarChart id="bar-chart__month" :options="yearTaskRatio['options']" :series="yearTaskRatio['series']"
+              :title="yearTaskRatio['title']" />
+            <label class="chart-title" for="bar-chart__week">Time per week</label>
+            <apexchart id="bar-chart__week" type="bar" height="450" :options="weekBar.chartOptions"
+              :series="weekBar.series" />
           </div>
         </div>
       </div>
+    </div>
   </main>
 
 </template>
@@ -131,11 +139,7 @@ const weekBar = ref({
             bar: {
               columnWidth: '60%'
             }
-          },
-      title: {
-        text: 'Total time per week',
-        align: 'left'
-      }
+          }
   }
 })
 
@@ -210,11 +214,6 @@ function redirect() {
 </script>
 
 <style scoped>
-/* #stats-page {
-  display: flex;
-  flex-direction: row;
-} */
-
 .main-container {
   display: flex;
   flex-direction: column;
@@ -248,7 +247,7 @@ function redirect() {
 
 .cards-row {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr 1fr;
   
 }
 .card {
