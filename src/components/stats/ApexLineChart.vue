@@ -29,10 +29,6 @@ const lineChart = ref(  {
       stroke: {
         curve: 'straight'
       },
-      title: {
-        text: props.title,
-        align: 'left'
-      },
       xaxis: {
         categories: props.options,
       },
