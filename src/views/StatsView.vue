@@ -3,13 +3,13 @@
     <div id="main" class="main-container">
       <h1>Stats</h1>
       <div id="time-span__header">
-        <span id="left-arrow" class="material-symbols-outlined" @click="handleBack">arrow_back</span>
-        <h2 v-if="selected === 'D'">Today</h2>
-        <h2 v-else-if="selected === 'W'">This Week</h2>
-        <h2 v-else-if="selected === 'M'">This Month</h2>
-        <h2 v-else>This Year</h2>
-        <span id="right-arrow" class="material-symbols-outlined" @click="handleForward">arrow_forward</span>
-        <span id="refresh" class="material-symbols-outlined" @click="refresh">refresh</span>
+          <span id="left-arrow" :style="selected == 'D' ? 'visibility : hidden' : ''" class="material-symbols-outlined" @click="handleBack">arrow_back</span>
+          <h2 v-if="selected === 'D'">Today</h2>
+          <h2 v-else-if="selected === 'W'">This Week</h2>
+          <h2 v-else-if="selected === 'M'">This Month</h2>
+          <h2 v-else>This Year</h2>
+          <span id="right-arrow" :style="selected == 'Y' ? 'visibility : hidden' : ''" class="material-symbols-outlined"
+            @click="handleForward">arrow_forward</span>
       </div>
 
       <div v-if="loading" class="loader">
@@ -53,16 +53,16 @@
           </div>
           <div v-else-if="selected === 'M'" id="chart">
             <label class="chart-title" for="line-chart__week">Time per week</label>
-            <ApexLineChart :id="'line-chart__week'" :options="weeksLineChart['options']" :series="weeksLineChart['series']"
-              :title="weeksLineChart['title']" />
+            <ApexLineChart :id="'line-chart__week'" :options="weeksLineChart['options']"
+              :series="weeksLineChart['series']" :title="weeksLineChart['title']" />
             <label class="chart-title" for="bar-chart__week">Time per task per week</label>
-            <ApexBarChart :id="'bar-chart__week'" :options="monthTaskRatio['options']" :series="monthTaskRatio['series']"
-              :title="monthTaskRatio['title']" />
+            <ApexBarChart :id="'bar-chart__week'" :options="monthTaskRatio['options']"
+              :series="monthTaskRatio['series']" :title="monthTaskRatio['title']" />
           </div>
           <div v-else-if="selected === 'Y'" id="chart">
             <label class="chart-title" for="line-chart__month">Time per month</label>
-            <ApexLineChart :id="'line-chart__month'" :options="monthsLineChart['options']" :series="monthsLineChart['series']"
-              :title="monthsLineChart['title']" />
+            <ApexLineChart :id="'line-chart__month'" :options="monthsLineChart['options']"
+              :series="monthsLineChart['series']" :title="monthsLineChart['title']" />
             <label class="chart-title" for="bar-chart__month">Time per task in month</label>
             <ApexBarChart :id="'bar-chart__month'" :options="yearTaskRatio['options']" :series="yearTaskRatio['series']"
               :title="yearTaskRatio['title']" />
@@ -72,7 +72,8 @@
           </div>
         </div>
 
-        <div id="collapse-details" class="details" v-if="selected !== 'D' && showDetails" @click="showDetails = !showDetails">
+        <div id="collapse-details" class="details" v-if="selected !== 'D' && showDetails"
+          @click="showDetails = !showDetails">
           Collapse<span class="material-symbols-outlined">arrow_drop_down</span>
         </div>
       </div>
@@ -82,7 +83,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useStatStore } from '../stores/stats';
 import formatTime from '../utils/formatTime';
 import CustomBar from '@/components/stats/CustomBar.vue';
@@ -236,28 +237,37 @@ main:last-child {
 
 #time-span__header {
   width: 80%;
+  position: relative;
   display : flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  margin: auto; 
-  margin-bottom: 3%;
+  margin: auto;
+}
+
+#refresh {
+  position: relative;
+  right: 1.5rem;
+}
+
+#time-span__header:first-child {
+  margin-left:auto;
 }
 
 #time-span__header > #left-arrow {
-  padding-right: 5%;
+  margin-right: 5%;
 }
 
-#time-span__header > #right-arrow {
-  padding-left: 5%;
+span#right-arrow.material-symbols-outlined {
+  margin-left: 5%;
 }
 
 /* Distance between buttons */
-#time-span__header > span.material-symbols-outlined:first-child,
+/* #time-span__header > span.material-symbols-outlined:first-child,
 #time-span__header > span.material-symbols-outlined:last-child
  {
     margin-left: auto;
-}
+} */
 
 .cards-row {
   display: grid;
