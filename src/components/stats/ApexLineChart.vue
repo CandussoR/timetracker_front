@@ -1,12 +1,12 @@
 <template>
-    <apexchart type="line" height="350" :options="lineChart.chartOptions" :series="lineChart.series"/>
+    <apexchart :id="props.id" type="line" height="350" :options="lineChart.chartOptions" :series="lineChart.series"/>
 </template>
 
 <script setup>
 import { ref } from 'vue';
 import formatTime from '@/utils/formatTime';
 
-const props = defineProps(["options", "series", "title"])
+const props = defineProps(["id", "options", "series", "title"])
 
 const lineChart = ref(  {
     series: props.series,

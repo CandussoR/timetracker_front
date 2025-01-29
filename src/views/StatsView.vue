@@ -30,7 +30,7 @@
         </div>
 
         <div id="resume" v-if="!resume.count || (resume.time === 0)">
-          <p id="incite" class="incite">No timer yet ! Go do one !</p>
+          <p id="incite" class="incite">No timer yet ! Let's do one</p>
           <button @click="redirect" class="button primary">New timer</button>
         </div>
 
@@ -38,34 +38,42 @@
 
         <TaskRatioList :data="statStore.taskRatio" />
 
-        <div id="details" v-if="selected !== 'D'" @click="loadMore()">
+        <div id="details" class="details" v-if="selected !== 'D' && !showDetails" @click="loadMore()">
           More details !<span class="material-symbols-outlined">arrow_drop_down</span>
         </div>
 
-        <div id="generic-stat" class="generic-stat" v-if="generic">
+        <div id="generic-stat" class="generic-stat" v-if="generic && showDetails">
           <div v-if="selected === 'W'" id="chart">
-            <ApexLineChart :options="daysLineChart['options']" :series="daysLineChart['series']"
+            <label class="chart-title" for="line-chart__day">Time per day</label>
+            <ApexLineChart :id="'line-chart__day'" :options="daysLineChart['options']" :series="daysLineChart['series']"
               :title="daysLineChart['title']" />
-            <ApexBarChart :options="weekTaskRatio['options']" :series="weekTaskRatio['series']"
+            <label class="chart-title" for="bar-chart__day">Time per task per day</label>
+            <ApexBarChart :id="'bar-chart__day'" :options="weekTaskRatio['options']" :series="weekTaskRatio['series']"
               :title="weekTaskRatio['title']" />
           </div>
           <div v-else-if="selected === 'M'" id="chart">
-            <ApexLineChart :options="weeksLineChart['options']" :series="weeksLineChart['series']"
+            <label class="chart-title" for="line-chart__week">Time per week</label>
+            <ApexLineChart :id="'line-chart__week'" :options="weeksLineChart['options']" :series="weeksLineChart['series']"
               :title="weeksLineChart['title']" />
-            <ApexBarChart :options="monthTaskRatio['options']" :series="monthTaskRatio['series']"
+            <label class="chart-title" for="bar-chart__week">Time per task per week</label>
+            <ApexBarChart :id="'bar-chart__week'" :options="monthTaskRatio['options']" :series="monthTaskRatio['series']"
               :title="monthTaskRatio['title']" />
           </div>
           <div v-else-if="selected === 'Y'" id="chart">
             <label class="chart-title" for="line-chart__month">Time per month</label>
-            <ApexLineChart id="line-chart__month" :options="monthsLineChart['options']" :series="monthsLineChart['series']"
+            <ApexLineChart :id="'line-chart__month'" :options="monthsLineChart['options']" :series="monthsLineChart['series']"
               :title="monthsLineChart['title']" />
-            <label class="chart-title" for="bar-chart__month">Time per month</label>
-            <ApexBarChart id="bar-chart__month" :options="yearTaskRatio['options']" :series="yearTaskRatio['series']"
+            <label class="chart-title" for="bar-chart__month">Time per task in month</label>
+            <ApexBarChart :id="'bar-chart__month'" :options="yearTaskRatio['options']" :series="yearTaskRatio['series']"
               :title="yearTaskRatio['title']" />
             <label class="chart-title" for="bar-chart__week">Time per week</label>
             <apexchart id="bar-chart__week" type="bar" height="450" :options="weekBar.chartOptions"
               :series="weekBar.series" />
           </div>
+        </div>
+
+        <div id="collapse-details" class="details" v-if="selected !== 'D' && showDetails" @click="showDetails = !showDetails">
+          Collapse<span class="material-symbols-outlined">arrow_drop_down</span>
         </div>
       </div>
     </div>
@@ -74,7 +82,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useStatStore } from '../stores/stats';
 import formatTime from '../utils/formatTime';
 import CustomBar from '@/components/stats/CustomBar.vue';
@@ -87,6 +95,7 @@ import ApexLineChart from '@/components/stats/ApexLineChart.vue';
 const router = useRouter()
 const statStore = useStatStore()
 const loading = ref(true)
+const showDetails = ref(false)
 const selected = ref("D")
 const selector = {
     "D": "day",
@@ -153,6 +162,7 @@ onMounted(async () => {
 })
 
 async function handleBack() {
+    showDetails.value = false
     if (selected.value != 'D') {
         const entries = Object.entries(selector).map(x => x[0])
         selected.value = entries[entries.indexOf(selected.value)-1]
@@ -162,6 +172,7 @@ async function handleBack() {
 }
 
 async function handleForward() {
+    showDetails.value = false
     if (selected.value != 'Y') {
         const entries = Object.entries(selector).map(x => x[0])
         selected.value = entries[entries.indexOf(selected.value)+1]
@@ -177,15 +188,12 @@ async function loadMore() {
       weekTaskRatio.value["series"] = res.stackedBarChart
       daysLineChart.value["options"] = res.dates
       daysLineChart.value["series"] = [res.daysLineChart]
-      generic.value = true
     } else if (selected.value === 'M') {
       const res = await statStore.getGenericMonthStats()
       monthTaskRatio.value["options"] = res.weeks
       monthTaskRatio.value["series"] = res.stackedBarChart
       weeksLineChart.value["options"] = res.weeks
       weeksLineChart.value["series"] = [res.weeksLineChart]
-      console.log(weeksLineChart.value)
-      generic.value = true
     } else if (selected.value === 'Y') {
       const res = await statStore.getGenericYearStats()
       yearTaskRatio.value["options"] = res.months
@@ -196,8 +204,9 @@ async function loadMore() {
         const [year, weeks] = Object.entries(res.weekLineChart)[i]
         weekBar.value.series.push({name : year, data : weeks})
       }
-      generic.value = true
     }
+    generic.value = true
+    showDetails.value = true
 }
 
 async function refresh() {
@@ -206,6 +215,7 @@ async function refresh() {
     await statStore.getHomeStats()
     await statStore.getTaskTimeRatio(selector[selected.value])
     loading.value = false
+    showDetails.value = false
 }
 
 function redirect() {
@@ -220,6 +230,10 @@ function redirect() {
   margin: auto; 
 }
 
+main:last-child {
+  margin-bottom: 2rem;
+}
+
 #time-span__header {
   width: 80%;
   display : flex;
@@ -227,7 +241,7 @@ function redirect() {
   align-items: center;
   justify-content: center;
   margin: auto; 
-  margin-bottom: 5%;
+  margin-bottom: 3%;
 }
 
 #time-span__header > #left-arrow {
@@ -267,7 +281,7 @@ function redirect() {
   align-content: center;
 }
 
-#details {
+.details {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -281,6 +295,19 @@ function redirect() {
   text-align: center;
 }
 
+div.generic-stat {
+  margin-top: 3rem;
+}
+
+label {
+  margin-top: 1rem;
+}
+
+#collapse-details span.material-symbols-outlined {
+  margin : auto 0;
+  transform : rotate(180deg);
+}
+
 @media screen and (min-width: 480px) {
   .cards-row {
     grid-template-columns: 1fr 1fr;
@@ -290,6 +317,9 @@ function redirect() {
   }
   .card:last-child {
     margin-bottom: 1rem;
+  }
+  .generic-stat {
+    margin-top: 1rem;
   }
 }
 </style>
