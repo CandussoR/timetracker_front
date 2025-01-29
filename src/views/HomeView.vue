@@ -108,6 +108,12 @@ function redirect() {
 </script>
 
 <style scoped>
+main {
+    height: 100vh;
+
+    place-content: center;
+}
+
 .data-card {
     margin: auto;
     min-width: 400px;
