@@ -198,6 +198,7 @@ function closeMenu() {
         color: var(--text);
         background: var(--secondary);
     }
+
     /* Svg + p span style */
     span {
             display: flex;
@@ -209,6 +210,7 @@ function closeMenu() {
     p {
         width: calc(80% - 2%); /* width without the padding of the p to not deform the svg */
     }
+
     /* Submenu */
     .submenu {
         display: flex;
