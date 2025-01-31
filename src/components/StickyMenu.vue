@@ -6,10 +6,8 @@
              Menu
         </button>
         <!-- Show the menu on wider screens or at click of burger menu -->
-        <div v-if="isToggled || windowWidth > 764" 
-            :class="[isExpanded ? 'menu is-expanded' : 'menu']"
-           v-on-click-outside="closeMenu">
-            <div id="menu-wrap" class="menu-toggle" v-if="windowWidth > 764">
+        <div id="menu" :class="[isExpanded ? 'menu is-expanded' : 'menu']" v-on-click-outside="closeMenu">
+            <div id="menu-wrap" class="menu-toggle">
                 <button id="wrap" type="button" class="wrap" @click="isExpanded = !isExpanded">
                     <span class="material-symbols-outlined">keyboard_double_arrow_right</span>
                 </button>
@@ -56,10 +54,6 @@
                     </div>
                 </div>
             </div>
-            <!-- <div class="menu-item" :class="{ active: route.path === '/stats' }">
-                <span class="material-symbols-outlined svg" @mouseover="stats = !stats" @mouseleave="stats = !stats">bar_chart</span>
-                <p class="primary" v-show="isExpanded">Stats</p>
-            </div> -->
             <div id="stats-menu">
                     <div id="stats-menu__header" class="menu-item" 
                     @click="toggleStatSubmenu"
@@ -94,7 +88,6 @@ const isToggled = ref(false)
 
 watch(router.currentRoute, () => {
     if (isExpanded.value) isExpanded.value = false;
-    if (isToggled.value) isToggled.value = false;
     if (editSubmenu.value) editSubmenu.value = false;
     if (statSubmenu.value) statSubmenu.value = false;
   });
@@ -107,13 +100,7 @@ function handleResize() {
 }
 
 function toggleMobileMenu() {
-    if (isToggled.value && isExpanded.value) {
-        isToggled.value = false
-        isExpanded.value = false 
-    } else {
-        isToggled.value = true
-        isExpanded.value = true
-    }
+    isExpanded.value = !isExpanded.value
 }
 
 function toggleEditSubmenu() {
@@ -198,6 +185,7 @@ function closeMenu() {
         color: var(--text);
         background: var(--secondary);
     }
+
     /* Svg + p span style */
     span {
             display: flex;
@@ -209,6 +197,7 @@ function closeMenu() {
     p {
         width: calc(80% - 2%); /* width without the padding of the p to not deform the svg */
     }
+
     /* Submenu */
     .submenu {
         display: flex;
