@@ -2,7 +2,7 @@
     <aside id="menu">
         <button id="menu-button" type="button" class="menu-button" @click="toggleMobileMenu()">
             <span class="material-symbols-outlined">menu</span>
-            Mobile Menu
+            Menu
         </button>
         <!-- Creates a mask which darkens the background and act as a closer when clicking, like vue-click-outside -->
         <div id="mask" class="overlay" v-if="isToggled" @click="toggleMobileMenu()"></div>
@@ -98,30 +98,17 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
+const router = useRouter()
 const isToggled = ref(false)
-
-const editSubmenu =ref(true)
-const statSubmenu = ref(true)
-
+watch(router.currentRoute, () => {
+    if (isToggled.value) isToggled.value = false;
+  });
 function toggleMobileMenu() {
-    if (isToggled.value) {
-        isToggled.value = false
-    } else {
-        isToggled.value = true
-    }
-    console.log(isToggled.value)
-}
-
-function toggleEditSubmenu() {
-    editSubmenu.value = !editSubmenu.value
-}
-function toggleStatSubmenu() {
-    statSubmenu.value = !statSubmenu.value
-    console.log(statSubmenu.value)
+    isToggled.value = !isToggled.value
 }
 </script>
 
@@ -129,6 +116,21 @@ function toggleStatSubmenu() {
 :root {
     --level: .5rem;
 }
+
+.menu-button {
+        appearance: none;
+        border: none;
+        outline: none;
+        background: none;
+        color: var(--text);
+        display: flex;
+        gap: 1rem;
+        justify-items: flex-start;
+        align-items: center;
+        font-size: 1.5rem;
+        width: 100vw;
+        padding: 1rem 0;
+    }
 
 .overlay {
     position: fixed;
@@ -163,7 +165,8 @@ function toggleStatSubmenu() {
 }
 
 ul {
-    padding-left: 1em;
+    padding-left: 1rem;
+    padding-right: 1rem;
 }
 ul#edit-submenu {
     margin-bottom: .3rem;
@@ -204,9 +207,6 @@ a {
   height: 2rem;
   padding: 3px;
   cursor: pointer;
-}
-a:hover {
-    margin: 1px 1px;
 }
 
 .submenu {
