@@ -14,7 +14,7 @@
                     <router-link to="/">
                         <div class="menu-item" :class="{ active: route.path === '/' }">
                             <span class="material-symbols-outlined">home</span>
-                            Home
+                            <span>Home</span>
                         </div>
                     </router-link>
                 </li>
@@ -46,45 +46,45 @@
                     </router-link>
                 </li>
 
-                <li>
-                    <details id="edit-menu-container">
-                        <summary id="disclosure-edit" @click="toggleEditSubmenu"
+                <li class="submenu">
+                    <details>
+                        <summary id="disclosure-edit" class="menu-item"
                             :class="{ active: route.path == '/tasks' || route.path === '/tags' }">
                             <span class="material-symbols-outlined">edit</span>
-                            Edit
+                            <span>Edit</span>
                         </summary>
-                        <ul id="edit-submenu" v-if="editSubmenu">
+                        <ul id="edit-submenu">
                             <li>
                                 <router-link to="/tasks">
-                                    <p :class="{ active: route.path === '/tasks' }">Tasks</p>
+                                    <div class="menu-item" :class="{ active: route.path === '/tasks' }">Tasks</div>
                                 </router-link>
                             </li>
                             <li>
                                 <router-link to="/tags">
-                                    <p :class="{ active: route.path === '/tags' }">Tags</p>
+                                    <div class="menu-item" :class="{ active: route.path === '/tags' }">Tags</div>
                                 </router-link>
                             </li>
                         </ul>
                     </details>
                 </li>
 
-                <li id="stats-menu">
+                <li id="stats-menu" class="submenu">
                     <details>
-                        <summary id="stats-disclosure" class="menu-item" @click="toggleStatSubmenu"
+                        <summary id="stats-disclosure" class="menu-item"
                             :class="{ active: route.path === '/stats' || route.path === '/stats/dive' }">
                             <span class="material-symbols-outlined ">bar_chart</span>
                             Stats
                         </summary>
-                        <ul id="stats-submenu" v-if="statSubmenu">
+                        <ul id="stats-submenu">
                             <li>
                                 <router-link to="/stats">
-                                    <p :class="{ active: route.path === '/stats' }">Resume</p>
+                                    <div class="menu-item" :class="{ active: route.path === '/stats' }">Resume</div>
                                 </router-link>
                             </li>
                             <li>
                                 <router-link to="/stats/dive">
-                                    <p :class="{ active: route.path === '/stats/dive' }">Dive Into
-                                    </p>
+                                    <div class="menu-item" :class="{ active: route.path === '/stats/dive' }">Dive Into
+                                    </div>
                                 </router-link>
                             </li>
 
@@ -121,13 +121,11 @@ function toggleEditSubmenu() {
 }
 function toggleStatSubmenu() {
     statSubmenu.value = !statSubmenu.value
+    console.log(statSubmenu.value)
 }
 </script>
 
-<style>
-li {
-    list-style: none;
-}
+<style scoped>
 :root {
     --level: .5rem;
 }
@@ -138,8 +136,8 @@ li {
     left : 0;
     width: 100vw;
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.3);
-    /* backdrop-filter: blur(2px); */
+    background-color: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(1px);
     z-index: 98;
 }
 
@@ -151,10 +149,9 @@ li {
     overflow-y: auto;
     scroll-snap-type: y mandatory;
     scroll-snap-align: start end;
-    background-color: var(--background);
+    background-color: var(--background-3);
     height: 100vh;
     width: fit-content;
-    line-height: 1.25rem;
     backdrop-filter: blur(10px);
     /* Hiding scrollbar for Firefox and Edge */
     -ms-overflow-style: none;
@@ -165,46 +162,46 @@ li {
     display: none;
 }
 
-
-details {
-    padding: 1rem 0;  
+ul {
+    padding-left: 1em;
 }
+ul#edit-submenu {
+    margin-bottom: .3rem;
+}
+
+li {
+    list-style: none;
+    height: 3rem;
+}
+
 /* Hiding arrows */
 details > summary {
     list-style: none;
 }
 
-.menu-item, summary {
+.menu-item {
     display: flex;
     flex-direction: row;
     gap: .5rem;
-    align-content: center;
-    margin-right: 2rem;
+    padding: .3rem 3rem .3rem 1rem;
+    align-items: center;
 }
-.menu-item:not(#stats-menu__header, #edit-menu__header) {
+.menu-item:not(#stats-disclosure, #edit-disclosure) {
     cursor: pointer;
 }
-/*
-.submenu-item {
-        display:flex;
-        align-items: flex-end;
-        justify-content: center;
-        font-weight: 500;
-        width:fit-content;
-        
-        padding: calc(var(--level)*4);
-        margin: 0;
-        border-radius: 0.3em;
-    }
 
 .menu-item:hover,.submenu-item:hover {
     background-color: var(--accent);
 }
-*/
+
 a {
+    /* Using block just to ensure the height is taken */
+  display : block;
+  width: 100%;
   text-decoration: none;
   color: var(--text);
   transition: 0.4s;
+  height: 2rem;
   padding: 3px;
   cursor: pointer;
 }
@@ -212,4 +209,8 @@ a:hover {
     margin: 1px 1px;
 }
 
+.submenu {
+    min-height: 3rem; /* Ensures the submenu doesn't collapse */
+    height: auto;
+}
 </style>
