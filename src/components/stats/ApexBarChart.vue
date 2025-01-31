@@ -1,11 +1,11 @@
 <template>
-    <apexchart type="bar" height="350" :options="taskRatio.chartOptions" :series="taskRatio.series" />
+    <apexchart :id="props.id" type="bar" height="350" :options="taskRatio.chartOptions" :series="taskRatio.series" />
 </template>
 
 <script setup>
 import { ref } from 'vue';
 
-const props = defineProps(["options", "series", "title"])
+const props = defineProps(["id", "options", "series", "title"])
 const taskRatio = ref({
           series: props.series,
           chartOptions: {
@@ -27,10 +27,6 @@ const taskRatio = ref({
             }],
             xaxis: {
               categories: props.options
-            },
-            title: {
-              text: props.title,
-              align: 'left'
             },
             legend: {
               position: 'right',

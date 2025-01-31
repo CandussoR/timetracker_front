@@ -12,7 +12,7 @@
                 </div>
                 <div class="data-card-data" v-if="data">
                     <p class="data-card-data__count">{{ data.count }} {{ data.count === 1 ? "timer" : "timers" }}</p>
-                    <TimeDisplay v-if="data.time" :time="data.time" :font="'big'"/>
+                    <TimeDisplay v-if="data.time" :time="data.time" :font="big"/>
                     <p v-else>--</p>
                 </div>
                 <div id="stats-link"><p><a @click="router.push('/stats')">More stats</a></p></div>
@@ -108,13 +108,12 @@ function redirect() {
 </script>
 
 <style scoped>
-    main {
-        height: 100vh;
-        display: flex;
-        flex-direction : column;
-        align-items: center;
-        justify-content: center;
-    }
+main {
+    height: 95vh;
+    place-content: center;
+    margin: 0;
+}
+
 .data-card {
     margin: auto;
     min-width: 400px;
@@ -152,6 +151,7 @@ function redirect() {
 .buttons {
     display : flex ;
     flex-direction: column;
+    margin-top: 2rem;
 }
 
 .buttons > button {
@@ -163,8 +163,19 @@ function redirect() {
 
 div#stats-link p {
     text-align: right;
-    font-size: .8em;
-    margin: 0 .5em .5em 0;
+    font-size: .9em;
+    padding-right: 1rem;
+}
+
+@media screen and (max-width: 720px) {
+    .buttons {
+        margin-top: 0;
+    }
+
+    .data-card {
+        min-width: 60%;
+        max-width: 80%;
+    }
 }
 
 </style>

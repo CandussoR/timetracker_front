@@ -4,6 +4,8 @@ import axios from "../utils/apiRequester"
 
 export const useTimeRecordStore = defineStore('timeRecord', () => {
     const timeRecords = ref([])
+    // Temporary : for lack of better solution
+    const displayOngoingInfos = ref(null)
 
     /**
      * 
@@ -63,5 +65,5 @@ export const useTimeRecordStore = defineStore('timeRecord', () => {
         }
     }
 
-    return { timeRecords, createTimeRecord, updateTimeRecord, getTimeRecords }
+    return { timeRecords, displayOngoingInfos, createTimeRecord, updateTimeRecord, getTimeRecords }
 })

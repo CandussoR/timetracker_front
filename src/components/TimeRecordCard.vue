@@ -234,45 +234,19 @@ button {
     border-width: 0;
 }
 
-.button-row {
-    display: flex;
-    justify-content: center;
-    gap: 2em;
-}
-
-.log {
-    width: 80%;
-    margin: .5em auto;
-    background-color: var(--background-3);
-    border-radius: 5px;
-    padding: 1em 2em;
-}
-
-.tag {
-    font-size: .9em;
-    background: var(--accent);
-    border-radius: 25px;
-    padding: .2em 1em;
-}
-
-.task {
-    border: none;
-    color: var(--background);
-    font-size: .9em;
-    font-weight: 500;
-    background: linear-gradient(.45turn, var(--text), 60%, var(--primary));
-    border-radius: 25px;
-    padding: .2em 1em;
-}
-
-.subtask {
-    font-size: .9em;
-    color: var(--background);
-    background: linear-gradient(.55turn, var(--primary), 60%, var(--text));
-    border-radius: 25px;
-    padding: .2em 1em;
-    margin-left: .5em;
-}
+    .button-row {
+        display: flex;
+        justify-content: center;
+        gap: 2em;
+    }
+    
+    .log {
+        width: 80%;
+        margin: .5em auto;
+        background-color: var(--background-3);
+        border-radius: 5px;
+        padding: 1em 2em;
+    }
 
 .precisions {
     display: flex;

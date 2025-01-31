@@ -1,19 +1,19 @@
 <template>
-    <main id="stats-page">
-      <div id="main" class="main-container">
-        <h1>Stats</h1>
-        <div id="time-span__header">
-            <span id="left-arrow" class="material-symbols-outlined" @click="handleBack">arrow_back</span>
-            <h2 v-if="selected === 'D'">Today</h2>
-            <h2 v-else-if="selected === 'W'">This Week</h2>
-            <h2 v-else-if="selected === 'M'">This Month</h2>
-            <h2 v-else>This Year</h2>
-            <span id="right-arrow" class="material-symbols-outlined" @click="handleForward">arrow_forward</span>
-            <span id="refresh" class="material-symbols-outlined" @click="refresh">refresh</span>
-        </div>
-    
-        <div v-if="loading" class="loader">
-        </div>
+  <main id="stats-page">
+    <div id="main" class="main-container">
+      <h1>Stats</h1>
+      <div id="time-span__header">
+          <span id="left-arrow" :style="selected == 'D' ? 'visibility : hidden' : ''" class="material-symbols-outlined" @click="handleBack">arrow_back</span>
+          <h2 v-if="selected === 'D'">Today</h2>
+          <h2 v-else-if="selected === 'W'">This Week</h2>
+          <h2 v-else-if="selected === 'M'">This Month</h2>
+          <h2 v-else>This Year</h2>
+          <span id="right-arrow" :style="selected == 'Y' ? 'visibility : hidden' : ''" class="material-symbols-outlined"
+            @click="handleForward">arrow_forward</span>
+      </div>
+
+      <div v-if="loading" class="loader">
+      </div>
 
         <div v-else>
           <div id="cards-row" class="cards-row">
@@ -21,37 +21,55 @@
             <MeanTimeCard v-if="resume.mean" :mean="resume.mean" :selected="selector[selected]"/>
           </div>
 
-          <div id="resume" v-if="!resume.count || (resume.time === 0)">
-            <p id="incite" class="incite">No timer yet ! Go do one !</p>
-            <button @click="redirect" class="button primary">New timer</button>
-          </div>
-    
-        <CustomBar :data="statStore.taskRatio"/>
+        <div id="resume" v-if="!resume.count || (resume.time === 0)">
+          <p id="incite" class="incite">No timer yet ! Let's do one</p>
+          <button @click="redirect" class="button primary">New timer</button>
+        </div>
 
-        <TaskRatioList :data="statStore.taskRatio"/> 
-    
-          <div id="details" v-if="selected !== 'D'" @click="loadMore()">
-            More details !<span class="material-symbols-outlined">arrow_drop_down</span>
+        <CustomBar :data="statStore.taskRatio" />
+
+        <TaskRatioList :data="statStore.taskRatio" />
+
+        <div id="details" class="details" v-if="selected !== 'D' && !showDetails" @click="loadMore()">
+          More details !<span class="material-symbols-outlined">arrow_drop_down</span>
+        </div>
+
+        <div id="generic-stat" class="generic-stat" v-if="generic && showDetails">
+          <div v-if="selected === 'W'" id="chart">
+            <label class="chart-title" for="line-chart__day">Time per day</label>
+            <ApexLineChart :id="'line-chart__day'" :options="daysLineChart['options']" :series="daysLineChart['series']"
+              :title="daysLineChart['title']" />
+            <label class="chart-title" for="bar-chart__day">Time per task per day</label>
+            <ApexBarChart :id="'bar-chart__day'" :options="weekTaskRatio['options']" :series="weekTaskRatio['series']"
+              :title="weekTaskRatio['title']" />
           </div>
-    
-          <div id="generic-stat" class="generic-stat" v-if="generic">
-              <div v-if="selected === 'W'" id="chart">
-                <ApexLineChart :options="daysLineChart['options']" :series="daysLineChart['series']" :title="daysLineChart['title']"/>
-                <ApexBarChart :options="weekTaskRatio['options']" :series="weekTaskRatio['series']" :title="weekTaskRatio['title']"/>
-              </div>
-              <div v-else-if="selected === 'M'" id="chart">
-                <ApexLineChart :options="weeksLineChart['options']" :series="weeksLineChart['series']" :title="weeksLineChart['title']"/>
-                <ApexBarChart :options="monthTaskRatio['options']" :series="monthTaskRatio['series']" :title="monthTaskRatio['title']"/>
-              </div>
-              <div v-else-if="selected === 'Y'" id="chart">
-                <ApexLineChart :options="monthsLineChart['options']" :series="monthsLineChart['series']" :title="monthsLineChart['title']"/>
-                <ApexBarChart :options="yearTaskRatio['options']" :series="yearTaskRatio['series']" :title="yearTaskRatio['title']"/>
-                <label class="chart-title" for="bar-chart__week">Time per week</label>
-                <apexchart id="bar-chart__week" type="bar" width="550" height="450" :options="weekBar.chartOptions" :series="weekBar.series"/>
-              </div>
+          <div v-else-if="selected === 'M'" id="chart">
+            <label class="chart-title" for="line-chart__week">Time per week</label>
+            <ApexLineChart :id="'line-chart__week'" :options="weeksLineChart['options']"
+              :series="weeksLineChart['series']" :title="weeksLineChart['title']" />
+            <label class="chart-title" for="bar-chart__week">Time per task per week</label>
+            <ApexBarChart :id="'bar-chart__week'" :options="monthTaskRatio['options']"
+              :series="monthTaskRatio['series']" :title="monthTaskRatio['title']" />
+          </div>
+          <div v-else-if="selected === 'Y'" id="chart">
+            <label class="chart-title" for="line-chart__month">Time per month</label>
+            <ApexLineChart :id="'line-chart__month'" :options="monthsLineChart['options']"
+              :series="monthsLineChart['series']" :title="monthsLineChart['title']" />
+            <label class="chart-title" for="bar-chart__month">Time per task in month</label>
+            <ApexBarChart :id="'bar-chart__month'" :options="yearTaskRatio['options']" :series="yearTaskRatio['series']"
+              :title="yearTaskRatio['title']" />
+            <label class="chart-title" for="bar-chart__week">Time per week</label>
+            <apexchart id="bar-chart__week" type="bar" height="450" :options="weekBar.chartOptions"
+              :series="weekBar.series" />
           </div>
         </div>
+
+        <div id="collapse-details" class="details" v-if="selected !== 'D' && showDetails"
+          @click="showDetails = !showDetails">
+          Collapse<span class="material-symbols-outlined">arrow_drop_down</span>
+        </div>
       </div>
+    </div>
   </main>
 
 </template>
@@ -71,6 +89,7 @@ import ApexLineChart from '@/components/stats/ApexLineChart.vue';
 const router = useRouter()
 const statStore = useStatStore()
 const loading = ref(true)
+const showDetails = ref(false)
 const selected = ref("D")
 const selector = {
     "D": "day",
@@ -123,11 +142,7 @@ const weekBar = ref({
             bar: {
               columnWidth: '60%'
             }
-          },
-      title: {
-        text: 'Total time per week',
-        align: 'left'
-      }
+          }
   }
 })
 
@@ -141,6 +156,7 @@ onMounted(async () => {
 })
 
 async function handleBack() {
+    showDetails.value = false
     if (selected.value != 'D') {
         const entries = Object.entries(selector).map(x => x[0])
         selected.value = entries[entries.indexOf(selected.value)-1]
@@ -150,6 +166,7 @@ async function handleBack() {
 }
 
 async function handleForward() {
+    showDetails.value = false
     if (selected.value != 'Y') {
         const entries = Object.entries(selector).map(x => x[0])
         selected.value = entries[entries.indexOf(selected.value)+1]
@@ -165,15 +182,12 @@ async function loadMore() {
       weekTaskRatio.value["series"] = res.stackedBarChart
       daysLineChart.value["options"] = res.dates
       daysLineChart.value["series"] = [res.daysLineChart]
-      generic.value = true
     } else if (selected.value === 'M') {
       const res = await statStore.getGenericMonthStats()
       monthTaskRatio.value["options"] = res.weeks
       monthTaskRatio.value["series"] = res.stackedBarChart
       weeksLineChart.value["options"] = res.weeks
       weeksLineChart.value["series"] = [res.weeksLineChart]
-      console.log(weeksLineChart.value)
-      generic.value = true
     } else if (selected.value === 'Y') {
       const res = await statStore.getGenericYearStats()
       yearTaskRatio.value["options"] = res.months
@@ -184,8 +198,9 @@ async function loadMore() {
         const [year, weeks] = Object.entries(res.weekLineChart)[i]
         weekBar.value.series.push({name : year, data : weeks})
       }
-      generic.value = true
     }
+    generic.value = true
+    showDetails.value = true
 }
 
 async function refresh() {
@@ -194,6 +209,7 @@ async function refresh() {
     await statStore.getHomeStats()
     await statStore.getTaskTimeRatio(selector[selected.value])
     loading.value = false
+    showDetails.value = false
 }
 
 function redirect() {
@@ -202,47 +218,56 @@ function redirect() {
 </script>
 
 <style scoped>
-/* #stats-page {
-  display: flex;
-  flex-direction: row;
-} */
-
 .main-container {
   display: flex;
   flex-direction: column;
   margin: auto; 
 }
 
+main:last-child {
+  margin-bottom: 2rem;
+}
+
 #time-span__header {
   width: 80%;
+  position: relative;
   display : flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  margin: auto; 
-  margin-bottom: 5%;
+  margin: auto;
+}
+
+#refresh {
+  position: relative;
+  right: 1.5rem;
+}
+
+#time-span__header:first-child {
+  margin-left:auto;
 }
 
 #time-span__header > #left-arrow {
-  padding-right: 5%;
+  margin-right: 5%;
 }
 
-#time-span__header > #right-arrow {
-  padding-left: 5%;
+span#right-arrow.material-symbols-outlined {
+  margin-left: 5%;
 }
 
 /* Distance between buttons */
-#time-span__header > span.material-symbols-outlined:first-child,
+/* #time-span__header > span.material-symbols-outlined:first-child,
 #time-span__header > span.material-symbols-outlined:last-child
  {
     margin-left: auto;
-}
+} */
 
 .cards-row {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr 1fr;
   
 }
+
 
 #resume {
   display: flex;
@@ -250,7 +275,7 @@ function redirect() {
   align-content: center;
 }
 
-#details {
+.details {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -262,6 +287,19 @@ function redirect() {
   font-size: 1.5rem;
   margin: 1.5rem;
   text-align: center;
+}
+
+div.generic-stat {
+  margin-top: 3rem;
+}
+
+label {
+  margin-top: 1rem;
+}
+
+#collapse-details span.material-symbols-outlined {
+  margin : auto 0;
+  transform : rotate(180deg);
 }
 
 @media screen and (min-width: 480px) {
