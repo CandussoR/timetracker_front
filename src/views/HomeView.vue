@@ -12,7 +12,7 @@
                 </div>
                 <div class="data-card-data" v-if="data">
                     <p class="data-card-data__count">{{ data.count }} {{ data.count === 1 ? "timer" : "timers" }}</p>
-                    <TimeDisplay v-if="data.time" :time="data.time" :font="big"/>
+                    <TimeDisplay v-if="data.time" :time="data.time"/>
                     <p v-else>--</p>
                 </div>
                 <div id="stats-link"><p><a @click="router.push('/stats')">More stats</a></p></div>
