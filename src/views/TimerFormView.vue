@@ -45,8 +45,9 @@
             </form>
          </div>
     
-        <ModalFrame content="newTask" v-if="newTask" v-on-click-outside="closeModal"/>
-        <ModalFrame content="newTag" v-if="newTag" v-on-click-outside="closeModal"/>
+        <Overlay v-if="newTask || newTag" @click="closeModal"/>
+        <ModalFrame content="newTask" v-if="newTask"/>
+        <ModalFrame content="newTag" v-if="newTag"/>
     </main>
 </template>
 
@@ -55,12 +56,12 @@ import TaskSelect from '@/components/select/TaskSelect.vue'
 import SubtaskSelect from '@/components/select/SubtaskSelect.vue'
 import TagSelect from '@/components/select/TagSelect.vue'
 import ModalFrame from '@/components/modals/ModalFrame.vue';
-import { vOnClickOutside } from '@vueuse/components'
 import { useTaskStore } from '@/stores/task';
 import { useTagStore } from '@/stores/tag';
 import { ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useTimeRecordStore } from '@/stores/timeRecord';
+import Overlay from '@/components/Overlay.vue';
 
 const taskStore = useTaskStore()
 const tagStore = useTagStore()
@@ -137,4 +138,14 @@ function handleSubmit() {
     #set {
         margin: auto;
     }
+    .overlay {
+    position: fixed;
+    top: 0;
+    left : 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(1px);
+    z-index: 98;
+}
 </style>

@@ -1,12 +1,7 @@
-<template>
+    <template>
     <aside id="menu">
-        <!-- Only show a burger menu for mobile device -->
-        <button id="menu-button" type="button" class="menu-button" v-if="windowWidth < 764" @click="toggleMobileMenu()">
-            <span class="material-symbols-outlined">menu</span> 
-             Menu
-        </button>
-        <!-- Show the menu on wider screens or at click of burger menu -->
-        <div id="menu" :class="[isExpanded ? 'menu is-expanded' : 'menu']" v-on-click-outside="closeMenu">
+        <div class="menu-overlay" v-if="isExpanded" @click="closeMenu"></div>
+        <div id="menu" :class="[isExpanded ? 'menu is-expanded' : 'menu']">
             <div id="menu-wrap" class="menu-toggle">
                 <button id="wrap" type="button" class="wrap" @click="isExpanded = !isExpanded">
                     <span class="material-symbols-outlined">keyboard_double_arrow_right</span>
@@ -17,8 +12,8 @@
                     <span class="material-symbols-outlined svg">home</span>
                     <p class="primary" v-show="isExpanded">Home</p>
                 </div>
-            </router-link>   
-            <router-link to="/new" >
+            </router-link>
+            <router-link to="/new">
                 <div class="menu-item" :class="{ active: route.path === '/new' }">
                     <span class="material-symbols-outlined svg">alarm</span>
                     <p class="primary" v-show="isExpanded">New clock</p>
@@ -36,40 +31,37 @@
                     <p class="primary" v-show="isExpanded">New search</p>
                 </div>
             </router-link>
-            <div id="edit-menu-container">
-                <div id="edit-menu">
-                    <div id="edit-menu__header" class="menu-item" 
-                    @click="toggleEditSubmenu"
+            <!-- <div id="edit-menu-container"> -->
+            <div id="edit-menu">
+                <div id="edit-menu__header" class="menu-item" @click="toggleEditSubmenu"
                     :class="{ active: route.path == '/tasks' || route.path === '/tags' }">
-                        <span class="material-symbols-outlined svg">edit</span>
-                        <p class="primary" v-show="isExpanded">Edit</p>
-                    </div>
-                    <div id="edit-menu__submenu" class="submenu" v-if="editSubmenu">
-                        <router-link to="/tasks">
-                            <p class="primary submenu-item" :class="{ active: route.path === '/tasks' }">Tasks</p>
-                        </router-link>
-                        <router-link to="/tags">
-                            <p class="primary submenu-item" :class="{ active: route.path === '/tags' }">Tags</p>
-                        </router-link>
-                    </div>
+                    <span class="material-symbols-outlined svg">edit</span>
+                    <p class="primary" v-show="isExpanded">Edit</p>
+                </div>
+                <div id="edit-menu__submenu" class="submenu" v-if="editSubmenu">
+                    <router-link to="/tasks">
+                        <p class="primary submenu-item" :class="{ active: route.path === '/tasks' }">Tasks</p>
+                    </router-link>
+                    <router-link to="/tags">
+                        <p class="primary submenu-item" :class="{ active: route.path === '/tags' }">Tags</p>
+                    </router-link>
                 </div>
             </div>
-            <div id="stats-menu">
-                    <div id="stats-menu__header" class="menu-item" 
-                    @click="toggleStatSubmenu"
-                    :class="{ active: route.path === '/stats' || route.path === '/stats/dive' }">
-                        <span class="material-symbols-outlined svg">bar_chart</span>
-                        <p class="primary" v-show="isExpanded">Stats</p>
-                    </div>
-                    <div id="edit-menu__submenu" class="submenu" v-if="statSubmenu">
-                        <router-link to="/stats">
-                            <p class="primary submenu-item" :class="{ active: route.path === '/stats' }">Resume</p>
-                        </router-link>
-                        <router-link to="/stats/dive">
-                            <p class="primary submenu-item" :class="{ active: route.path === '/stats/dive' }">Dive Into</p>
-                        </router-link>
-                    </div>
-                </div>
+        <div id="stats-menu">
+            <div id="stats-menu__header" class="menu-item" @click="toggleStatSubmenu"
+                :class="{ active: route.path === '/stats' || route.path === '/stats/dive' }">
+                <span class="material-symbols-outlined svg">bar_chart</span>
+                <p class="primary" v-show="isExpanded">Stats</p>
+            </div>
+            <div id="edit-menu__submenu" class="submenu" v-if="statSubmenu">
+                <router-link to="/stats">
+                    <p class="primary submenu-item" :class="{ active: route.path === '/stats' }">Resume</p>
+                </router-link>
+                <router-link to="/stats/dive">
+                    <p class="primary submenu-item" :class="{ active: route.path === '/stats/dive' }">Dive Into</p>
+                </router-link>
+            </div>
+        </div>
         </div>
     </aside>
 </template>
@@ -77,14 +69,12 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { vOnClickOutside } from '@vueuse/components';
 
 const route = useRoute();
 const router = useRouter();
 const editSubmenu = ref(false);
 const statSubmenu = ref(false);
 const isExpanded = ref(false)
-const isToggled = ref(false)
 
 watch(router.currentRoute, () => {
     if (isExpanded.value) isExpanded.value = false;
@@ -129,19 +119,16 @@ function closeMenu() {
 </script>
 
 <style scoped>
-    .menu-button {
-        appearance: none;
-        border: none;
-        outline: none;
-        background: none;
-        color: var(--text);
-        display: flex;
-        justify-items: flex-start;
-        align-items: center;
-        font-size: 1.5rem;
+    /* Pasting overlay class here because only case where background not darkened nor blurred */
+    .menu-overlay {
+        position: fixed;
+        top: 0;
+        left : 0;
         width: 100vw;
-        padding: 1em;
+        height: 100vh;
+        z-index: 98;
     }
+
     .menu {
         position: fixed;
         display: flex;
@@ -149,14 +136,18 @@ function closeMenu() {
         width: max-content;
         background-color: var(--background);
         transition: 0.2s ease-out;
-        z-index: 99;
+        /* Overlay index - 1 */
+        z-index: 98;
         height: 100vh;
     }
-    .menu-item {
+    .menu-item{
             display: flex; 
             flex-grow: 1;
             align-items: center;
             margin-bottom: 1%;
+    }
+    .edit-menu-container {
+        padding: 3px
     }
     .menu-item p {
             padding: 0 1rem;

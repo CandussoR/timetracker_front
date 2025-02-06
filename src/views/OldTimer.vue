@@ -98,16 +98,17 @@
             </div>
         </div>
     
-        <ModalFrame content="newTask" v-if="newTask" v-on-click-outside="closeModal"/>
-        <ModalFrame content="newTag" v-if="newTag" v-on-click-outside="closeModal"/>
+        <Overlay v-if="newTask || newTag" @click="closeModal"/>
+        <ModalFrame content="newTask" v-if="newTask"/>
+        <ModalFrame content="newTag" v-if="newTag"/>
     </main>
 </template>
 
 <script setup>
 import { ref, watch } from 'vue';
 import ModalFrame from '@/components/modals/ModalFrame.vue';
+import Overlay from '@/components/Overlay.vue';
 import VueDatePicker from '@vuepic/vue-datepicker'
-import { vOnClickOutside } from '@vueuse/components';
 import '@vuepic/vue-datepicker/dist/main.css';
 import TimeRecordCard from '@/components/TimeRecordCard.vue';
 import TaskSelect from '@/components/select/TaskSelect.vue';

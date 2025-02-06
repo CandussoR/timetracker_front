@@ -14,7 +14,8 @@
             >
                 <span class="task" v-if="item.subtask">{{ item.subtask }} <span class="material-symbols-outlined close-icon" @click="handleModalForGuid(item.guid)">close</span></span>
                 <span class="task" v-else>{{ item.task_name }} <span class="material-symbols-outlined close-icon" @click="displayModal = true">close</span></span>
-                <ModalFrame v-if="displayModal" content="confirmDelete" v-on-click-outside="closeModal"/>            
+                <Overlay v-if="displayModal" @click="closeModal"/>
+                <ModalFrame v-if="displayModal" content="confirmDelete"/>            
               </li>
         </ul>
 
@@ -27,8 +28,8 @@
 <script setup>
 import { computed, onBeforeMount, provide, ref } from 'vue';
 import { useTaskStore } from '@/stores/task';
-import { vOnClickOutside } from '@vueuse/components';
 import ModalFrame from '@/components/modals/ModalFrame.vue';
+import Overlay from '@/components/Overlay.vue';
 
 const taskStore = useTaskStore()
 
