@@ -11,4 +11,9 @@ Current State : under development - css and html are left shaky on purpose for n
   `https://github.com/CandussoR/timetracker_front.git`  
 * `cd` into your repo ;  
 * `npm install` ;
-* After having launched the back repo with the arg `--api` (see [this readme](https://github.com/CandussoR/timetracker/blob/master/README.md)), run this one with `npm run dev`.
+* After having launched the back repo with the arg `--api` (see [this readme](https://github.com/CandussoR/timetracker/blob/master/README.md)), get the URL on which your server is running, and create a `.env` file at the root of your folder with :
+```env
+VITE_APP_IP_DEV = <your.server.adress:port>
+VITE_APP_RING = "./src/assets/timer_end.mp3"
+```
+* Run your project with `npm run dev`.
