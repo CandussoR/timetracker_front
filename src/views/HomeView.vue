@@ -109,9 +109,14 @@ function redirect() {
 
 <style scoped>
 main {
-    height: 95vh;
+    /* height: 100vh; */
+    min-height: 100vh;
     place-content: center;
     margin: 0;
+}
+
+div#buttons:last-child {
+    margin-bottom: 1rem;
 }
 
 .data-card {
