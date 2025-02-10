@@ -22,13 +22,17 @@ export const useTagStore = defineStore('tags', () => {
      * @returns {number} the status code of the request 
      */
     async function createTag(tag) {
-        const res = await axios.post('/tag', {"tag" : tag})
-        if (res.status == 200) {
-            createdTag.value = res.data
-            tags.value.push(res.data)
-            isCreated.value = true
+        try {
+            const res = await axios.post('/tag', { "tag": tag })
+            if (res.status == 200) {
+                createdTag.value = res.data
+                tags.value.push(res.data)
+                isCreated.value = true
+            }
+            return res
+        } catch (e) {
+            return e.response
         }
-        return res.status
     }
 
     /**
