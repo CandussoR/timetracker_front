@@ -50,9 +50,10 @@ div.button-row {
 
 textarea {
     min-width:100%;
+    padding: 2em;
     font-family: var(--font-family);
     border-radius: 5px;
-    height: 5em;
+    height: auto;
 }
 
 form .button {
@@ -77,5 +78,11 @@ form .button[type="submit"] {
     .section-inputs {
         display: grid;
         grid-template-columns: 1fr 1fr;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    form {
+        min-width: 50%;
     }
 }

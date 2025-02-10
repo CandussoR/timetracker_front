@@ -7,7 +7,7 @@
     
                 <fieldset id="date__section">
                     <legend>Date</legend>
-                    <label class="bold" for="time-record-date">Date : </label>
+                    <label class="bold" for="time-record-date" hidden>Date : </label>
                     <VueDatePicker id="time-record-date" 
                         name="time-record-date"
                         v-model="formRecord.date" 
@@ -18,7 +18,8 @@
                         format='yyyy-MM-dd' 
                         auto-apply 
                         :enable-time-picker="false"
-                        placeholder="Select a date"/>
+                        placeholder="Select a date"
+                        required/>
                 </fieldset>
     
                 <fieldset id="task__section">
@@ -54,6 +55,8 @@
                                                 format= "HH:mm:ss"
                                                 time-picker
                                                 enable-seconds
+                                                text-input
+                                                required
                                                 />
                             </div>
                         </div>
@@ -68,6 +71,8 @@
                                                 format= "HH:mm:ss"
                                                 time-picker
                                                 enable-seconds
+                                                text-input
+                                                required
                                                 />
                             </div>
                         </div>
@@ -77,24 +82,23 @@
                 <fieldset>
                     <legend>Log</legend>
                     <label class="bold" for="log">Log :</label> 
-                    <textarea id="log" name="log" v-model="formRecord.log" rows="5" col="70" placeholder="Write something, if you want."></textarea>
+                    <textarea id="log" name="log" v-model="formRecord.log" rows="10" cols="70" placeholder="Write something, if you want."></textarea>
                 </fieldset>
             </div> 
             <div id="submit">
-                <button class="button" type="submit">Submit</button>
+                <button class="button" type="submit" :disabled="isDisabled">Submit</button>
             </div>
         </form>
     
         </div>
         
-        <div class="record-display">
-            <div v-if="record">
+        <div class="record-display" v-if="record">
+            <div>
                 <TimeRecordCard :record="record" @updated="record = $event"/>
             </div>
         
-            <div v-if="success">
+            <div id="another" v-if="success">
                 <button class="button" @click="handleAnother">Create another timer</button>
-                <router-link to="/">Home</router-link>
             </div>
         </div>
     
@@ -105,7 +109,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import ModalFrame from '@/components/modals/ModalFrame.vue';
 import Overlay from '@/components/Overlay.vue';
 import VueDatePicker from '@vuepic/vue-datepicker'
@@ -128,25 +132,8 @@ const statStore = useStatStore()
 const record = ref(null)
 const errorMsg = ref('')
 const success = ref(false)
-const formRecord = ref({
-    date : null,
-    task_name : null,
-    subtask : null,
-    tag : null,
-    timeBeginning : 
-        {
-            hours: null,
-            minutes: null,
-            seconds: null
-        },
-    timeEnding : 
-        {
-            hours: null,
-            minutes: null,
-            seconds: null
-        },
-    log: null
-})
+const formRecord = ref(setDefaultForm())
+const isDisabled = computed(() => !formRecord.value.date && !formRecord.value.task_name && !(typeof formRecord.value.timeBeginning == 'Object') && !(typeof formRecord.value.timeEnding == 'Object'));
 
 
 watch(
@@ -165,6 +152,27 @@ watch(
     }
 });
 
+function setDefaultForm() {
+    return {
+        date : null,
+        task_name : null,
+        subtask : null,
+        tag : null,
+        timeBeginning : 
+            {
+                hours: 0,
+                minutes: 0,
+                seconds: 0
+            },
+        timeEnding : 
+            {
+                hours: 0,
+                minutes: 0,
+                seconds: 0
+            },
+        log: null
+    }
+}
 
 async function handleSubmit() {
     try {
@@ -183,6 +191,7 @@ async function handleSubmit() {
             success.value = true
             record.value = res
             statStore.handleUpdated();
+            formRecord.value = setDefaultForm()
         }
     }
     catch(e) {
@@ -211,5 +220,10 @@ function closeModal() {
 .record-display {
     margin: auto;
     width: 80%;
+}
+
+#another {
+    display: flex;
+    margin:auto;
 }
 </style>
