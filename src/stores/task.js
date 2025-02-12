@@ -29,15 +29,27 @@ export const useTaskStore = defineStore('tasks', () => {
     async function createTask(taskName, subtask) {
         isCreated.value = false
         const data = subtask == null ? {task_name: taskName} : {task_name : taskName, subtask: subtask}
-        const res = await axios.post('/task', data)
-
-        if (res.status == 200) {
-            createdTask.value = res.data["task_name"]
-            createdSubtask.value = res.data["subtask"]
-            tasks.value.push(res.data)
-            isCreated.value = true
-            return res.status
+        try {
+            const res = await axios.post('/task', data)
+            if (res.status == 200) {
+                createdTask.value = res.data["task_name"]
+                createdSubtask.value = res.data["subtask"]
+                tasks.value.push(res.data)
+                isCreated.value = true
+            }
+            return res
+        } catch (e) {
+            console.log("Exception catched", e)
+            return e.response
         }
+
+        // if (res.status == 200) {
+        //     createdTask.value = res.data["task_name"]
+        //     createdSubtask.value = res.data["subtask"]
+        //     tasks.value.push(res.data)
+        //     isCreated.value = true
+        // }
+        // return res.status
     }
 
     /**

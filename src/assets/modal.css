@@ -20,7 +20,7 @@
     flex-direction: column;
     justify-items: center;
     background-color: var(--background);
-    padding: 2em;
+    padding: 1em;
   }
     
 .modalContent {

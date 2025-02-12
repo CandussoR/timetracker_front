@@ -80,6 +80,10 @@ button {
   padding: 0;
 }
 
+button:not(:disabled) {
+  cursor: pointer;
+}
+
 .button {
   font-family: var(--font-family); 
   color: var(--background);
@@ -140,7 +144,7 @@ button {
 }
 
 input, select, textarea {
-  max-width: 300px;
+  max-width: 250px;
   border-radius: 5px;
   padding: .5rem;
   height: 2rem;
@@ -182,10 +186,6 @@ input, select, textarea {
   body {
     display: flex;
     place-items: center;
-  }
-
-  input, select {
-    width: 70%;
   }
 
   input, select {

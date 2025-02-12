@@ -5,7 +5,7 @@
             Menu
         </button>
         <!-- Creates a mask which darkens the background and act as a closer when clicking, like vue-click-outside -->
-        <div id="mask" class="overlay" v-if="isToggled" @click="toggleMobileMenu()"></div>
+        <Overlay v-if="isToggled" @click="toggleMobileMenu()"/>
         <!-- Creating a drawer -->
         <div class="menu" v-if="isToggled">
             <ul>
@@ -100,6 +100,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import Overlay from './Overlay.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -130,18 +131,10 @@ function toggleMobileMenu() {
         font-size: 1.5rem;
         width: 100vw;
         padding: 1rem 0;
+        margin-bottom: .5rem;
     }
 
-.overlay {
-    position: fixed;
-    top: 0;
-    left : 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.9);
-    backdrop-filter: blur(1px);
-    z-index: 98;
-}
+
 
 .menu {
     z-index : 99;
