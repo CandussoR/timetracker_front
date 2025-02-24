@@ -1,11 +1,11 @@
 <template>
     <div>
-        <div id="cards-row" class="cards-row">
+        <div id="cards-row" class="cards-row" v-if="resume">
           <TimerCountCard v-if="resume.count && resume.time" :count="resume.count" :time="resume.time" />
           <MeanTimeCard v-if="resume.mean" :mean="resume.mean" :selected="props.selector" />
         </div>
 
-        <div id="resume" v-if="!resume.count || (resume.time === 0)">
+        <div id="resume" v-if="resume && (!resume.count || (resume.time === 0))">
           <p id="incite" class="incite">No timer yet ! Let's do one</p>
           <button @click="redirect" class="button primary">New timer</button>
         </div>
@@ -57,7 +57,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watchEffect } from 'vue';
+import { computed, ref, watchEffect, onMounted } from 'vue';
 import { useStatStore } from '@/stores/stats';
 import formatTime from '@/utils/formatTime';
 import CustomBar from '@/components/stats/CustomBar.vue';
@@ -69,10 +69,16 @@ import ApexLineChart from '@/components/stats/ApexLineChart.vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
-const props = defineProps(['selector', 'selected'])
+const props = defineProps(['selector', 'selected', 'date'])
 const statStore = useStatStore()
 const showDetails = ref(false)
 watchEffect(() => showDetails.value = false)
+
+onMounted(async () => {
+  if (props.date) {
+    await loadMore();
+  }
+}) 
 
 // Each time we get the period inferior to the one for which we do the ratio
 const weekTaskRatio = ref({"options" : null, "series" : null, "title" : "Task ratio per day"})
@@ -83,7 +89,8 @@ const daysLineChart = ref({"options" : null, "series" : null, "title" : "Total t
 const weeksLineChart = ref({"options" : null, "series" : null, "title" : "Total time per week"})
 const monthsLineChart = ref({"options" : null, "series" : null, "title" : "Total time per month"})
 
-const resume = computed(() => {
+
+const current_resume = computed(() => {
     if (props.selected === 'D') {
         return statStore.daily
     } else if (props.selected === 'W') {
@@ -94,6 +101,8 @@ const resume = computed(() => {
         return statStore.yearly
     }
 })
+const resume = ref(props.date ? null : current_resume)
+
 
 const weekBar = ref({
   series : [],
@@ -123,26 +132,37 @@ const weekBar = ref({
 
 
 async function loadMore() {
+  let res = null
+  if (props.date) {
+    res = await statStore.getGenericStats(props.selector, typeof props.date == 'string' ? props.date : props.date[0])
+    resume.value = res.resume
+  } else {
     if (props.selected === "W") {
-      const res = await statStore.getGenericWeekStats()
-      weekTaskRatio.value["options"] = res.dates
-      weekTaskRatio.value["series"] = res.stackedBarChart
-      daysLineChart.value["options"] = res.dates
-      daysLineChart.value["series"] = [res.daysLineChart]
+      res = await statStore.getGenericWeekStats()
     } else if (props.selected === 'M') {
-      const res = await statStore.getGenericMonthStats()
-      monthTaskRatio.value["options"] = res.weeks
-      monthTaskRatio.value["series"] = res.stackedBarChart
-      weeksLineChart.value["options"] = res.weeks
-      weeksLineChart.value["series"] = [res.weeksLineChart]
+      res = await statStore.getGenericMonthStats()
     } else if (props.selected === 'Y') {
-      const res = await statStore.getGenericYearStats()
-      yearTaskRatio.value["options"] = res.months
-      yearTaskRatio.value["series"] = res.stackedBarChart
-      monthsLineChart.value["options"] = res.months
-      monthsLineChart.value["series"] = [res.monthsLineChart]
-      for (let i=0; i < Object.entries(res.weekLineChart).length; i++) {
-        const [year, weeks] = Object.entries(res.weekLineChart)[i]
+      res = await statStore.getGenericYearStats()
+    }
+  }
+
+  if (props.selected === "W") {
+      weekTaskRatio.value["options"] = res.details.dates
+      weekTaskRatio.value["series"] = res.details.stackedBarChart
+      daysLineChart.value["options"] = res.details.dates
+      daysLineChart.value["series"] = [res.details.daysLineChart]
+    } else if (props.selected === 'M') {
+      monthTaskRatio.value["options"] = res.details.weeks
+      monthTaskRatio.value["series"] = res.details.stackedBarChart
+      weeksLineChart.value["options"] = res.details.weeks
+      weeksLineChart.value["series"] = [res.details.weeksLineChart]
+    } else if (props.selected === 'Y') {
+      yearTaskRatio.value["options"] = res.details.months
+      yearTaskRatio.value["series"] = res.details.stackedBarChart
+      monthsLineChart.value["options"] = res.details.months
+      monthsLineChart.value["series"] = [res.details.monthsLineChart]
+      for (let i=0; i < Object.entries(res.details.weekLineChart).length; i++) {
+        const [year, weeks] = Object.entries(res.details.weekLineChart)[i]
         weekBar.value.series.push({name : year, data : weeks})
       }
     }

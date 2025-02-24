@@ -109,6 +109,20 @@ export const useStatStore = defineStore("stats", () => {
 
     /**
      * 
+     * @param {String} period 
+     * @param {String|List[String]} [dates] - one date for the period or an array for a week
+     */
+    async function getGenericStats(period, dates = null) {
+        try {
+            let res = await axios.get('stats/generic', { params : {"period" : period, "date" : dates} })
+            return res.data
+        } catch(e) {
+            throw new Error(e)
+        }
+    }
+
+    /**
+     * 
      */
     async function getGenericWeekStats () {
         try {
@@ -180,6 +194,7 @@ export const useStatStore = defineStore("stats", () => {
         getGenericWeekStats, 
         getGenericMonthStats, 
         getGenericYearStats,
-        getQueriedStats
+        getQueriedStats,
+        getGenericStats
     }
 })
