@@ -14,7 +14,7 @@
       </div>
 
       <div v-if="loading" class="loader"></div>
-      <GenericStats v-else :selector="selector[selected]" :selected="selected" />
+      <GenericStats v-else :selector="selector[selected]" :selected="selected" :key="selected"/>
     </div>
   </main>
 
@@ -41,7 +41,6 @@ onMounted(async () => {
     if (!statStore.daily) {
         await statStore.getHomeStats()
     }
-    await statStore.getTaskTimeRatio(selector[selected.value])
     loading.value = false
 })
 

@@ -2,7 +2,8 @@
     <main id="stats-dive">
         <h1>Dive into your stats</h1>
 
-        <QueryForm @submitted="handleSubmit($event)" stats/>
+        <!-- <QueryForm @submitted="handleSubmit($event)" stats/> -->
+        <QueryForm @submitted="handleSubmit($event)" @change="mountGeneric = false"/>
 
         <div id="stats-section" v-if="stats">
             <div v-for="(el, i) in stats" :key="i">
@@ -15,6 +16,7 @@
                 </div>
             </div>
         </div>
+        <GenericStats v-if="mountGeneric" :selector="genericRequest.selector" :selected="genericRequest.selected" :date="genericRequest.date" />
         <div id="logs-section" v-if="logs">
             <div v-for="(log, i) in logs" :key="i">
                 <TimeRecordCard :record="log"/>
@@ -32,13 +34,23 @@ import CustomBar from '@/components/stats/CustomBar.vue';
 import TaskRatioList from '@/components/stats/TaskRatioList.vue';
 import TimerCountCard from '@/components/stats/TimerCountCard.vue';
 import { useStatStore } from '@/stores/stats';
+import GenericStats from '@/components/stats/GenericStats.vue';
 import { ref } from 'vue';
 
 const statStore = useStatStore()
 const stats = ref(null)
 const logs = ref(null)
+const mountGeneric = ref(false)
+const genericRequest = ref(null)
 
 async function handleSubmit(cleanedForm) {
+    mountGeneric.value = false
+    if (!("stats" in cleanedForm)) {
+        genericRequest.value = null
+        mountGeneric.value = true;
+        genericRequest.value = getGenericRequestInfo(cleanedForm)
+        return;
+    }
     stats.value = null
     logs.value = null
     const res = await statStore.getQueriedStats(cleanedForm)
@@ -49,6 +61,18 @@ async function handleSubmit(cleanedForm) {
     }
     if (keys.includes("logs")) {
         logs.value = res.data["logs"]
+    }
+}
+
+function getGenericRequestInfo(form) {
+    if ("day" in form) {
+        return {'selector': 'day', 'selected' : 'D', 'date' : form['day']}
+    } else if ("week" in form) {
+        return {'selector': 'week', 'selected' : 'W', 'date' : form['week']}
+    } else if ("month" in form) {
+        return {'selector': 'month', 'selected' : 'M', 'date' : form['month']}
+    } else if ("year" in form) {
+        return {'selector': 'year', 'selected' : 'Y', 'date' : String(form['year'])}
     }
 }
 

@@ -5,16 +5,16 @@
           <MeanTimeCard v-if="resume.mean" :mean="resume.mean" :selected="props.selector" />
         </div>
 
-        <div id="resume" v-if="resume && (!resume.count || (resume.time === 0))">
+         <div id="resume" v-if="resume && (!resume.count || (resume.time === 0))">
           <p id="incite" class="incite">No timer yet ! Let's do one</p>
           <button @click="redirect" class="button primary">New timer</button>
         </div>
 
-        <CustomBar :data="statStore.taskRatio" />
+        <CustomBar :data="taskRatio" />
 
-        <TaskRatioList :data="statStore.taskRatio" />
+        <TaskRatioList :data="taskRatio" />
 
-        <div id="details" class="details" v-if="props.selected !== 'D' && !showDetails" @click="loadMore()">
+        <div id="details" class="details" v-if="!props.date && props.selected !== 'D' && !showDetails" @click="loadMore()">
           More details !<span class="material-symbols-outlined">arrow_drop_down</span>
         </div>
 
@@ -48,16 +48,16 @@
           </div>
         </div>
 
-        <div id="collapse-details" class="details" v-if="props.selected !== 'D' && showDetails"
+        <div id="collapse-details" class="details" v-if="(!props.date) && (props.selected !== 'D') && showDetails"
           @click="showDetails = !showDetails">
           Collapse<span class="material-symbols-outlined">arrow_drop_down</span>
         </div>
-      
+
     </div>
 </template>
 
 <script setup>
-import { computed, ref, watchEffect, onMounted } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { useStatStore } from '@/stores/stats';
 import formatTime from '@/utils/formatTime';
 import CustomBar from '@/components/stats/CustomBar.vue';
@@ -69,26 +69,29 @@ import ApexLineChart from '@/components/stats/ApexLineChart.vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
-const props = defineProps(['selector', 'selected', 'date'])
 const statStore = useStatStore()
+const props = defineProps(['selector', 'selected', 'date'])
+const error = ref(null)
+const resume = ref(null)
+const taskRatio = ref(null)
 const showDetails = ref(false)
-watchEffect(() => showDetails.value = false)
 
 onMounted(async () => {
-  if (props.date) {
-    await loadMore();
+  if (!props.date) {
+    resume.value = current_resume.value
+    await statStore.getTaskTimeRatio(props.selector)
+    taskRatio.value = statStore.taskRatio
+    return
   }
-}) 
+  const res = await statStore.getPastTaskTimeRatio(props.selector, props.date && typeof props.date == 'string' ? props.date : props.date[0])
+  if (res.status == 200) {
+    taskRatio.value = res.data
+  } else {
+    error.value = res.data
+  }
 
-// Each time we get the period inferior to the one for which we do the ratio
-const weekTaskRatio = ref({"options" : null, "series" : null, "title" : "Task ratio per day"})
-const monthTaskRatio = ref({"options" : null, "series" : null, "title" : "Task ratio per week"})
-const yearTaskRatio = ref({"options" : null, "series" : null, "title" : "Task ratio per month"})
-// Line charts
-const daysLineChart = ref({"options" : null, "series" : null, "title" : "Total time per day"})
-const weeksLineChart = ref({"options" : null, "series" : null, "title" : "Total time per week"})
-const monthsLineChart = ref({"options" : null, "series" : null, "title" : "Total time per month"})
-
+  await loadMore();
+})
 
 const current_resume = computed(() => {
     if (props.selected === 'D') {
@@ -101,8 +104,15 @@ const current_resume = computed(() => {
         return statStore.yearly
     }
 })
-const resume = ref(props.date ? null : current_resume)
 
+// Each time we get the period inferior to the one for which we do the ratio
+const weekTaskRatio = ref({"options" : null, "series" : null, "title" : "Task ratio per day"})
+const monthTaskRatio = ref({"options" : null, "series" : null, "title" : "Task ratio per week"})
+const yearTaskRatio = ref({"options" : null, "series" : null, "title" : "Task ratio per month"})
+// Line charts
+const daysLineChart = ref({"options" : null, "series" : null, "title" : "Total time per day"})
+const weeksLineChart = ref({"options" : null, "series" : null, "title" : "Total time per week"})
+const monthsLineChart = ref({"options" : null, "series" : null, "title" : "Total time per month"})
 
 const weekBar = ref({
   series : [],
@@ -137,13 +147,7 @@ async function loadMore() {
     res = await statStore.getGenericStats(props.selector, typeof props.date == 'string' ? props.date : props.date[0])
     resume.value = res.resume
   } else {
-    if (props.selected === "W") {
-      res = await statStore.getGenericWeekStats()
-    } else if (props.selected === 'M') {
-      res = await statStore.getGenericMonthStats()
-    } else if (props.selected === 'Y') {
-      res = await statStore.getGenericYearStats()
-    }
+    res = await statStore.getGenericStats(props.selector)
   }
 
   if (props.selected === "W") {
@@ -178,7 +182,7 @@ function redirect() {
 .cards-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  
+
 }
 
 #resume {

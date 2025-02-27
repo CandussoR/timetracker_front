@@ -32,16 +32,16 @@ export const useStatStore = defineStore("stats", () => {
             return 400, "Couldn't load the stats."
         }
     }
+    
 
-    async function getWeekStatsForYear(year = null) {
+    async function getPastTaskTimeRatio(period, aDate=null) {
         try {
-            const res = await axios.get('/stats/weeks', {
-                params: {"years" : [year]}
+            const res = await axios.get('/stats/task_ratio', {
+            params: {"period" : period, "date" : aDate}
             })
-            weekBarChart.value = res.data
-        }
-        catch(e) {
-            return 400, "An error occured while fetching the stats."
+            return res
+        } catch(e) {
+            return e.response
         }
     }
 
@@ -80,7 +80,6 @@ export const useStatStore = defineStore("stats", () => {
             data[period] = res.data
             // Splitting the formatted time for display ?
             for (let i=0; i < data[period].length; i++) {
-
                 data[period][i]["formatted"] = data[period][i]["formatted"].split(":")
             }
             sessionStorage.setItem('stats', JSON.stringify(data))
@@ -95,7 +94,7 @@ export const useStatStore = defineStore("stats", () => {
             return 200
         }
         catch(e) {
-            return e
+            return e.response
         }
     }
 
@@ -118,36 +117,6 @@ export const useStatStore = defineStore("stats", () => {
             return res.data
         } catch(e) {
             throw new Error(e)
-        }
-    }
-
-    /**
-     * 
-     */
-    async function getGenericWeekStats () {
-        try {
-            const res = await axios.get('stats/generic/week')
-             return res.data
-        } catch(e) {
-            throw new Error(e);
-        }
-    }
-    
-    async function getGenericMonthStats() {
-        try {
-            const res = await axios.get('stats/generic/month')
-            return res.data
-        } catch(e) {
-            throw new Error(e);
-        }
-    }
-    
-    async function getGenericYearStats () {
-        try {
-            const res = await axios.get('stats/generic/year')
-            return res.data
-        } catch(e) {
-            throw new Error(e);
         }
     }
 
@@ -188,12 +157,9 @@ export const useStatStore = defineStore("stats", () => {
         weekBarChart, 
         taskRatio, 
         getHomeStats, 
-        getWeekStatsForYear, 
+        getPastTaskTimeRatio,
         getTaskTimeRatio, 
         handleUpdated, 
-        getGenericWeekStats, 
-        getGenericMonthStats, 
-        getGenericYearStats,
         getQueriedStats,
         getGenericStats
     }

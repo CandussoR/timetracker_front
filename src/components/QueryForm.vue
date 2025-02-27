@@ -117,7 +117,7 @@ import SubtaskSelect from '@/components/select/SubtaskSelect.vue';
 import TagSelect from '@/components/select/TagSelect.vue';
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import cleanObject from '../utils/cleanObject.js'
 import PeriodSelect from '@/components/select/PeriodSelect.vue';
 
@@ -140,7 +140,6 @@ const tag = ref(null)
 const statForm = ref([])
 const selectedCriteria = ref([])
 const isTimeCriteria = computed(() => selectedCriteria.value.some(item => ['day', 'week', 'month', 'year', 'range'].includes(item)))
-
 // Insures there is one time value selected
 const hasTimeValue = computed(() => {
     if (selectedCriteria.value.includes("tag")) {
@@ -163,7 +162,8 @@ const selectedStatElement = ref([])
 
 const getLogsWithStats = ref(false)
 
-const emit = defineEmits(['submitted'])
+const emit = defineEmits(['submitted', 'change'])
+watch([day, week , monthYear , year], () => emit('change'))
 
 /**
  * Swipe one temporal criteria with the new one if needed
@@ -249,7 +249,7 @@ function handleParams() {
             return ;
         }
         if (statForm.value.length !== 0) cleanedForm["stats"] = statForm.value
-        cleanedForm["logs"] = getLogsWithStats.value
+        if (getLogsWithStats.value) cleanedForm["logs"] = true
     }
 
     emit('submitted', cleanedForm)
