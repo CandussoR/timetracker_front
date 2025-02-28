@@ -1,5 +1,28 @@
 <template>
     <div class="form-container">
+        <div class="other-choice">
+            <label for="criteriaSelect" name="criteriaSelect">Select your criteria :</label>
+            <select id="criteriaSelect" name="criteriaSelect" v-model="criteria" @change="handleCriteria(criteria)">
+                <option v-for="pc in possibleCriteria" :key="pc" :value="pc">{{ pc[0].toUpperCase() + pc.slice(1) }}
+                </option>
+            </select>
+        </div>
+
+        <div class="stats-section" v-if="false">
+            <label for="stats-element-select">
+                Choose a stat element
+            </label>
+            <select id="stats-element-select" name="stats-element-select" @change="handleChange">Select sth
+                <option value="">Select an element</option>
+                <option value="timer-info">Timer count & total time</option>
+                <option value="line-chart">line chart</option>
+                <option value="stacked-column-chart" v-if="!subtask">stacked column</option>
+                <option value="task-ratio" v-if="!subtask">Task Ratio</option>
+                <option value="subtask-ratio">Subtask Ratio</option>
+            </select>
+
+        </div>
+
         <form>
             <fieldset id="date__section" class="fieldset" v-if="isTimeCriteria">
                 <legend>Time</legend>
@@ -57,7 +80,7 @@
                 </div>
             </fieldset>
 
-            <fieldset id="stat__section" class="fieldset" v-if="props.stats">
+            <fieldset id="stat__section" class="fieldset" v-if="false">
                 <legend>Stats elements</legend>
                 <p id="generic-info" v-if="!statForm">Not selecting any element will result in a generic stat page alike
                     to those of the resume page.</p>
@@ -84,28 +107,6 @@
 
         </form>
 
-        <div class="other-choice">
-            <label for="criteriaSelect" name="criteriaSelect">Select your criteria(s)</label>
-            <select id="criteriaSelect" name="criteriaSelect" v-model="criteria" @change="handleCriteria(criteria)">
-                <option v-for="pc in possibleCriteria" :key="pc" :value="pc">{{ pc[0].toUpperCase() + pc.slice(1) }}
-                </option>
-            </select>
-        </div>
-
-        <div class="stats-section" v-if="props.stats">
-            <label for="stats-element-select">
-                Choose a stat element
-            </label>
-            <select id="stats-element-select" name="stats-element-select" @change="handleChange">Select sth
-                <option value="">Select an element</option>
-                <option value="timer-info">Timer count & total time</option>
-                <option value="line-chart">line chart</option>
-                <option value="stacked-column-chart" v-if="!subtask">stacked column</option>
-                <option value="task-ratio" v-if="!subtask">Task Ratio</option>
-                <option value="subtask-ratio">Subtask Ratio</option>
-            </select>
-
-        </div>
         <button id="submit" class="button" type="submit" @click="handleParams()"
             :disabled="(props.stats && allStatHavePeriod && hasTimeValue) || (!props.stats && hasTimeValue ) ? false : true">Get'em all</button>
     </div>
@@ -127,7 +128,13 @@ const props = defineProps({
 const errorMsg = ref("")
 const maxDate = new Date().getFullYear()
 const criteria = ref(null)
-const possibleCriteria = ['day', 'week', 'month', 'year', 'range', 'task', 'tag']
+const possibleCriteria = computed(() => {
+    let ret = ['day', 'week', 'month', 'year']
+    if (!(props.stats)) {
+        ret.push('range', 'task', 'tag')
+    }
+    return ret
+})
 const day = ref(null)
 const week = ref(null)
 const monthYear = ref(null)
@@ -168,17 +175,18 @@ watch([day, week , monthYear , year], () => emit('change'))
 /**
  * Swipe one temporal criteria with the new one if needed
  *
- * @param {String} criteria
+ * @param {String} selected
  */
-function handleCriteria(criteria) {
+function handleCriteria(selected) {
     const timespans = ['day', 'week', 'month', 'year', 'range']
     const vars = [day, week, monthYear, year]
-    if (timespans.includes(criteria)) {
+    if (timespans.includes(selected)) {
         // filters out all the criterias that are not included in timespans
         selectedCriteria.value = selectedCriteria.value.filter((c) => !timespans.includes(c))
         vars.forEach(element => {element.value = null});
     }
-    selectedCriteria.value.push(criteria)
+    selectedCriteria.value.push(selected)
+    criteria.value = null
 }
 
 
@@ -285,5 +293,22 @@ function handleParams() {
     font-size: 1.7em;
     top: -1.5em;
     right: 1em;
+}
+.other-choice {
+    margin : 1.5rem auto;
+}
+
+@media screen and (min-width: 720px) {
+  .other-choice {
+    display: flex;
+    place-items: center;
+  }
+  .other-choice label {
+    white-space: nowrap;
+    margin-right: 1rem;
+  }
+  .other-choice select {
+    min-width: 200px;
+  }
 }
 </style>
