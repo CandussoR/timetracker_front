@@ -38,9 +38,9 @@
                             :maxDate="new Date()" locale="fr" :model-value="day" model-type="yyyy-MM-dd"
                             format='yyyy-MM-dd' auto-apply :enable-time-picker="false" placeholder="Select a date" />
                         <VueDatePicker v-if="selectedCriteria.includes('week')" id="week" v-model="week"
-                            model-type="yyyy-MM-dd" week-picker auto-apply placeholder="Select a week" />
+                            :maxDate="new Date()" model-type="yyyy-MM-dd" week-picker auto-apply placeholder="Select a week" />
                         <VueDatePicker v-if="selectedCriteria.includes('month')" id="month" v-model="monthYear"
-                            month-picker locale="fr" auto-apply model-type="yyyy-MM" format='yyyy-MM'
+                            :maxDate="new Date()" month-picker locale="fr" auto-apply model-type="yyyy-MM" format='yyyy-MM'
                             placeholder="Select a month" />
                         <VueDatePicker v-if="selectedCriteria.includes('year')" id="year" v-model="year"
                             :year-range="[2019, maxDate]" year-picker auto-apply :prevent-min-max-navigation="true"
