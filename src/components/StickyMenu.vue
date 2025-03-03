@@ -3,7 +3,7 @@
         <div class="menu-overlay" v-if="isExpanded" @click="closeMenu"></div>
         <div id="menu" :class="[isExpanded ? 'menu is-expanded' : 'menu']">
             <div id="menu-wrap" class="menu-toggle">
-                <button id="wrap" type="button" class="wrap" @click="isExpanded = !isExpanded">
+                <button id="wrap" type="button" class="wrap" @click="toggleMenu">
                     <span class="material-symbols-outlined">keyboard_double_arrow_right</span>
                 </button>
             </div>
@@ -89,8 +89,14 @@ function handleResize() {
     windowWidth.value = window.innerWidth
 }
 
-function toggleMobileMenu() {
-    isExpanded.value = !isExpanded.value
+function toggleMenu() {
+    if (isExpanded.value) {
+        isExpanded.value = false
+        editSubmenu.value = false
+        statSubmenu.value = false
+    } else {
+        isExpanded.value = true
+    }
 }
 
 function toggleEditSubmenu() {
@@ -127,6 +133,7 @@ function closeMenu() {
         width: 100vw;
         height: 100vh;
         z-index: 98;
+        backdrop-filter: blur(5px);
     }
 
     .menu {
@@ -216,6 +223,7 @@ function closeMenu() {
             right: 0; 
             height: fit-content;
             margin: auto 0;
+            backdrop-filter: none;
         }
         /* Whether expand, or unroll, or burger, make it smaller ? */
         span:first {
