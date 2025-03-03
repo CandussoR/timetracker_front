@@ -2,7 +2,7 @@
     <main id="stats-dive">
         <h1>Dive into your stats</h1>
 
-        <QueryForm @submitted="handleSubmit($event)" @change="mountGeneric = false" stats/>
+        <QueryForm @submitted="handleSubmit($event)" @change="mountGeneric = false" stats :key="queryCount"/>
 
         <div id="stats-section" v-if="stats">
             <div v-for="(el, i) in stats" :key="i">
@@ -37,7 +37,8 @@ import GenericStats from '@/components/stats/GenericStats.vue';
 import { ref } from 'vue';
 
 const statStore = useStatStore()
-const stats = ref(false)
+const queryCount = ref(0)
+const stats = ref(null)
 const logs = ref(null)
 const mountGeneric = ref(false)
 const genericRequest = ref(null)
@@ -48,6 +49,7 @@ async function handleSubmit(cleanedForm) {
         genericRequest.value = null
         mountGeneric.value = true;
         genericRequest.value = getGenericRequestInfo(cleanedForm)
+        queryCount.value++;
         return;
     }
     stats.value = null
@@ -61,6 +63,7 @@ async function handleSubmit(cleanedForm) {
     if (keys.includes("logs")) {
         logs.value = res.data["logs"]
     }
+    queryCount.value++;
 }
 
 function getGenericRequestInfo(form) {

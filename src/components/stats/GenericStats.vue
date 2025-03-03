@@ -1,5 +1,7 @@
 <template>
     <div>
+        <h2 v-if="props.date && props.selector != 'week'">Stats for {{props.date}}</h2>
+        <h2 v-else-if="props.date">Stats from {{props.date[0]}}<br/>to {{props.date[1]}}</h2>
         <div id="cards-row" class="cards-row" v-if="resume">
           <TimerCountCard v-if="resume.count && resume.time" :count="resume.count" :time="resume.time" />
           <MeanTimeCard v-if="resume.mean" :mean="resume.mean" :selected="props.selector" />

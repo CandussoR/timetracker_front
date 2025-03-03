@@ -107,8 +107,8 @@
 
         </form>
 
-        <button id="submit" class="button" type="submit" @click="handleParams()"
-            :disabled="(props.stats && allStatHavePeriod && hasTimeValue) || (!props.stats && hasTimeValue ) ? false : true">Get'em all</button>
+        <button id="submit" class="button" type="submit" @click="handleParams()" v-if="hasTimeValue"
+            :disabled="(props.stats && allStatHavePeriod) || (!props.stats) ? false : true">Get'em all</button>
     </div>
 </template>
 
