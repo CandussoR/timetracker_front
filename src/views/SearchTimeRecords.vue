@@ -2,7 +2,7 @@
     <main id="search">
         <h1>Search time records</h1>
     
-        <QueryForm @submitted="handleSubmit($event)" />
+        <QueryForm @submitted="handleSubmit($event)" @change="records = []"/>
         <p v-if="errorMsg" class="error">{{ errorMsg }}</p>
     
         <h2 v-if="records.length !== 0">Search Results</h2>
@@ -51,15 +51,16 @@ function handleRecordUpdate(idx, timeRecord) {
     records.value[idx] = timeRecord
 }
 
+/*
+*   Is only called after submit click in Query Form
+*/
 function handleSubmit(cleanedForm) {
     records.value = []
     errorMsg.value = null
     maxPage.value = 0
-    if (!currRequest.value) {
-        currRequest.value = cleanedForm
-        currRequest.value.page = 1
-        currRequest.value.page_size = pageSize.value
-    }
+    currRequest.value = cleanedForm
+    currRequest.value.page = 1
+    currRequest.value.page_size = pageSize.value
     timeRecordStore.getTimeRecords(currRequest.value)
         .then((res) => { 
             maxPage.value = res.data.pages
@@ -67,6 +68,9 @@ function handleSubmit(cleanedForm) {
         .catch((e) => errorMsg.value = e)
 }
 
+/*
+* Is only called when we change the page of current request
+*/
 function getPage(num) {
     currRequest.value.page = num
     currPage.value = num

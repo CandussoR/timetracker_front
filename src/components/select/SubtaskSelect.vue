@@ -3,7 +3,8 @@
         <label v-if="subtaskCanBeNull" for="subtask">Subtask name (optional) : </label>
 
         <select id="subtask-select" name="substask" v-model="selectedSubtask" @change="emit('selected', selectedSubtask)">
-            <option value="" disabled selected>Select a subtask (optional)</option>
+            <option value="" default>All subtasks</option>
+            <option value="None">No subtask</option>
             <option v-for="subtask in subtasks.filter(st => st !== null)" :key="subtask" :value="subtask">
                 {{ subtask }}
             </option>

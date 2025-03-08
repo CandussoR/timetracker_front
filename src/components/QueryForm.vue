@@ -3,6 +3,7 @@
         <div class="other-choice">
             <label for="criteriaSelect" name="criteriaSelect">Select your criteria :</label>
             <select id="criteriaSelect" name="criteriaSelect" v-model="criteria" @change="handleCriteria(criteria)">
+                <option value="" disabled>--</option>
                 <option v-for="pc in possibleCriteria" :key="pc" :value="pc">{{ pc[0].toUpperCase() + pc.slice(1) }}
                 </option>
             </select>
@@ -186,7 +187,7 @@ function handleCriteria(selected) {
         vars.forEach(element => {element.value = null});
     }
     selectedCriteria.value.push(selected)
-    criteria.value = null
+    criteria.value = ""
 }
 
 
