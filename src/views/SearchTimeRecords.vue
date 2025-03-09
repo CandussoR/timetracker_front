@@ -5,7 +5,7 @@
         <QueryForm @submitted="handleSubmit($event)" @change="records = []"/>
         <p v-if="errorMsg" class="error">{{ errorMsg }}</p>
     
-        <h2 v-if="records.length !== 0">Search Results</h2>
+        <h2 v-if="requestDone">Search Results</h2>
         
         <div id="records-results" class="records-results" v-if="records.length !== 0">
             <div id="record" v-for="(record, i) in records" :key="record">
@@ -23,6 +23,9 @@
                 <button class="button" v-if="maxPage > 1" @click="getPage(maxPage)" :disabled="currPage === maxPage ? true : false">{{maxPage}}</button>
             </div>
         </div>
+        <div id="records-results" class="records-results" v-if="requestDone && records.length === 0">
+            <p>No results for your query.</p>
+        </div>
     </main>
     
 </template>
@@ -34,6 +37,7 @@ import { useTimeRecordStore } from '@/stores/timeRecord';
 import QueryForm from '@/components/QueryForm.vue';
 
 const timeRecordStore = useTimeRecordStore()
+const requestDone = ref(false)
 const errorMsg = ref('')
 const requests = ref([])
 const records = ref([])
@@ -55,6 +59,7 @@ function handleRecordUpdate(idx, timeRecord) {
 *   Is only called after submit click in Query Form
 */
 function handleSubmit(cleanedForm) {
+    requestDone.value = false
     records.value = []
     errorMsg.value = null
     maxPage.value = 0
@@ -64,7 +69,8 @@ function handleSubmit(cleanedForm) {
     timeRecordStore.getTimeRecords(currRequest.value)
         .then((res) => { 
             maxPage.value = res.data.pages
-            records.value.push(...res.data.records.flat()) })
+            records.value.push(...res.data.records.flat())
+            requestDone.value = true })
         .catch((e) => errorMsg.value = e)
 }
 
