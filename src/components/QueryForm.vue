@@ -73,6 +73,15 @@
                 </div>
             </fieldset>
 
+            
+            <fieldset id="task__section" class="fieldset" v-if="selectedCriteria.includes('log includes')">
+                <legend>Find in logs</legend>
+                <span class="material-symbols-outlined close-icon" @click="deleteSection('log includes')">close</span>
+                <div class="section-inputs">
+                    <input type="text" v-model="logIncludes" minlength="3">
+                </div>
+            </fieldset>
+
             <fieldset id="tag__section" class="fieldset" v-if="selectedCriteria.includes('tag')">
                 <legend>Tag</legend>
                 <span class="material-symbols-outlined close-icon" @click="deleteSection('tag')">close</span>
@@ -107,9 +116,8 @@
             </fieldset>
 
         </form>
-
-        <button id="submit" class="button" type="submit" @click="handleParams()" v-if="hasTimeValue"
-            :disabled="(props.stats && allStatHavePeriod) || (!props.stats) ? false : true">Get'em all</button>
+        <button id="submit" class="button" type="submit" @click="handleParams()" v-if="hasTimeValue || hasLogSearch"
+            :disabled="(props.stats && allStatHavePeriod) || (!props.stats) || hasLogSearch ? false : true">Get'em all</button>
     </div>
 </template>
 
@@ -130,7 +138,7 @@ const errorMsg = ref("")
 const maxDate = new Date().getFullYear()
 const criteria = ref(null)
 const possibleCriteria = computed(() => {
-    let ret = ['day', 'week', 'month', 'year']
+    let ret = ['day', 'week', 'month', 'year', 'log includes']
     if (!(props.stats)) {
         ret.push('range', 'task', 'tag')
     }
@@ -145,6 +153,8 @@ const rangeEnding = ref(null)
 const task = ref(null)
 const subtask = ref(null)
 const tag = ref(null)
+const logIncludes = ref(null)
+const hasLogSearch = computed(() => selectedCriteria.value.includes('log includes') && logIncludes.value)
 const statForm = ref([])
 const selectedCriteria = ref([])
 const isTimeCriteria = computed(() => selectedCriteria.value.some(item => ['day', 'week', 'month', 'year', 'range'].includes(item)))
@@ -209,7 +219,11 @@ function deleteSection(section) {
     } else if (section === "tag") {
         selectedCriteria.value = selectedCriteria.value.filter(item => item !== "tag");
         tag.value = null
+    } else if (section === "log includes") {
+        selectedCriteria.value = selectedCriteria.value.filter(item => item !== "log includes");
+        logIncludes.value = null
     }
+    emit('change')
 }
 
 function deleteStat(index) {
@@ -247,7 +261,8 @@ function handleParams() {
         "month" : monthYear.value,
         "task" : task.value,
         "subtask" : subtask.value,
-        "tag" : tag.value
+        "tag" : tag.value,
+        "logIncludes" : logIncludes.value
     }
     // Cleaning entries with null values
     const cleanedForm = cleanObject(form)
