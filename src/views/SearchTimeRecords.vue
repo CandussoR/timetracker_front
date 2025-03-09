@@ -20,7 +20,7 @@
                 <button class="button" v-if="currPage < (maxPage - 1)" @click="getPage(currPage+1)">{{currPage + 1}}</button>
                 <button class="button" v-if="currPage < (maxPage - 2)" @click="getPage(currPage+2)">{{currPage + 2}}</button>
                 <button class="button" v-if="currPage < (maxPage - 3)" disabled>...</button>
-                <button class="button" @click="getPage(maxPage)" :disabled="currPage === maxPage ? true : false">{{maxPage}}</button>
+                <button class="button" v-if="maxPage > 1" @click="getPage(maxPage)" :disabled="currPage === maxPage ? true : false">{{maxPage}}</button>
             </div>
         </div>
     </main>
