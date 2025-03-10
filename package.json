@@ -10,9 +10,11 @@
     "test:unit": "vitest",
     "test:e2e": "start-server-and-test preview http://localhost:4173 'cypress run --e2e'",
     "test:e2e:dev": "start-server-and-test 'vite dev --port 4173' http://localhost:4173 'cypress open --e2e'",
-    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
+    "tauri": "tauri"
   },
   "dependencies": {
+    "@tauri-apps/api": "^1.6.0",
     "@vuepic/vue-datepicker": "^7.4.1",
     "axios": "^1.6.5",
     "dompurify": "^3.0.9",
@@ -23,6 +25,7 @@
     "vue3-apexcharts": "^1.4.4"
   },
   "devDependencies": {
+    "@tauri-apps/cli": "^2.3.1",
     "@vitejs/plugin-vue": "^4.5.2",
     "@vue/test-utils": "^2.4.3",
     "cypress": "^13.6.1",
