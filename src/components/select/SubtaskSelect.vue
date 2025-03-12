@@ -1,10 +1,10 @@
 <template>
     <div v-if="props.task && subtaskCanBeNull">
         <label v-if="subtaskCanBeNull" for="subtask">Subtask name (optional) : </label>
-
         <select id="subtask-select" name="substask" v-model="selectedSubtask" @change="emit('selected', selectedSubtask)">
-            <option value="" default>All subtasks</option>
-            <option value="None">No subtask</option>
+            <option v-if="props.view == 'timerForm'" value="" default>No subtask</option>
+            <option v-else value="" default>All subtasks</option>
+            <option v-if="props.view != 'timerForm'" value="None">No subtask</option>
             <option v-for="subtask in subtasks.filter(st => st !== null)" :key="subtask" :value="subtask">
                 {{ subtask }}
             </option>
@@ -27,7 +27,7 @@ import { useTaskStore } from '@/stores/task.js'
 import { ref, watch, computed, onMounted } from 'vue';
 const taskStore = useTaskStore();
 // Gets the task selected to update the dropdown
-const props = defineProps(["task", "subtask"]);
+const props = defineProps(["task", "subtask", "view"]);
 // Returns the selected Subtask to the parent
 const emit = defineEmits(["selected"]);
 

@@ -69,7 +69,7 @@
                 <span class="material-symbols-outlined close-icon" @click="deleteSection('task')">close</span>
                 <div class="section-inputs">
                     <TaskSelect :task="task" @selected="task = $event" />
-                    <SubtaskSelect :task="task" @selected="subtask = $event" />
+                    <SubtaskSelect :task="task" view="recordSearch" @selected="subtask = $event" />
                 </div>
             </fieldset>
 

@@ -13,7 +13,7 @@
                    
                     <div class="section-inputs">
                         <TaskSelect :task="selectedTask" @selected="selectedTask = $event"/>
-                        <SubtaskSelect v-if="selectedTask" :task="selectedTask" @selected="selectedSubtask = $event" /> 
+                        <SubtaskSelect v-if="selectedTask" :task="selectedTask" view="timerForm" @selected="selectedSubtask = $event" /> 
                     </div>
                     <p class="error" v-if="error">Couldn't retrieve the task : be sure to select a subtask.</p>
                 </fieldset>

@@ -50,7 +50,7 @@
                     <legend>Task</legend>
                     <div class="section-inputs">
                         <TaskSelect :task="formRecord.task_name" @selected="formRecord.task_name = $event" />
-                        <SubtaskSelect :task="formRecord.task_name" :subtask="formRecord.subtask"
+                        <SubtaskSelect :task="formRecord.task_name" :subtask="formRecord.subtask" view="timerForm"
                             @selected="formRecord.subtask = $event" />
                     </div>
                 </fieldset>
