@@ -1,13 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import TimerFormview from '../views/TimerFormView.vue'
 import HomeView from '../views/HomeView.vue'
-import TaskView from '../views/TaskView.vue'
-import TimerView from '../views/TimerView.vue'
-import SearchTimeRecords from '../views/SearchTimeRecords.vue'
-import OldTimer from '../views/OldTimer.vue'
-import StatsView from '../views/StatsView.vue'
-import StatsDiveView from '../views/StatsDiveView.vue'
-import TagView from '../views/TagView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -20,42 +12,42 @@ const router = createRouter({
     {
       path: '/new',
       name: 'timerFormView',
-      component: TimerFormview
+      component: () => import('../views/TimerFormView.vue')
     },
     {
       path: '/old',
       name: 'oldTimerView',
-      component: OldTimer
+      component: () => import('../views/OldTimer.vue')
     },
     {
       path: '/ongoing',
       name: 'timerView',
-      component: TimerView
+      component: () => import('../views/TimerView.vue')
     },
     {
       path: '/tasks',
       name: 'taskView',
-      component: TaskView
+      component: () => import('../views/TaskView.vue')
     },
     {
       path: '/time_records',
       name: 'timeRecords',
-      component: SearchTimeRecords
+      component: () => import('../views/SearchTimeRecords.vue')
     },
     {
       path: '/stats',
       name: 'statsView',
-      component: StatsView
+      component: () => import('../views/StatsView.vue')
     },
     {
       path: '/stats/dive',
       name: 'StatsDiveView',
-      component: StatsDiveView
+      component: () => import('../views/StatsDiveView.vue')
     },
     {
       path: '/tags',
       name: 'TagView',
-      component: TagView
+      component: () => import('../views/TagView.vue')
     }
   ]
 })
