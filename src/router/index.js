@@ -48,6 +48,11 @@ const router = createRouter({
       path: '/tags',
       name: 'TagView',
       component: () => import('../views/TagView.vue')
+    },
+    {
+      path: '/settings',
+      name: 'SettingsView',
+      component: () => import('../views/SettingsView.vue')
     }
   ]
 })
