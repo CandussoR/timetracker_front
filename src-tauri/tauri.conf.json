@@ -2,7 +2,7 @@
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "timetracker",
   "version": "0.1.0",
-  "identifier": "com.tauri.dev",
+  "identifier": "Timetracker",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:5173",
