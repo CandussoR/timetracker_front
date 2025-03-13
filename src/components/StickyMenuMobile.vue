@@ -92,6 +92,15 @@
                     </details>
                 </li>
 
+                <li>
+                    <router-link to="/settings">
+                        <div class="menu-item" :class="{ active: route.path === '/settings' }">
+                            <span class="material-symbols-outlined">settings</span>
+                            Settings
+                        </div>
+                    </router-link>
+                </li>
+
             </ul>
         </div>
     </aside>

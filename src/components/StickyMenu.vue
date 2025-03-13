@@ -62,6 +62,12 @@
                 </router-link>
             </div>
         </div>
+        <router-link to="/settings">
+                <div class="menu-item" :class="{ active: route.path === '/settings' }">
+                    <span class="material-symbols-outlined svg">settings</span>
+                    <p class="primary" v-show="isExpanded">Settings</p>
+                </div>
+            </router-link>
         </div>
     </aside>
 </template>
