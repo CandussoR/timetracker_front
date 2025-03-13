@@ -2,7 +2,7 @@
     <main id="search">
         <h1>Search time records</h1>
     
-        <QueryForm @submitted="handleSubmit($event)" @change="records = []"/>
+        <QueryForm @submitted="handleSubmit($event)" @change="resetResults"/>
         <p v-if="errorMsg" class="error">{{ errorMsg }}</p>
     
         <h2 v-if="requestDone">Search Results</h2>
@@ -84,6 +84,14 @@ function getPage(num) {
         .then((res) => { records.value = res.data.records.flat() })
         .catch((e) => errorMsg.value = e)
 }
+
+function resetResults() {
+    records.value = []
+    maxPage.value = 0
+    currPage.value = 1
+    requestDone.value = false
+}
+
 </script>
 
 <style scoped>
