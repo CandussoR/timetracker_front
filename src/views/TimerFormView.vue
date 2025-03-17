@@ -23,7 +23,7 @@
                         <span class="material-symbols-outlined" v-if="!newTag" @click="newTag = !newTag">add</span>
                     </legend>
                     <div class="inline">
-                        <TagSelect :tag="selectedTag" @selected="selectedTag = $event"/>
+                        <TagSelect :tag="selectedTag" @selected="selectedTag = $event" :key="selectedTag"/>
                     </div>
     
                 </fieldset>
@@ -89,6 +89,8 @@ watch(
         if (newValue === true) {
             closeModal()
     }
+    selectedTask.value = taskStore.createdTask;
+    selectedSubtask.value = taskStore.createdSubtask;
 });
 
 watch(
@@ -96,7 +98,8 @@ watch(
     (newValue) => {
         if (newValue === true) {
             closeModal()
-    }
+   }
+   selectedTag.value = tagStore.createdTag;
 });
 
 function handleSubmit() {

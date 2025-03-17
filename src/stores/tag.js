@@ -25,7 +25,7 @@ export const useTagStore = defineStore('tags', () => {
         try {
             const res = await axios.post('/tag', { "tag": tag })
             if (res.status == 200) {
-                createdTag.value = res.data
+                createdTag.value = res.data.tag
                 tags.value.push(res.data)
                 isCreated.value = true
             }
