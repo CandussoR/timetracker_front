@@ -36,7 +36,7 @@
                             <label class="bold" for="time-record-beginning">Time Beginning : </label>
                             <VueDatePicker id="time-record-beginning" name="time-record-beginning"
                                 v-model="formRecord.time_beginning" :model-value="formRecord.time_beginning"
-                                model-type="HH:mm:ss" format="HH:mm:ss" time-picker enable-seconds />
+                                model-type="HH:mm:ss" format="HH:mm:ss" time-picker text-input enable-seconds />
                         </div>
                         <div class="datepicker">
                             <label class="bold" for="time-record-ending">Time Ending :</label>
@@ -76,7 +76,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 import TaskSelect from './select/TaskSelect.vue';
 import SubtaskSelect from './select/SubtaskSelect.vue';
 import TagSelect from './select/TagSelect.vue';
@@ -108,28 +108,10 @@ const formRecord = ref({
     subtask: props.record.subtask,
     tag: props.record.tag,
     // Format for the time picker
-    time_beginning:
-    {
-        hours: null,
-        minutes: null,
-        seconds: null
-    },
-    time_ending:
-    {
-        hours: null,
-        minutes: null,
-        seconds: null
-    },
+    time_beginning: props.record.time_beginning,
+    time_ending: props.record.time_ending,
     log: props.record.log
 })
-
-onMounted(() => {
-    formRecord.value.time_beginning = createDateFromTimeString(formRecord.value.time_beginning,
-        ...props.record.time_beginning.split(":"))
-    let time_ending = props.record.time_ending === null ? [0, 0, 0] : props.record.time_ending.split(":");
-    formRecord.value.time_ending = createDateFromTimeString(formRecord.value.time_ending,
-        ...time_ending)
-});
 
 function toggleEdit(truth) {
     editing.value = truth
@@ -137,59 +119,41 @@ function toggleEdit(truth) {
     showDone.value = truth
 }
 
-function createDateFromTimeString(valueToUpdate, hour, minutes, seconds) {
-    valueToUpdate = {
-        hours: hour | 0,
-        minutes: minutes | 0,
-        seconds: seconds | 0
-    }
-    return valueToUpdate
-}
-
 /**
  * Need to check if form is dirty before we make a request
  */
 async function handleSubmit() {
-    // Converts the time picker format to string if untouched
-    if (typeof formRecord.value.time_beginning !== "string") {
-        const ftb = formRecord.value.time_beginning
-        formRecord.value.time_beginning = `${String(ftb.hours).padStart(2, '0')}:${String(ftb.minutes).padStart(2, '0')}:${String(ftb.seconds).padStart(2, '0')}`;
-    }
-    if (typeof formRecord.value.time_ending !== "string") {
-        const fte = formRecord.value.time_ending
-        formRecord.value.time_ending = `${String(fte.hours).padStart(2, '0')}:${String(fte.minutes).padStart(2, '0')}:${String(fte.seconds).padStart(2, '0')}`;
-    }
-
     formRecord.value.guid = props.record.guid
 
-    if (!areObjectEquals(originalRecord, formRecord.value)) {
-        // Question : bring this in the back service instead of here ?
-        // Continuation of the spring cleaning : format, guids.
-        if (formRecord.value.subtask === '') formRecord.value.subtask = null
-        formRecord.value.task_guid = taskStore.tasks.filter(x => x.task_name == formRecord.value.task_name
-            && x.subtask == formRecord.value.subtask)
-            .map(x => x.guid)[0]
-        delete formRecord.value.subtask
-        delete formRecord.value.task_name
-
-        if (formRecord.value.tag === null) {
-            formRecord.value.tag_guid = null
-        } else {
-            formRecord.value.tag_guid = tagStore.tags.filter(x => x.tag === formRecord.value.tag)
-                .map(x => x.guid)[0]
-        }
-        delete formRecord.value.tag
-
-        // make an update of the record.
-        recordStore.updateTimeRecord(formRecord.value, "edit")
-            .then((res) => {
-                statStore.handleUpdated()
-                emit("updated", res)
-                editing.value = !editing.value
-            })
+    if (areObjectEquals(originalRecord, formRecord.value)) {
+        editing.value = false
+        return
     }
 
-    editing.value = false
+    // Question : bring this in the back service instead of here ?
+    // Continuation of the spring cleaning : format, guids.
+    if (formRecord.value.subtask === '') formRecord.value.subtask = null
+    formRecord.value.task_guid = taskStore.tasks.filter(x => x.task_name == formRecord.value.task_name
+        && x.subtask == formRecord.value.subtask)
+        .map(x => x.guid)[0]
+    delete formRecord.value.subtask
+    delete formRecord.value.task_name
+
+    if (formRecord.value.tag === null) {
+        formRecord.value.tag_guid = null
+    } else {
+        formRecord.value.tag_guid = tagStore.tags.filter(x => x.tag === formRecord.value.tag)
+            .map(x => x.guid)[0]
+    }
+    delete formRecord.value.tag
+
+    // make an update of the record.
+    recordStore.updateTimeRecord(formRecord.value, "edit")
+        .then((res) => {
+            statStore.handleUpdated()
+            emit("updated", res)
+            editing.value = !editing.value
+        })
 }
 
 /**
