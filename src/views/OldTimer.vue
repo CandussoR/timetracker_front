@@ -10,10 +10,10 @@
                     <label class="bold" for="time-record-date" hidden>Date : </label>
                     <VueDatePicker id="time-record-date" 
                         name="time-record-date"
-                        v-model="formRecord.date" 
+                        v-model="date" 
                         :maxDate="new Date()" 
                         locale="fr" 
-                        :model-value="formRecord.date" 
+                        :model-value="date" 
                         model-type="yyyy-MM-dd" 
                         format='yyyy-MM-dd' 
                         auto-apply 
@@ -28,17 +28,17 @@
                         <span id="add-task-button" class="material-symbols-outlined" v-if="!newTask" @click.stop="newTask = !newTask">add</span> 
                     </legend>
                     <div class="section-inputs">
-                        <TaskSelect @selected="formRecord.task_name = $event"/>
-                        <SubtaskSelect :task="formRecord.task_name" view="timerForm" @selected="formRecord.subtask = $event"/>
+                        <TaskSelect :task="selectedTask" @selected="selectedTask = $event"/>
+                        <SubtaskSelect v-if="selectedTask" :task="selectedTask" view="timerForm" @selected="selectedSubtask = $event" :key="selectedTask"/> 
                     </div>
                 </fieldset>
     
     
                 <fieldset id="tag__section">
                     <legend>Tag
-                        <span class="material-symbols-outlined" v-if="!newTag" @click="newTag = !newTag">add</span>
+                        <span class="material-symbols-outlined" v-if="!newTag" @click.stop="newTag = !newTag">add</span>
                     </legend>
-                    <TagSelect @selected="formRecord.tag = $event"/>
+                    <TagSelect :tag="selectedTag" @selected="selectedTag" :key="selectedTag"/>
                 </fieldset>
                 
                 <fieldset id="time__section">
@@ -49,8 +49,8 @@
                             <div class="datepicker">
                                 <VueDatePicker id="time-record-beginning" 
                                                 name="time-record-beginning"
-                                                v-model="formRecord.timeBeginning"
-                                                :model-value="formRecord.timeBeginning"
+                                                v-model="timeBeginning"
+                                                :model-value="timeBeginning"
                                                 model-type="HH:mm:ss" 
                                                 format= "HH:mm:ss"
                                                 time-picker
@@ -65,8 +65,8 @@
                             <div class="datepicker">
                                 <VueDatePicker id="time-record-ending"
                                                 name="time-record-ending"
-                                                v-model="formRecord.timeEnding"
-                                                :model-value="formRecord.timeEnding"
+                                                v-model="timeEnding"
+                                                :model-value="timeEnding"
                                                 model-type="HH:mm:ss" 
                                                 format= "HH:mm:ss"
                                                 time-picker
@@ -82,7 +82,7 @@
                 <fieldset>
                     <legend>Log</legend>
                     <label class="bold" for="log">Log :</label> 
-                    <textarea id="log" name="log" v-model="formRecord.log" rows="10" cols="70" placeholder="Write something, if you want."></textarea>
+                    <textarea id="log" name="log" v-model="log" rows="10" cols="70" placeholder="Write something, if you want."></textarea>
                 </fieldset>
             </div> 
             <div id="submit">
@@ -132,9 +132,17 @@ const statStore = useStatStore()
 const record = ref(null)
 const errorMsg = ref('')
 const success = ref(false)
-const formRecord = ref(setDefaultForm())
-const isDisabled = computed(() => !formRecord.value.date && !formRecord.value.task_name && !(typeof formRecord.value.timeBeginning == 'Object') && !(typeof formRecord.value.timeEnding == 'Object'));
 
+// Form fields
+const date = ref(null)
+const selectedTag = ref(null)
+const selectedTask = ref(null)
+const selectedSubtask = ref(null)
+const timeBeginning = ref("00:00:00")
+const timeEnding = ref("00:00:00")
+const log = ref(null)
+
+const isDisabled = computed(() => !(date.value && selectedTask.value && (timeBeginning.value != timeEnding.value)));
 
 watch(
     () => taskStore.isCreated, 
@@ -142,6 +150,8 @@ watch(
         if (newValue === true) {
             closeModal()
     }
+    selectedTask.value = taskStore.createdTask;
+    selectedSubtask.value = taskStore.createdSubtask;
 });
 
 watch(
@@ -150,48 +160,32 @@ watch(
         if (newValue === true) {
             closeModal()
     }
+    value.tag = tagStore.createdTag;
+    selectedTag.value = tagStore.createdTag;
 });
-
-function setDefaultForm() {
-    return {
-        date : null,
-        task_name : null,
-        subtask : null,
-        tag : null,
-        timeBeginning : 
-            {
-                hours: 0,
-                minutes: 0,
-                seconds: 0
-            },
-        timeEnding : 
-            {
-                hours: 0,
-                minutes: 0,
-                seconds: 0
-            },
-        log: null
-    }
-}
 
 async function handleSubmit() {
     try {
-        if (formRecord.value.subtask !== '') formRecord.value.subtask = null
-        formRecord.value.task_guid = taskStore.tasks.filter(x => x.task_name == formRecord.value.task_name 
-                                                                && x.subtask == formRecord.value.subtask)
-                                                    .map(x => x.guid)[0]
-        if (formRecord.value.tag === null) {
-            formRecord.value.tag_guid = null
-        } else {
-            formRecord.value.tag_guid = tagStore.tags.filter(x => x.tag === formRecord.value.tag)
-            .map(x => x.guid)[0]
+        const formRecord = {
+            "date" : date.value,
+            "timeBeginning" : timeBeginning.value,
+            "timeEnding" : timeEnding.value,
+            "log": log.value
         }
-        const res = await recordStore.createTimeRecord(formRecord.value, "old")
+
+        formRecord["task_guid"] = taskStore.tasks.filter(x => x.task_name == selectedTask.value
+                                                                && x.subtask == selectedSubtask.value)
+                                                    .map(x => x.guid)[0]
+        if (selectedTag.value) {
+            formRecord["tag_guid"] = tagStore.tags.filter(x => x.tag === selectedTag.value).map(x => x.guid)[0]
+        }
+
+        const res = await recordStore.createTimeRecord(formRecord, "old")
         if (res) {
             success.value = true
             record.value = res
             statStore.handleUpdated();
-            formRecord.value = setDefaultForm()
+            setDefaultForm()
         }
     }
     catch(e) {
@@ -210,6 +204,14 @@ function closeModal() {
     newTag.value = false;
 }
 
+function setDefaultForm() {
+    selectedTag.value = null
+    selectedTask.value = null
+    selectedSubtask.value = null
+    timeBeginning.value = "00:00:00"
+    timeEnding.value = "00:00:00"
+    log.value = null
+    }
 </script>
 
 <style scoped>
