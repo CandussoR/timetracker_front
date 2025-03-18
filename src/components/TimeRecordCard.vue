@@ -35,13 +35,13 @@
                         <div class="datepicker">
                             <label class="bold" for="time-record-beginning">Time Beginning : </label>
                             <VueDatePicker id="time-record-beginning" name="time-record-beginning"
-                                v-model="formRecord.timeBeginning" :model-value="formRecord.timeBeginning"
+                                v-model="formRecord.time_beginning" :model-value="formRecord.time_beginning"
                                 model-type="HH:mm:ss" format="HH:mm:ss" time-picker enable-seconds />
                         </div>
                         <div class="datepicker">
                             <label class="bold" for="time-record-ending">Time Ending :</label>
                             <VueDatePicker id="time-record-ending" name="time-record-ending"
-                                v-model="formRecord.timeEnding" :model-value="formRecord.timeEnding"
+                                v-model="formRecord.time_ending" :model-value="formRecord.time_ending"
                                 model-type="HH:mm:ss" format="HH:mm:ss" time-picker enable-seconds />
                         </div>
                     </div>
@@ -51,7 +51,7 @@
                     <div class="section-inputs">
                         <TaskSelect :task="formRecord.task_name" @selected="formRecord.task_name = $event" />
                         <SubtaskSelect :task="formRecord.task_name" :subtask="formRecord.subtask" view="timerForm"
-                            @selected="formRecord.subtask = $event" />
+                            @selected="formRecord.subtask = $event" :key="formRecord.task_name"/>
                     </div>
                 </fieldset>
                 <fieldset>
@@ -108,13 +108,13 @@ const formRecord = ref({
     subtask: props.record.subtask,
     tag: props.record.tag,
     // Format for the time picker
-    timeBeginning:
+    time_beginning:
     {
         hours: null,
         minutes: null,
         seconds: null
     },
-    timeEnding:
+    time_ending:
     {
         hours: null,
         minutes: null,
@@ -124,12 +124,11 @@ const formRecord = ref({
 })
 
 onMounted(() => {
-    formRecord.value.timeBeginning = createDateFromTimeString(formRecord.value.timeBeginning,
+    formRecord.value.time_beginning = createDateFromTimeString(formRecord.value.time_beginning,
         ...props.record.time_beginning.split(":"))
     let time_ending = props.record.time_ending === null ? [0, 0, 0] : props.record.time_ending.split(":");
-    formRecord.value.timeEnding = createDateFromTimeString(formRecord.value.timeEnding,
+    formRecord.value.time_ending = createDateFromTimeString(formRecord.value.time_ending,
         ...time_ending)
-
 });
 
 function toggleEdit(truth) {
@@ -152,13 +151,13 @@ function createDateFromTimeString(valueToUpdate, hour, minutes, seconds) {
  */
 async function handleSubmit() {
     // Converts the time picker format to string if untouched
-    if (typeof formRecord.value.timeBeginning !== "string") {
-        const ftb = formRecord.value.timeBeginning
-        formRecord.value.timeBeginning = `${String(ftb.hours).padStart(2, '0')}:${String(ftb.minutes).padStart(2, '0')}:${String(ftb.seconds).padStart(2, '0')}`;
+    if (typeof formRecord.value.time_beginning !== "string") {
+        const ftb = formRecord.value.time_beginning
+        formRecord.value.time_beginning = `${String(ftb.hours).padStart(2, '0')}:${String(ftb.minutes).padStart(2, '0')}:${String(ftb.seconds).padStart(2, '0')}`;
     }
-    if (typeof formRecord.value.timeEnding !== "string") {
-        const fte = formRecord.value.timeEnding
-        formRecord.value.timeEnding = `${String(fte.hours).padStart(2, '0')}:${String(fte.minutes).padStart(2, '0')}:${String(fte.seconds).padStart(2, '0')}`;
+    if (typeof formRecord.value.time_ending !== "string") {
+        const fte = formRecord.value.time_ending
+        formRecord.value.time_ending = `${String(fte.hours).padStart(2, '0')}:${String(fte.minutes).padStart(2, '0')}:${String(fte.seconds).padStart(2, '0')}`;
     }
 
     formRecord.value.guid = props.record.guid
@@ -170,10 +169,8 @@ async function handleSubmit() {
         formRecord.value.task_guid = taskStore.tasks.filter(x => x.task_name == formRecord.value.task_name
             && x.subtask == formRecord.value.subtask)
             .map(x => x.guid)[0]
-        console.log(formRecord.value.task_guid)
         delete formRecord.value.subtask
         delete formRecord.value.task_name
-
 
         if (formRecord.value.tag === null) {
             formRecord.value.tag_guid = null
@@ -191,6 +188,8 @@ async function handleSubmit() {
                 editing.value = !editing.value
             })
     }
+
+    editing.value = false
 }
 
 /**

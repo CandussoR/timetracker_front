@@ -24,6 +24,7 @@
 
 <script setup>
 import { useTaskStore } from '@/stores/task.js'
+import cleanObject from '@/utils/cleanObject';
 import { ref, watch, computed, onMounted } from 'vue';
 const taskStore = useTaskStore();
 // Gets the task selected to update the dropdown
@@ -33,13 +34,16 @@ const emit = defineEmits(["selected"]);
 
 const subtasks = ref([]);
 
-const subtaskCanBeNull = computed(() => subtasks.value.includes(null));
+const subtaskCanBeNull = computed(() => subtasks.value.includes(null) || subtasks.value.length == 0);
 // Initiated with subtask prop if any, modified with input
 const selectedSubtask = ref(null);
 
 
 // Same thing on mounted and on change of prop.
-onMounted(() => getSubtasksAndSelect(props.task))
+onMounted(() => {
+    getSubtasksAndSelect(props.task)
+    if (subtaskCanBeNull.value) emit('selected', null)
+})
 watch(
     () => props.task,
     () => getSubtasksAndSelect(props.task)
@@ -56,6 +60,7 @@ watch(
             selectedSubtask.value = taskStore.createdSubtask
     }
 });
+
 
 /**
  * Is used by hooks for setting up the select input.
@@ -89,7 +94,7 @@ function getSubtasksAndSelect(task_name) {
  * @returns {String}
  */
 function getSelectedSubtaskValue() {
-    if (props.subtask) return props.subtask;
+    if (props.subtask && props.subtask != null) return props.subtask;
     if (subtaskCanBeNull.value) return "";
     if (subtasks.value) return subtasks.value[0];
 }
