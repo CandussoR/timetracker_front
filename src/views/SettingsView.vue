@@ -15,6 +15,10 @@
             <dl class="label">Timer ring : </dl>
             <p>{{ring}}</p>
         </div>
+        <div class="entry">
+            <dl class="label">Log file : </dl>
+            <p>{{log}}</p>
+        </div>
     </div>
     <p class="error" v-if="error">{{error}}</p>
     </main>
@@ -26,6 +30,7 @@ import axios from "../utils/apiRequester";
 import { open } from '@tauri-apps/plugin-dialog';
 const database = ref(null)
 const ring = ref(null)
+const log = ref(null)
 const error = ref(null)
 
 onMounted(async () => {
@@ -33,6 +38,7 @@ onMounted(async () => {
     if (res.status == 200) {
         database.value = res.data.database;
         ring.value = res.data.timer_ring;
+        log.value = res.data.log_file;
     } else {
         error.value = res.data.message
     }
