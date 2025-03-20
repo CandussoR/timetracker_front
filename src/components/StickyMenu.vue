@@ -31,8 +31,7 @@
                     <p class="primary" v-show="isExpanded">New search</p>
                 </div>
             </router-link>
-            <!-- <div id="edit-menu-container"> -->
-            <div id="edit-menu">
+            <div id="edit-menu" class="composed">
                 <div id="edit-menu__header" class="menu-item" @click="toggleEditSubmenu"
                     :class="{ active: route.path == '/tasks' || route.path === '/tags' }">
                     <span class="material-symbols-outlined svg">edit</span>
@@ -47,7 +46,8 @@
                     </router-link>
                 </div>
             </div>
-        <div id="stats-menu">
+
+        <div id="stats-menu" class="composed">
             <div id="stats-menu__header" class="menu-item" @click="toggleStatSubmenu"
                 :class="{ active: route.path === '/stats' || route.path === '/stats/dive' }">
                 <span class="material-symbols-outlined svg">bar_chart</span>
@@ -158,6 +158,9 @@ function closeMenu() {
             flex-grow: 1;
             align-items: center;
             margin-bottom: 1%;
+    }
+    .composed {
+        padding: 3px;
     }
     .edit-menu-container {
         padding: 3px
