@@ -131,126 +131,143 @@ function closeMenu() {
 </script>
 
 <style scoped>
-    /* Pasting overlay class here because only case where background not darkened nor blurred */
-    .menu-overlay {
-        position: fixed;
-        top: 0;
-        left : 0;
-        width: 100vw;
-        height: 100vh;
-        z-index: 98;
-        backdrop-filter: blur(5px);
+#menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+}
+
+.menu {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: var(--background);
+    z-index: 99;
+    overflow: auto;
+    scroll-snap-type: y mandatory;
+    scroll-snap-align: start end;
+    /* Hiding scrollbar for Firefox and Edge */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Hiding scrollbar for Chrome, Safari, Opera */
+.menu::-webkit-scrollbar {
+    display: none;
+}
+
+/* Pasting overlay class here because only case where background not darkened nor blurred */
+.menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 98;
+    backdrop-filter: blur(5px);
+}
+
+.menu-item {
+    display: flex;
+    flex-grow: 1;
+    align-items: center;
+    margin-bottom: 1%;
+}
+
+.composed {
+    padding: 3px;
+}
+
+.edit-menu-container {
+    padding: 3px
+}
+
+.menu-item p {
+    padding: 0 1rem;
+    color: var(--background);
+    background: var(--primary);
+    font-weight: 500;
+    border-radius: 0 0.3em 0.3em 0;
+    justify-content: center;
+    transform: translateX(-5px);
+}
+
+.material-symbols-outlined {
+    font-size: clamp(1.5rem, 1.5rem, 3rem)
+}
+
+/* Menu item background + color styles */
+.menu-item:hover p,
+.menu-item:hover .svg,
+.submenu-item:hover {
+    color: var(--text);
+    background: var(--accent);
+}
+
+.menu-item.active p,
+.menu-item.active .svg,
+.submenu-item.active {
+    color: var(--text);
+    background: var(--secondary);
+}
+
+/* Svg + p span style */
+span {
+    display: flex;
+    justify-content: center;
+    /* Center horizontally */
+    align-items: center;
+    /* Center vertically */
+    width: 3rem;
+    height: 3rem;
+}
+
+p {
+    width: calc(80% - 2%);
+    /* width without the padding of the p to not deform the svg */
+}
+
+/* Submenu */
+.submenu {
+    display: flex;
+    flex-direction: column;
+}
+
+.submenu-item {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    font-weight: 500;
+    width: 75%;
+    padding: 0;
+    margin: 0;
+    margin-left: auto;
+    border-radius: 0.3em;
+}
+
+@media screen and (min-width: 764px) {
+    /* Whether expand, or unroll, or burger, make it smaller ? */
+    span:first {
+        width: 2rem;
+        height: 2rem;
     }
 
-    .menu {
-        position: fixed;
+    /* Styling the expand arrow */
+    .menu-toggle {
         display: flex;
-        flex-direction: column;
-        width: max-content;
-        background-color: var(--background);
-        transition: 0.2s ease-out;
-        /* Overlay index - 1 */
-        z-index: 98;
-        height: 100vh;
-    }
-    .menu-item{
-            display: flex; 
-            flex-grow: 1;
-            align-items: center;
-            margin-bottom: 1%;
-    }
-    .composed {
-        padding: 3px;
-    }
-    .edit-menu-container {
-        padding: 3px
-    }
-    .menu-item p {
-            padding: 0 1rem;
-            color: var(--background);
-            background: var(--primary);
-            font-weight: 500;
-            border-radius: 0 0.3em 0.3em 0;
-            justify-content: center;
-            transform: translateX(-5px);
-        }
-    .material-symbols-outlined {
-        font-size: clamp(1.5rem, 1.5rem, 3rem)
+        justify-content: flex-end;
     }
 
-    /* Menu item background + color styles */
-    .menu-item:hover p, 
-    .menu-item:hover .svg,
-    .submenu-item:hover
-    {
+    .wrap {
+        background-color: var(--expanded);
         color: var(--text);
-        background: var(--accent); 
-    }
-    .menu-item.active p,
-    .menu-item.active .svg,
-    .submenu-item.active {
-        color: var(--text);
-        background: var(--secondary);
+        border-style: none;
     }
 
-    /* Svg + p span style */
-    span {
-            display: flex;
-            justify-content: center; /* Center horizontally */
-            align-items: center; /* Center vertically */
-            width: 3rem;
-            height: 3rem;
-        }
-    p {
-        width: calc(80% - 2%); /* width without the padding of the p to not deform the svg */
+    .is-expanded .wrap {
+        transform: rotate(-180deg);
+        /* points inward when expanded */
     }
-
-    /* Submenu */
-    .submenu {
-        display: flex;
-        flex-direction: column;
-    }
-    .submenu-item {
-        display:flex;
-        align-items: flex-end;
-        justify-content: center;
-        font-weight: 500;
-        width: 75%;
-        padding: 0;
-        margin: 0;
-        margin-left:auto;
-        border-radius: 0.3em;
-    }
-
-    @media screen and (min-width: 764px) {
-        .menu {
-            /* Always keep the menu in the middle of the screen if in column */
-            margin-right: 2em;
-            top: 0; 
-            bottom: 0;
-            left: 0; 
-            right: 0; 
-            height: fit-content;
-            margin: auto 0;
-            backdrop-filter: none;
-        }
-        /* Whether expand, or unroll, or burger, make it smaller ? */
-        span:first {
-            width: 2rem;
-            height: 2rem;
-        }
-        /* Styling the expand arrow */
-        .menu-toggle {
-            display:flex;
-            justify-content: flex-end;
-        }
-        .wrap {
-            background-color: var(--expanded);
-            color: var(--text);
-            border-style: none;
-        }   
-        .is-expanded .wrap {
-            transform: rotate(-180deg); /* points inward when expanded */
-        }
-    }
+}
 </style>
