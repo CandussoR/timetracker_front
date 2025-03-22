@@ -1,6 +1,6 @@
     <template>
     <aside id="menu">
-        <div class="menu-overlay" v-if="isExpanded" @click="closeMenu"></div>
+        <Overlay v-if="isExpanded" @click="isExpanded = !isExpanded"/>
         <div id="menu" :class="[isExpanded ? 'menu is-expanded' : 'menu']">
             <div id="menu-wrap" class="menu-toggle">
                 <button id="wrap" type="button" class="wrap" @click="toggleMenu">
@@ -75,6 +75,7 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import Overlay from './Overlay.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -132,7 +133,7 @@ function closeMenu() {
 
 <style scoped>
 #menu {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     height: 100vh;
@@ -143,6 +144,7 @@ function closeMenu() {
     flex-direction: column;
     justify-content: center;
     background-color: var(--background);
+    width: max-content;
     z-index: 99;
     overflow: auto;
     scroll-snap-type: y mandatory;
@@ -155,17 +157,6 @@ function closeMenu() {
 /* Hiding scrollbar for Chrome, Safari, Opera */
 .menu::-webkit-scrollbar {
     display: none;
-}
-
-/* Pasting overlay class here because only case where background not darkened nor blurred */
-.menu-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 98;
-    backdrop-filter: blur(5px);
 }
 
 .menu-item {
