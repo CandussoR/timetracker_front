@@ -7,6 +7,15 @@
   ],
   "permissions": [
     "core:default",
-    "log:default"
+    "log:default",
+    {
+      "identifier": "shell:allow-execute",
+      "allow": [
+        {
+          "name": "binaries/timetracker-backend",
+          "sidecar": true
+        }
+      ]
+    }
   ]
 }

@@ -2,7 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::sync::{Arc, Mutex};
-use tauri::{Emitter, Manager, RunEvent};
+use tauri::{Emitter, Manager};
 use tauri_plugin_shell::process::{CommandChild, CommandEvent};
 use tauri_plugin_shell::ShellExt;
 
@@ -15,19 +15,22 @@ pub fn toggle_fullscreen(window: tauri::Window) {
 
 // Helper function to spawn the sidecar and monitor its stdout/stderr
 pub fn spawn_and_monitor_sidecar(app_handle: tauri::AppHandle) -> Result<(), String> {
+    log::info!("Entering spawn_and_monitor_sidecar");
     // Check if a sidecar process already exists
     if let Some(state) = app_handle.try_state::<Arc<Mutex<Option<CommandChild>>>>() {
         let child_process = state.lock().unwrap();
         if child_process.is_some() {
             // A sidecar is already running, do not spawn a new one
-            println!("[tauri] Sidecar is already running. Skipping spawn.");
+            log::info!("[tauri] Sidecar is already running. Skipping spawn.");
             return Ok(()); // Exit early since sidecar is already running
         }
     }
+
+    log::info!("No sidecar running yet, spawning one.");
     // Spawn sidecar
     let sidecar_command = app_handle
         .shell()
-        .sidecar("backend")
+        .sidecar("timetracker-backend")
         .map_err(|e| e.to_string())?;
     let (mut rx, child) = sidecar_command.spawn().map_err(|e| e.to_string())?;
     // Store the child process in the app state
@@ -65,42 +68,52 @@ pub fn spawn_and_monitor_sidecar(app_handle: tauri::AppHandle) -> Result<(), Str
     Ok(())
 }
 
-// Define a command to shutdown sidecar process
 #[tauri::command]
-pub fn shutdown_sidecar(app_handle: tauri::AppHandle) -> Result<String, String> {
-    println!("[tauri] Received command to shutdown sidecar.");
-    // Access the sidecar process state
+pub fn kill_sidecar(app_handle: tauri::AppHandle) {
+    use std::process::Command;
+    use std::sync::Mutex;
+    log::info!("[tauri] Attempting to kill sidecar...");
+
     if let Some(state) = app_handle.try_state::<Arc<Mutex<Option<CommandChild>>>>() {
-        let mut child_process = state
-            .lock()
-            .map_err(|_| "[tauri] Failed to acquire lock on sidecar process.")?;
+        let mut child_process = state.lock().unwrap();
 
-        if let Some(mut process) = child_process.take() {
-            let command = "sidecar shutdown\n"; // Add newline to signal the end of the command
-
-            // Attempt to write the command to the sidecar's stdin
-            if let Err(err) = process.write(command.as_bytes()) {
-                println!("[tauri] Failed to write to sidecar stdin: {}", err);
-                // Restore the process reference if shutdown fails
-                *child_process = Some(process);
-                return Err(format!("Failed to write to sidecar stdin: {}", err));
-            }
-
-            println!("[tauri] Sent 'sidecar shutdown' command to sidecar.");
-            Ok("'sidecar shutdown' command sent.".to_string())
+        if child_process.is_some() {
+            log::info!("[tauri] Killing sidecar...");
+            let _ = child_process.take().unwrap().kill(); // Take ownership before killing
+            log::info!("[tauri] Sidecar killed successfully.");
         } else {
-            println!("[tauri] No active sidecar process to shutdown.");
-            Err("No active sidecar process to shutdown.".to_string())
+            log::warn!("[tauri] No running sidecar to kill.");
         }
     } else {
-        Err("Sidecar process state not found.".to_string())
+        log::error!("[tauri] Could not access sidecar state.");
+    }
+
+    // Ensure all instances of backend.exe are killed
+    #[cfg(target_os = "windows")]
+    {
+        let _ = Command::new("taskkill")
+            .args(&["/F", "/IM", "timetracker-backend.exe", "/T"])
+            .output();
+        log::info!("[tauri] Forced all timetracker-backend.exe processes to close.");
+    }
+
+    #[cfg(target_os = "linux")]
+    {
+        let _ = Command::new("pkill").arg("-f").arg("timetracker-backend").output();
+        log::info!("[tauri] Forced all timetracker-backend processes to close.");
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        let _ = Command::new("pkill").arg("-f").arg("timetracker-backend").output();
+        log::info!("[tauri] Forced all timetracker-backend processes to close.");
     }
 }
 
 // Define a command to start sidecar process.
 #[tauri::command]
 pub fn start_sidecar(app_handle: tauri::AppHandle) -> Result<String, String> {
-    println!("[tauri] Received command to start sidecar.");
+    log::info!("[tauri] Received command to start sidecar.");
     spawn_and_monitor_sidecar(app_handle)?;
     Ok("Sidecar spawned and monitoring started.".to_string())
 }
