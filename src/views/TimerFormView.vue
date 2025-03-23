@@ -31,8 +31,8 @@
                 <fieldset id="clock__section">
                     <legend>Clock Type</legend>
                     <div class="button-row">
-                        <button class="button secondary" @click.prevent="clock = 'Timer'">Timer</button>
-                        <button class="button secondary" @click.prevent="clock = 'Stopwatch'">Stopwatch</button> 
+                        <button class="button" :class="[clock == 'Timer' ? 'active bigger' : 'primary']" @click.prevent="clock = 'Timer'">Timer</button>
+                        <button class="button" :class="[clock == 'Stopwatch' ? 'active bigger' : 'primary']" @click.prevent="clock = 'Stopwatch'">Stopwatch</button> 
                     </div>
                     <div v-if="clock == 'Timer'">
                         <label for="duration">Set your time (in minutes):</label>
@@ -150,5 +150,12 @@ function handleSubmit() {
     background-color: rgba(0, 0, 0, 0.9);
     backdrop-filter: blur(1px);
     z-index: 98;
+}
+.active {
+    color: var(--text);
+    background: var(--secondary);
+}
+.bigger {
+    scale: 1.3;
 }
 </style>
