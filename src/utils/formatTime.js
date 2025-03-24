@@ -1,5 +1,5 @@
 const formatTime = (val) => {
-    if (!val) {
+    if (!val && val !== 0) {
         return ''
     }
     const days = Math.floor(val / 86400);
