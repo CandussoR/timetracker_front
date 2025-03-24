@@ -99,13 +99,19 @@ pub fn kill_sidecar(app_handle: tauri::AppHandle) {
 
     #[cfg(target_os = "linux")]
     {
-        let _ = Command::new("pkill").arg("-f").arg("timetracker-backend").output();
+        let _ = Command::new("pkill")
+            .arg("-f")
+            .arg("timetracker-backend")
+            .output();
         log::info!("[tauri] Forced all timetracker-backend processes to close.");
     }
 
     #[cfg(target_os = "macos")]
     {
-        let _ = Command::new("pkill").arg("-f").arg("timetracker-backend").output();
+        let _ = Command::new("pkill")
+            .arg("-f")
+            .arg("timetracker-backend")
+            .output();
         log::info!("[tauri] Forced all timetracker-backend processes to close.");
     }
 }
