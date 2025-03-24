@@ -19,10 +19,10 @@
 
             <button v-if="!timerRunning && !stopwatchRunning && !isDone" class="button"
                 @click="currentDuration ? beginTimeRecord('timer') : beginTimeRecord('stopwatch')">
-                Go !
+                <span class="material-symbols-outlined"> play_circle </span>
             </button>
             <button v-else-if="(timerRunning || stopwatchRunning) && !isDone" class="button" @click="stopTheClock()">
-                Stop !
+                <span class="material-symbols-outlined"> stop_circle </span>
             </button>
             <div id="log-form" v-else>
                 <h3>Log</h3>
@@ -31,7 +31,7 @@
                 <p id="success" name="success" class="success">{{ success }}</p>
                 <div id="update-time">
                     <p>In the end, you kept on going ? Don't worry !</p>
-                    <button class="button" @click="console.log('Not implemented yet but I head that')">Update to now</button>
+                    <button class="button" @click="console.log('Not implemented yet but I heard that')">Update to now</button>
                 </div>
             </div>
         </div>

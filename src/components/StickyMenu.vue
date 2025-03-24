@@ -15,7 +15,7 @@
             </router-link>
             <router-link to="/new">
                 <div class="menu-item" :class="{ active: route.path === '/new' }">
-                    <span class="material-symbols-outlined svg">alarm</span>
+                    <span class="material-symbols-outlined svg">timer</span>
                     <p class="primary" v-show="isExpanded">New clock</p>
                 </div>
             </router-link>
