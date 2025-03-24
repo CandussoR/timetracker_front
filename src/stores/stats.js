@@ -19,6 +19,18 @@ export const useStatStore = defineStore("stats", () => {
     const weekBarChart = ref(null)
     const taskRatio = ref(null)
 
+    function reset() {
+        updated.value = true
+        daily.value = null
+        weekly.value = null
+        monthly.value = null
+        yearly.value = null
+        weekBarChart.value = null
+        taskRatio.value = null
+        sessionStorage.clear()
+    }
+
+
     async function getHomeStats() {
         try {
             const res = await (await axios.get('/stats/resume')).data
@@ -161,6 +173,7 @@ export const useStatStore = defineStore("stats", () => {
         getTaskTimeRatio, 
         handleUpdated, 
         getQueriedStats,
-        getGenericStats
+        getGenericStats,
+        reset
     }
 })

@@ -7,6 +7,12 @@ export const useTagStore = defineStore('tags', () => {
     const isCreated = ref(false)
     const createdTag = ref(null)
 
+    function reset() {
+        tags.value = []
+        isCreated.value = false
+        createdTag.value = null
+    }
+
     /** Gets all the tags from the back */
     async function index() {
         if (tags.value.length == 0) {
@@ -54,5 +60,5 @@ export const useTagStore = defineStore('tags', () => {
         }
     }
 
-   return {tags, createdTag, isCreated, index, createTag, deleteTag}
+   return {tags, createdTag, isCreated, index, createTag, deleteTag, reset}
 })

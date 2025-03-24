@@ -28,6 +28,10 @@
 import { onMounted, ref } from "vue";
 import axios from "../utils/apiRequester";
 import { open } from '@tauri-apps/plugin-dialog';
+import { useStatStore } from "@/stores/stats";
+import { useTagStore } from "@/stores/tag";
+import { useTaskStore } from "@/stores/task";
+import { useTimeRecordStore } from "@/stores/timeRecord";
 const database = ref(null)
 const ring = ref(null)
 const log = ref(null)
@@ -49,7 +53,19 @@ async function select(settingsKey) {
     const d = settingsKey == "database" ? {"database" : select} : {"timer_ring": select}
     const res = await axios.put('/settings', d)
     if (res.status == 200) {
-        database.value = res.data.database
+        if (settingsKey === 'database') {
+            database.value = res.data.database
+            const statStore = useStatStore();
+            const tagStore = useTagStore();
+            const taskStore = useTaskStore();
+            const timeRecordStore = useTimeRecordStore();
+            statStore.reset();
+            tagStore.reset();
+            taskStore.reset();
+            timeRecordStore.reset();
+        } else {
+            ring.value = res.data.timer_ring
+        }
     } else {
         error.value = `A problem occured when trying to change ${settingsKey == "database" ? "database" : "ring"}.`
     }

@@ -7,6 +7,12 @@ export const useTimeRecordStore = defineStore('timeRecord', () => {
     // Temporary : for lack of better solution
     const displayOngoingInfos = ref(null)
 
+    function reset() {
+        localStorage.clear();
+        timeRecords.value = [];
+    }
+
+
     /**
      * 
      * @param {*} timeRecord 
@@ -65,5 +71,5 @@ export const useTimeRecordStore = defineStore('timeRecord', () => {
         }
     }
 
-    return { timeRecords, displayOngoingInfos, createTimeRecord, updateTimeRecord, getTimeRecords }
+    return { timeRecords, displayOngoingInfos, createTimeRecord, updateTimeRecord, getTimeRecords, reset }
 })

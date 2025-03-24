@@ -11,6 +11,14 @@ export const useTaskStore = defineStore('tasks', () => {
     const isCreated = ref(false)
 
 
+    function reset() {
+        tasks.value = []
+        createdTask.value = null
+        createdSubtask.value = null
+        isCreated.value = false
+    }
+
+
     /** Gets all the tasks from the API and set the tasks and uniqueTasks value. */
     async function index() {
         if (tasks.value.length == 0 ) {
@@ -71,5 +79,5 @@ export const useTaskStore = defineStore('tasks', () => {
         }
     }
 
-    return {tasks, uniqueTasks, createdTask, createdSubtask, isCreated, index, createTask, deleteTask}
+    return {tasks, uniqueTasks, createdTask, createdSubtask, isCreated, index, createTask, deleteTask, reset}
 })
