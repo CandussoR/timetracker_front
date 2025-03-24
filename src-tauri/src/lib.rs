@@ -7,7 +7,7 @@ use tauri::RunEvent;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    let app = tauri::Builder::default();
+    let app = tauri::Builder::default().plugin(tauri_plugin_dialog::init());
 
     #[cfg(feature = "launch_binary")]
     let app = app.plugin(tauri_plugin_shell::init());
