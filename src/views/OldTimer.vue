@@ -168,8 +168,8 @@ async function handleSubmit() {
     try {
         const formRecord = {
             "date" : date.value,
-            "timeBeginning" : timeBeginning.value,
-            "timeEnding" : timeEnding.value,
+            "time_beginning" : timeBeginning.value,
+            "time_ending" : timeEnding.value,
             "log": log.value
         }
 
