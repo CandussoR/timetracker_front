@@ -10,9 +10,9 @@
                     </div>
                     <span class="material-symbols-outlined" @click="handleForward">arrow_forward</span>
                 </div>
-                <div class="data-card-data" v-if="data">
-                    <p class="data-card-data__count">{{ data.count }} {{ data.count === 1 ? "timer" : "timers" }}</p>
-                    <TimeDisplay v-if="data.time" :time="data.time"/>
+                <div class="data-card-data" v-if="!loading">
+                    <p class="data-card-data__count">{{ count }} {{ count === 1 ? "timer" : "timers" }}</p>
+                    <TimeDisplay v-if="selectedKey && statStore[selectedKey].time" :time="statStore[selectedKey].time" :key="statStore[selectedKey].time"/>
                     <p v-else>--</p>
                 </div>
                 <div id="stats-link"><p><a @click="router.push('/stats')">More stats</a></p></div>
@@ -22,15 +22,13 @@
 
         <div id="buttons" class="buttons">
             <button class="button" @click="redirect">New timer</button>
-            <p v-if="success" id="success" class="success">{{ success }}</p>
-            <p v-else-if="error" id="error" class="error">{{ error }}</p>
-            <button class="button secondary" @click="handleUpdate()">Update last timer to now</button>
+            <update-last-timer-button />
         </div>
     </main>
 </template>
 
 <script setup>
-import axios from 'axios';
+import UpdateLastTimerButton from '@/components/UpdateLastTimerButton.vue';
 import { computed, onMounted, ref } from 'vue';
 import {useStatStore } from '../stores/stats';
 import { useRouter } from 'vue-router';
@@ -38,57 +36,22 @@ import TimeDisplay from '@/components/TimeDisplay.vue';
 
 const router = useRouter()
 const statStore = useStatStore()
-
-const cardData = ref({
-    daily: null,
-    weekly: null,
-    monthly: null,
-    yearly: null
-})
-
-const data = computed(() => {
-    if (selected.value === "D") {
-        return cardData.value.daily
-    } else if (selected.value === "W") {
-        return cardData.value.weekly
-    } else if (selected.value === "M") {
-        return cardData.value.monthly
-    } else if (selected.value === "Y") { 
-        return cardData.value.yearly
-    } else {
-        return null
-    }
-})
-
-// Split the formatted time if there is one
-// const timeData = computed(() => data.value.time.split(":") || null)
 const selectors = ["D", "W", "M", "Y"]
 const selected = ref('')
 const loading = ref(null)
-const success = ref('')
-const error = ref('')
+const selectedDict = {"D" : "daily", "W": "weekly", "M" : "monthly", "Y": "yearly"}
+const selectedKey = computed(() => selected.value ? selectedDict[selected.value] : null)
+const count = computed(() => selectedKey.value ? statStore[selectedKey.value].count : null)
 
 onMounted(async () => {
     loading.value = true
     if (statStore.updated) {
         await statStore.getHomeStats()
     }
-    cardData.value.daily = statStore.daily
-    cardData.value.weekly = statStore.weekly
-    cardData.value.monthly = statStore.monthly
-    cardData.value.yearly = statStore.yearly
     selected.value = "D"
     loading.value = false
 })
 
-function handleUpdate() {
-    success.value = ''
-    error.value = ''
-    axios.put('/time_records/last_to_now')
-        .then(() => success.value = "Updated, boss.")
-        .catch(() => error.value = "An error occured.")
-    statStore.handleUpdated()
-}
 
 function handleBack() {
     if (selected.value != 'D') {
@@ -156,14 +119,7 @@ div#buttons:last-child {
 .buttons {
     display : flex ;
     flex-direction: column;
-    margin-top: 2rem;
-}
-
-.buttons > button {
-    margin: 1.5em auto;
-}
-.buttons > button:last-of-type {
-    margin: 0 auto;
+    margin: 2rem auto 0 auto;
 }
 
 div#stats-link p {

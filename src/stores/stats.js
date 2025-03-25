@@ -113,9 +113,10 @@ export const useStatStore = defineStore("stats", () => {
     /**
      * Sets updated to true and clears the storage to fetch updated data
      */
-    function handleUpdated() {
+    async function handleUpdated() {
         updated.value = true;
         sessionStorage.removeItem('stats')
+        await getHomeStats()
     }
 
     /**
