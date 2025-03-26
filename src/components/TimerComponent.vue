@@ -8,38 +8,36 @@
         </div>
 
         <button v-if="!timerRunning && !stopwatchRunning && !isDone" class="button"
-            @click="currentDuration ? beginTimeRecord('timer') : beginTimeRecord('stopwatch')">
+            @click="handleBeginClick">
             <span class="material-symbols-outlined big"> play_circle </span>
         </button>
         <button v-else-if="(timerRunning || stopwatchRunning) && !isDone" class="button" @click="stopTheClock()">
             <span class="material-symbols-outlined"> stop_circle </span>
         </button>
-        <div id="log-form" v-else>
+        <div id="log-form" v-else-if="!(props.break)">
             <h3>Log</h3>
             <textarea v-model="log"></textarea>
             <button class="button" @click="updateTimeRecord()">Send</button>
             <p id="success" name="success" class="success">{{ success }}</p>
             <div id="update-time">
                 <p>In the end, you kept on going ? Don't worry !</p>
-                <button class="button" @click="console.log('Not implemented yet but I heard that')">Update to
-                    now</button>
+                <update-last-timer-button/>
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
-import { useStatStore } from '@/stores/stats';
 import { useTimeRecordStore } from '@/stores/timeRecord';
 import formatTime from '@/utils/formatTime';
 import getCurrentDateTime from '@/utils/getCurrentDateTime';
 import cleanObject from '@/utils/cleanObject';
 import { ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import UpdateLastTimerButton from './UpdateLastTimerButton.vue';
 
-const router = useRouter()
+const props = defineProps({break : Boolean})
+const emit = defineEmits(['end', 'launch'])
 const timeRecordStore = useTimeRecordStore()
-const statStore = useStatStore()
 const timeRecord = ref(null)
 const log = ref(null)
 const timerRunning = ref(false)
@@ -47,22 +45,32 @@ const stopwatchRunning = ref(false)
 const isDone = ref(false)
 const currentDuration = ref(0)
 const formattedDuration = computed(() => formatTime(currentDuration.value))
-console.log(formattedDuration)
 const err = ref('')
 const success = ref('')
 
 // Initialising
-timeRecord.value = JSON.parse(sessionStorage.getItem('time_record'))
-// timeRecord.value = JSON.parse(data)
-let data2 = sessionStorage.getItem('duration')
-console.log(data2)
+timeRecord.value = JSON.parse(localStorage.getItem('time_record'))
+let data2 = localStorage.getItem('duration')
 if (data2) {
-    console.log("data2")
     currentDuration.value = Number(data2)
 }
-console.log(formattedDuration)
 
 let worker;
+
+function handleBeginClick() {
+    if (props.break) {
+        const { currentDate, currentTime } = getCurrentDateTime()
+        const datetime = new Date(currentDate + ' ' + currentTime)
+        startTheClock("timer", datetime)
+        return;
+    }
+
+    if (currentDuration.value) {
+        beginTimeRecord('timer')
+    } else {
+        beginTimeRecord('stopwatch')
+    }
+}
 
 function beginTimeRecord(clockType) {
     const { currentDate, currentTime } = getCurrentDateTime()
@@ -76,10 +84,11 @@ function beginTimeRecord(clockType) {
     timeRecordStore.createTimeRecord(tr, "begin")
         .then((res) => {
             // puts it in the storage in case of refresh
-            sessionStorage.setItem("time_record", JSON.stringify(res))
+            localStorage.setItem("time_record", JSON.stringify(res))
             // puts it in the timeRecord for convenience
             timeRecord.value = res
 
+            emit('launch')
             if (clockType == "timer") {
                 startTheClock("timer", datetime)
             } else {
@@ -125,6 +134,9 @@ function stopTheClock() {
     isDone.value = true
     const audio = new Audio(import.meta.env.VITE_APP_RING)
     audio.play()
+    if (props.break) {
+        emit('end', null)
+    }
 }
 
 
@@ -132,15 +144,7 @@ function updateTimeRecord() {
     const tr = {"guid" : timeRecord.value["guid"],
                 "time_ending" : timeRecord.value["time_ending"],
                 "log" : log.value}
-    timeRecordStore.updateTimeRecord(tr, "ending")
-        .then(() => {
-            success.value = "Your timer has been saved. You will now be redirected."
-            sessionStorage.removeItem('time_record')
-            sessionStorage.removeItem('duration')
-        })
-        .catch((e) => err.value = e)
-    statStore.handleUpdated()
-    setTimeout(function() { router.push({ path: '/'})}, 2000)
+    emit('end', tr)
 }
 </script>
 
