@@ -12,13 +12,12 @@
             <span class="material-symbols-outlined big"> play_circle </span>
         </button>
         <button v-else-if="(timerRunning || stopwatchRunning) && !isDone" class="button" @click="stopTheClock()">
-            <span class="material-symbols-outlined"> stop_circle </span>
+            <span class="material-symbols-outlined big"> stop_circle </span>
         </button>
         <div id="log-form" v-else-if="!(props.break)">
             <h3>Log</h3>
             <textarea v-model="log"></textarea>
             <button class="button" @click="updateTimeRecord()">Send</button>
-            <p id="success" name="success" class="success">{{ success }}</p>
             <div id="update-time">
                 <p>In the end, you kept on going ? Don't worry !</p>
                 <update-last-timer-button/>
@@ -32,11 +31,11 @@ import { useTimeRecordStore } from '@/stores/timeRecord';
 import formatTime from '@/utils/formatTime';
 import getCurrentDateTime from '@/utils/getCurrentDateTime';
 import cleanObject from '@/utils/cleanObject';
-import { ref, computed } from 'vue';
+import { ref, computed, watchEffect } from 'vue';
 import UpdateLastTimerButton from './UpdateLastTimerButton.vue';
 
-const props = defineProps({break : Boolean})
-const emit = defineEmits(['end', 'launch'])
+const props = defineProps({break : Boolean, send : Boolean})
+const emit = defineEmits(['end', 'launch', 'stopped'])
 const timeRecordStore = useTimeRecordStore()
 const timeRecord = ref(null)
 const log = ref(null)
@@ -46,7 +45,13 @@ const isDone = ref(false)
 const currentDuration = ref(0)
 const formattedDuration = computed(() => formatTime(currentDuration.value))
 const err = ref('')
-const success = ref('')
+
+
+watchEffect(() => {if (props.send) {
+    timeRecord.value["time_ending"] = getCurrentDateTime().currentTime
+    updateTimeRecord()
+}})
+
 
 // Initialising
 timeRecord.value = JSON.parse(localStorage.getItem('time_record'))
@@ -128,6 +133,7 @@ function stopTheClock() {
         worker.terminate();
         worker = null
     }
+    emit('stopped')
     timerRunning.value = false
     stopwatchRunning.value = false
     timeRecord.value["time_ending"] = getCurrentDateTime().currentTime
