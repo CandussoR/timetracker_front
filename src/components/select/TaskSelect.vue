@@ -5,7 +5,7 @@
         <select id="taskNameSelect" name="taskName" v-model="selectedTask" @change="emit('selected', selectedTask)" required>
             <option v-if="props.task" :value="props.task" selected>{{props.task}}</option>
             <option v-else value="" disabled selected>Select a task</option>
-            <option v-for="task in taskStore.uniqueTasks" :key="task" :value="task">
+            <option v-for="task in uniqueTasks" :key="task" :value="task">
                 {{ task }}
             </option>
         </select>
@@ -13,14 +13,13 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import { useTaskStore } from '../../stores/task.js'
 const taskStore = useTaskStore()
 taskStore.index()
 const props = defineProps(["task"])
 const emit = defineEmits(["selected"])
 const selectedTask = ref(props.task ? props.task : '')
-
 watch(
     () => taskStore.isCreated, 
     (newValue) => {
@@ -28,6 +27,7 @@ watch(
             selectedTask.value = taskStore.createdTask
     }
 });
+const uniqueTasks = computed(() => taskStore.tasks.filter(x => x.task_name != props.task).map(x => x.task_name))
 </script>
 
 <style scoped>
