@@ -53,6 +53,16 @@ const router = createRouter({
       path: '/settings',
       name: 'SettingsView',
       component: () => import('../views/SettingsView.vue')
+    },
+    {
+      path: '/flow',
+      name: 'FlowView',
+      component: () => import('../views/FlowView.vue')
+    },
+    {
+      path: '/flow/edit',
+      name: 'FlowEditView',
+      component: () => import('../views/FlowView.vue')
     }
   ]
 })
