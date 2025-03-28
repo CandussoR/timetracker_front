@@ -7,20 +7,25 @@
             <p>{{ err }}</p>
         </div>
 
-        <button v-if="!timerRunning && !stopwatchRunning && !isDone" class="button"
-            @click="handleBeginClick">
-            <span class="material-symbols-outlined big"> play_circle </span>
-        </button>
-        <button v-else-if="(timerRunning || stopwatchRunning) && !isDone" class="button" @click="stopTheClock()">
-            <span class="material-symbols-outlined big"> stop_circle </span>
-        </button>
-        <div id="log-form" v-else-if="!(props.break)">
+        <div class="row">
+            <button v-if="!timerRunning && !stopwatchRunning && !isDone" class="button" @click="handleBeginClick">
+                <span class="material-symbols-outlined big"> play_circle </span>
+            </button>
+            <button v-else-if="(timerRunning || stopwatchRunning) && !isDone" class="button" @click="stopTheClock()">
+                <span class="material-symbols-outlined big"> stop_circle </span>
+            </button>
+            <button v-if="props.break" class="button" @click="skipBreak">
+                <span class="material-symbols-outlined big" title="skip the break"> skip_next </span>
+            </button>
+        </div>
+
+        <div id="log-form" v-if="!(props.break)">
             <h3>Log</h3>
             <textarea v-model="log"></textarea>
-            <button class="button" @click="updateTimeRecord()">Send</button>
+            <button class="button" @click="props.break ? stopTheClock : updateTimeRecord()">Send</button>
             <div id="update-time">
                 <p>In the end, you kept on going ? Don't worry !</p>
-                <update-last-timer-button/>
+                <update-last-timer-button />
             </div>
         </div>
     </div>
@@ -31,7 +36,7 @@ import { useTimeRecordStore } from '@/stores/timeRecord';
 import formatTime from '@/utils/formatTime';
 import getCurrentDateTime from '@/utils/getCurrentDateTime';
 import cleanObject from '@/utils/cleanObject';
-import { ref, computed, watchEffect } from 'vue';
+import { ref, computed, watchEffect, onUnmounted } from 'vue';
 import UpdateLastTimerButton from './UpdateLastTimerButton.vue';
 
 const props = defineProps({break : Boolean, send : Boolean})
@@ -41,6 +46,7 @@ const timeRecord = ref(null)
 const log = ref(null)
 const timerRunning = ref(false)
 const stopwatchRunning = ref(false)
+const skip = ref(false)
 const isDone = ref(false)
 const currentDuration = ref(0)
 const formattedDuration = computed(() => formatTime(currentDuration.value))
@@ -52,6 +58,7 @@ watchEffect(() => {if (props.send) {
     updateTimeRecord()
 }})
 
+onUnmounted(() => skip.value = false)
 
 // Initialising
 timeRecord.value = JSON.parse(localStorage.getItem('time_record'))
@@ -104,6 +111,12 @@ function beginTimeRecord(clockType) {
 }
 
 
+function skipBreak() {
+    skip.value = true
+    stopTheClock()
+}
+
+
 function startTheClock(type, beginningDatetime) {
     if (!window.Worker) {
         err.value = "Your browser doesn't support workers."
@@ -136,10 +149,15 @@ function stopTheClock() {
     emit('stopped')
     timerRunning.value = false
     stopwatchRunning.value = false
-    timeRecord.value["time_ending"] = getCurrentDateTime().currentTime
+    if (!(skip.value || props.break)) {
+        timeRecord.value["time_ending"] = getCurrentDateTime().currentTime
+    }
     isDone.value = true
-    const audio = new Audio(import.meta.env.VITE_APP_RING)
-    audio.play()
+
+    if (!props.send && !skip.value) {
+        const audio = new Audio(import.meta.env.VITE_APP_RING)
+        audio.play()
+    }
     if (props.break) {
         emit('end', null)
     }
@@ -178,6 +196,14 @@ button span {
     display:flex;
     justify-content: center;
 }
+
+.row {
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+    margin: 0 auto;
+}
+
 @media screen and (max-height : 500px) {
     p.num {
         margin : .5rem auto;

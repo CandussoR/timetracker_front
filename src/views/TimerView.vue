@@ -1,10 +1,10 @@
 <template>
     <main id="clock" v-if="displayInfo">
-        <h1 >{{displayInfo.title}}</h1>
+        <h1 v-if="!flow">{{displayInfo.title}}</h1>
         <h2 v-if="flow && flow.current.type == 'timer'">Timer {{flow.current.i + 1}} / {{flow.infos.f.length}}</h2>
-        <h2 v-else>Break</h2>
+        <h2 v-else-if="flow">Break</h2>
 
-        <div id="record__info" class="button-row" v-if="displayInfo && displayInfo.title != 'Break'">
+        <div id="record__info" class="row" v-if="displayInfo && displayInfo.title != 'Break'">
             <p id="record__info-task" class="task" v-if="displayInfo.task_name">{{displayInfo.task_name}}
                 <span id="record__info-subtask" v-if="displayInfo.subtask">({{displayInfo.subtask}})</span>
             </p>
@@ -160,7 +160,7 @@ function updateLocalStorage(is_flow) {
     localStorage.setItem('flow', JSON.stringify(flow))
     displayInfo.value.title = wasTimer ? "Break" : "Timer"
 
-    localStorage.setItem("duration", flow.info.f[flow.current.i][wasTimer ? "b" : "t"])
+    localStorage.setItem("duration", flow.infos.f[flow.current.i][wasTimer ? "b" : "t"])
 
     if (!wasTimer) {
         hideEdit.value = false
@@ -181,6 +181,11 @@ main {
     display : flex;
     flex-direction : column;
     place-items : center;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
 }
 
 @media screen and (max-height : 300px) {
