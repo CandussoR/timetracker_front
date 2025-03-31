@@ -197,19 +197,23 @@ button {
     border-width: 0;
 }
 
-    .button-row {
-        display: flex;
-        justify-content: center;
-        gap: 2em;
-    }
-    
-    .log {
-        width: 80%;
-        margin: .5em auto;
-        background-color: var(--background-3);
-        border-radius: 5px;
-        padding: 1em 2em;
-    }
+.button-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 2em;
+}
+.material-symbols-outlined {
+    font-size: 1.5rem;
+}
+
+.log {
+    width: 80%;
+    margin: .5em auto;
+    background-color: var(--background-3);
+    border-radius: 5px;
+    padding: 1em 2em;
+}
 
 .precisions {
     display: flex;

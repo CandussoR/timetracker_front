@@ -9,10 +9,13 @@
                 <span id="record__info-subtask" v-if="displayInfo.subtask">({{displayInfo.subtask}})</span>
             </p>
             <p id="record__info-tag" class="tag" v-if="displayInfo.tag">{{displayInfo.tag}}</p>
-            <span class="material-symbols-outlined icon-clear-gradient" @click="handleEdit" title="Edit task & tag">edit</span>
+            <button class="icon-clear-gradient">
+                <span class="material-symbols-outlined " @click="handleEdit" title="Edit task & tag">edit</span>
+            </button>
         </div>
 
-        <TimerComponent @end="handleUpdateEnd($event)" @launch="handleLaunch" @stopped="isRunning = false" :send="sendTimerEnd" :break="displayInfo.title === 'Break'" :key="displayInfo.title"/>
+        <TimerComponent @end="handleUpdateEnd($event)" @launch="handleLaunch" @stopped="isRunning = false"
+            :send="sendTimerEnd" :break="displayInfo.title === 'Break'" :key="displayInfo.title" />
         <p id="success" name="success" class="success">{{ success }}</p>
 
         <Overlay v-if="warnBeforeLeave" />
@@ -25,7 +28,7 @@
                 </div>
                 <div v-else class="button-row">
                     <button class="button" @click="handleQuit('leave')">Leave</button>
-                    <button  class="button" @click="handleQuit('cancel')">Cancel</button>
+                    <button class="button" @click="handleQuit('cancel')">Cancel</button>
                 </div>
             </div>
         </div>
@@ -183,9 +186,21 @@ main {
     place-items : center;
 }
 
+button {
+    border-width: 0;
+}
+
 .row {
     display: flex;
     flex-direction: row;
+    gap : 1rem;
+    place-items: center;
+}
+
+.material-symbols-outlined {
+    font-size: 1.5rem;
+    height: 1.5em;
+    width: 1.5em;
 }
 
 @media screen and (max-height : 300px) {

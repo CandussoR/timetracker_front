@@ -25,8 +25,6 @@ strong {
 .material-symbols-outlined {
   display: flex;
   cursor: pointer;
-  width: 2.5em;
-  height: 2.5em;
   align-items: center;
   justify-content: center;
 }
