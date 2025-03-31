@@ -220,7 +220,7 @@ function handleFlow() {
 
 .individual-or-flow {
     display: grid;
-    width: 30%;
+    width: fit-content;
     grid-template-columns: .9fr .2fr .9fr .2fr .9fr;
     place-items: center; 
     margin-left: auto;
