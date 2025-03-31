@@ -24,7 +24,7 @@
                         <span class="material-symbols-outlined" v-if="!newTask"
                             @click.stop="newTask = !newTask">add</span>
                     </legend>
-                    <div class="section-inputs">
+                    <div class="flow-section-input">
                         <FlowSelect :inventory="flowStore.inventory.map(f => f.n)" 
                             :flow="selectedFlow !== null ? flowStore.inventory[selectedFlow].n : null" 
                             @change="selectedFlow = Number($event.target.value)" 
@@ -250,5 +250,4 @@ function handleFlow() {
     border: 1px solid var(--accent);
     color: var(--accent);
 }
-
 </style>

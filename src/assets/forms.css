@@ -32,7 +32,9 @@ legend span {
     margin-left: 1rem;
 }
 
-.section-inputs {
+/* FlowSelect doesn't need the bigger screen rule but work have the same display
+    as any input in any section-inputs, so I just add it here for the moment */
+.section-inputs, .flow-section-input {
     display : flex;
     flex-direction: column;
     gap: 1em;
