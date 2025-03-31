@@ -9,7 +9,7 @@
                 <span id="record__info-subtask" v-if="displayInfo.subtask">({{displayInfo.subtask}})</span>
             </p>
             <p id="record__info-tag" class="tag" v-if="displayInfo.tag">{{displayInfo.tag}}</p>
-            <button class="icon-clear-gradient">
+            <button class="icon-clear-gradient" v-if="flow">
                 <span class="material-symbols-outlined " @click="handleEdit" title="Edit task & tag">edit</span>
             </button>
         </div>

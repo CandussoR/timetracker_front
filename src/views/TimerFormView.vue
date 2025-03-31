@@ -107,7 +107,7 @@ const tagStore = useTagStore()
 const flowStore = useFlowStore()
 const router = useRouter()
 
-const type = ref(null)
+const type = ref('ind')
 
 const newTask = ref(false)
 const newTag = ref(false)
