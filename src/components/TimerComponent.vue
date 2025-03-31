@@ -19,7 +19,7 @@
             </button>
         </div>
 
-        <div id="log-form" v-if="!(props.break)">
+        <div id="log-form" v-if="!(props.break) && isDone">
             <h3>Log</h3>
             <textarea v-model="log"></textarea>
             <button class="button" @click="props.break ? stopTheClock : updateTimeRecord()">Send</button>
