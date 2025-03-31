@@ -15,6 +15,8 @@ import router from './router'
 
 const app = createApp(App)
 
+localStorage.clear()
+
 app.use(createPinia())
     .use(router)
     .use(VueApexCharts)
