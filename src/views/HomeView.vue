@@ -130,7 +130,7 @@ div#stats-link p {
 
 @media screen and (max-width: 720px) {
     .buttons {
-        margin-top: 0;
+        margin-top: 1rem;
     }
 
     .data-card {
