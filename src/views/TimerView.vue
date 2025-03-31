@@ -203,14 +203,24 @@ button {
     width: 1.5em;
 }
 
-@media screen and (max-height : 300px) {
-    h1, p.task {
+timer-component {
+    margin-top: 0;
+}
+
+@media screen and (max-height : 350px) {
+    h1, div#record__info {
+        display : none;
+    }
+}
+
+@media screen and (max-height : 400px) {
+    h1 {
         display : none;
     }
 }
 @media screen and (max-height : 500px) {
-    p.task {
-        margin : .5rem auto;
+    div#record__info {
+        margin : .3rem auto;
     }
 }
 </style>

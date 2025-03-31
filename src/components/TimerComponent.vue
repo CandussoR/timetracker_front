@@ -192,6 +192,7 @@ textarea {
 .big {
     scale: 1.5;
 }
+
 button span {
     display:flex;
     justify-content: center;
@@ -204,9 +205,9 @@ button span {
     margin: 0 auto;
 }
 
-@media screen and (max-height : 500px) {
+@media screen and (max-height : 550px) {
     p.num {
-        margin : .5rem auto;
+        margin : 0 auto;
     }
 }
 </style>
