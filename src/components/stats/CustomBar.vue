@@ -4,7 +4,7 @@
             :style="{ width: item.ratio + '%' }"
             v-for="(item, index) in props.data" 
             :key="index" 
-            :class="['bar', 'task' + index]">
+            :class="['bar', 'task' + index%13]">
         </div>
     </div>
 </template>
@@ -30,21 +30,5 @@ const props = defineProps(["data"])
 
     .bar:not(:last-child) {
         margin-right: 0.2rem;
-    }
-
-    .task0 {
-        background-color: blue;
-    }
-    .task1 {
-        background-color: purple;
-    }
-    .task2 {
-        background-color: beige;
-    }
-    .task3 {
-        background-color: yellowgreen
-    }
-    .task4 {
-        background-color: yellow
     }
 </style>

@@ -35,10 +35,22 @@ const taskRatio = ref({
             fill: {
               opacity: 1
             }
-          }
+          },
         })
 </script>
 
-<style scoped>
-
+<style>
+.apexcharts-tooltip {
+  font-family: var(--font-family);
+  color: black;
+}
+div.apexcharts-menu-item {
+  color: black;
+}
+div.apexcharts-menu-item.exportSVG:hover,
+div.apexcharts-menu-item.exportPNG:hover,
+div.apexcharts-menu-item.exportCSV:hover {
+  background-color: var(--secondary);
+  color: white;
+} 
 </style>

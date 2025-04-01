@@ -85,21 +85,6 @@ const maxElements = computed(() => {
         font-size: .8rem;
     }
 
-    .task0 {
-        background-color: blue;
-    }
-    .task1 {
-        background-color: purple;
-    }
-    .task2 {
-        background-color: beige;
-    }
-    .task3 {
-        background-color: yellowgreen
-    }.task4 {
-        background-color: yellow
-    }
-
     @media screen and (min-width: 794px) {
         .length3 {
             width: 75%;
