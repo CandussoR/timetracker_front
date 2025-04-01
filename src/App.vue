@@ -2,7 +2,7 @@
     <div class="app">
         <StickyMenu v-if="windowWidth > 764 && windowHeight > 630" :closeMenu="close" @expand="expandMenu" @close="closeMenu"/>
         <StickyMenuMobile v-else :closeMenu="close" @expand="expandMenu" @close="closeMenu"/>
-        <Overlay v-if="menuExpanded" @click="closeMenu" :key="menuExpanded"/>
+        <Overlay v-if="menuExpanded" @click="closeMenu"/>
         <RouterView/>
     </div>
 </template>
@@ -16,7 +16,6 @@ import Overlay from './components/Overlay.vue';
 
 const menuExpanded = ref(false)
 const close = ref(false)
-
 // Manage which sticky menu appears
 const windowWidth = ref(window.innerWidth)
 const windowHeight = ref(window.innerHeight)
