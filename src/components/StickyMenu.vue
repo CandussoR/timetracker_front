@@ -95,6 +95,10 @@ watch(() => props.closeMenu, (newValue) => {
     }
 });
 
+router.beforeEach(() => {
+    emit('close')
+})
+
 // Unmounts expand button from dom if width < 480 (portable)
 const windowWidth = ref(window.innerWidth)
 onMounted(() => addEventListener('resize', handleResize))

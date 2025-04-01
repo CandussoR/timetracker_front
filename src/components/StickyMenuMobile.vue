@@ -108,11 +108,15 @@
 import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-const emit = defineEmits(['expand'])
+const emit = defineEmits(['expand', 'close'])
 const props = defineProps(['closeMenu'])
 const route = useRoute()
 const router = useRouter()
 const isToggled = ref(false)
+
+router.beforeEach(() => {
+    emit('close')
+})
 
 watch(router.currentRoute, () => {
     if (isToggled.value) isToggled.value = false;

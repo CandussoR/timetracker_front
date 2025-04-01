@@ -1,7 +1,7 @@
 <template>
     <div class="app">
         <StickyMenu v-if="windowWidth > 764 && windowHeight > 630" :closeMenu="close" @expand="expandMenu" @close="closeMenu"/>
-        <StickyMenuMobile v-else :closeMenu="close" @expand="expandMenu"/>
+        <StickyMenuMobile v-else :closeMenu="close" @expand="expandMenu" @close="closeMenu"/>
         <Overlay v-if="menuExpanded" @click="closeMenu" :key="menuExpanded"/>
         <RouterView/>
     </div>
