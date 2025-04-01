@@ -1,9 +1,8 @@
     <template>
     <aside id="menu">
-        <Overlay v-if="isExpanded" @click="isExpanded = !isExpanded"/>
         <div id="menu" :class="[isExpanded ? 'menu is-expanded' : 'menu']">
             <div id="menu-wrap" class="menu-toggle">
-                <button id="wrap" type="button" class="wrap" @click="toggleMenu">
+                <button id="wrap" type="button" class="wrap" @click="isExpanded ? closeMenu(true) : expandMenu()">
                     <span class="material-symbols-outlined">keyboard_double_arrow_right</span>
                 </button>
             </div>
@@ -75,8 +74,9 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import Overlay from './Overlay.vue';
 
+const emit = defineEmits(['expand', 'close'])
+const props = defineProps(['closeMenu'])
 const route = useRoute();
 const router = useRouter();
 const editSubmenu = ref(false);
@@ -89,6 +89,12 @@ watch(router.currentRoute, () => {
     if (statSubmenu.value) statSubmenu.value = false;
   });
 
+watch(() => props.closeMenu, (newValue) => {
+    if (newValue) {
+        closeMenu(false);
+    }
+});
+
 // Unmounts expand button from dom if width < 480 (portable)
 const windowWidth = ref(window.innerWidth)
 onMounted(() => addEventListener('resize', handleResize))
@@ -96,13 +102,17 @@ function handleResize() {
     windowWidth.value = window.innerWidth
 }
 
-function toggleMenu() {
-    if (isExpanded.value) {
-        isExpanded.value = false
-        editSubmenu.value = false
-        statSubmenu.value = false
-    } else {
-        isExpanded.value = true
+function expandMenu() {
+    isExpanded.value = true
+    emit('expand')
+}
+
+function closeMenu(must_emit) {
+    isExpanded.value = false
+    editSubmenu.value = false
+    statSubmenu.value = false
+    if (must_emit) {
+        emit('close') 
     }
 }
 
@@ -123,20 +133,15 @@ function toggleStatSubmenu() {
         isExpanded.value = true
     }
 }
-
-function closeMenu() {
-    isExpanded.value = false
-    editSubmenu.value = false
-    statSubmenu.value = false
-}
 </script>
 
 <style scoped>
 #menu {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     height: 100vh;
+    z-index: 99;
 }
 
 .menu {

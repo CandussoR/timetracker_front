@@ -4,8 +4,6 @@
             <span class="material-symbols-outlined">menu</span>
             Menu
         </button>
-        <!-- Creates a mask which darkens the background and act as a closer when clicking, like vue-click-outside -->
-        <Overlay v-if="isToggled" @click="toggleMobileMenu()"/>
         <!-- Creating a drawer -->
         <div class="menu" v-if="isToggled">
             <ul>
@@ -109,17 +107,29 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import Overlay from './Overlay.vue'
 
+const emit = defineEmits(['expand'])
+const props = defineProps(['closeMenu'])
 const route = useRoute()
 const router = useRouter()
 const isToggled = ref(false)
+
 watch(router.currentRoute, () => {
     if (isToggled.value) isToggled.value = false;
   });
+
+watch(() => props.closeMenu, (newValue) => {
+    if (newValue) {
+        toggleMobileMenu()
+    }
+});
 function toggleMobileMenu() {
+    if (!isToggled.value) {
+        emit('expand')
+    }
     isToggled.value = !isToggled.value
 }
+
 </script>
 
 <style scoped>
