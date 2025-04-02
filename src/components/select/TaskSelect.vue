@@ -27,7 +27,7 @@ watch(
             selectedTask.value = taskStore.createdTask
     }
 });
-const uniqueTasks = computed(() => taskStore.tasks.filter(x => x.task_name != props.task).map(x => x.task_name))
+const uniqueTasks = computed(() => new Set(taskStore.tasks.filter(x => x.task_name != props.task).map(x => x.task_name)))
 </script>
 
 <style scoped>
