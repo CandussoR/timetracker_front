@@ -123,7 +123,7 @@ watch(router.currentRoute, () => {
   });
 
 watch(() => props.closeMenu, (newValue) => {
-    if (newValue) {
+    if (newValue && isToggled.value) {
         toggleMobileMenu()
     }
 });
