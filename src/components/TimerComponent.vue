@@ -36,8 +36,10 @@ import { useTimeRecordStore } from '@/stores/timeRecord';
 import formatTime from '@/utils/formatTime';
 import getCurrentDateTime from '@/utils/getCurrentDateTime';
 import cleanObject from '@/utils/cleanObject';
-import { ref, computed, watchEffect, onUnmounted } from 'vue';
+import { ref, computed, watchEffect, onUnmounted, onMounted } from 'vue';
 import UpdateLastTimerButton from './UpdateLastTimerButton.vue';
+import { invoke } from '@tauri-apps/api/core';
+import { listen } from '@tauri-apps/api/event';
 
 const props = defineProps({break : Boolean, send : Boolean})
 const emit = defineEmits(['end', 'launch', 'stopped'])
@@ -52,13 +54,26 @@ const currentDuration = ref(0)
 const formattedDuration = computed(() => formatTime(currentDuration.value))
 const err = ref('')
 
-
 watchEffect(() => {if (props.send) {
     timeRecord.value["time_ending"] = getCurrentDateTime().currentTime
     updateTimeRecord()
 }})
 
-onUnmounted(() => skip.value = false)
+let unlisten;
+
+onMounted(async () => {
+  unlisten = await listen("duration", (event) => {
+    currentDuration.value = event.payload;
+    if (timerRunning.value && event.payload == 0) {
+        stopTheClock();
+    }
+  })
+})
+
+onUnmounted(() => {
+    if (unlisten) unlisten()
+    skip.value = false
+})
 
 // Initialising
 timeRecord.value = JSON.parse(localStorage.getItem('time_record'))
@@ -66,8 +81,6 @@ let data2 = localStorage.getItem('duration')
 if (data2) {
     currentDuration.value = Number(data2)
 }
-
-let worker;
 
 function handleBeginClick() {
     if (props.break) {
@@ -84,7 +97,7 @@ function handleBeginClick() {
     }
 }
 
-function beginTimeRecord(clockType) {
+async function beginTimeRecord(clockType) {
     const { currentDate, currentTime } = getCurrentDateTime()
     const datetime = new Date(currentDate + ' ' + currentTime)
 
@@ -93,21 +106,22 @@ function beginTimeRecord(clockType) {
 
     const tr = cleanObject(timeRecord.value)
     
-    timeRecordStore.createTimeRecord(tr, "begin")
-        .then((res) => {
-            // puts it in the storage in case of refresh
-            localStorage.setItem("time_record", JSON.stringify(res))
-            // puts it in the timeRecord for convenience
-            timeRecord.value = res
+    try {
+        const res = await timeRecordStore.createTimeRecord(tr, "begin")
+        // puts it in the storage in case of refresh
+        localStorage.setItem("time_record", JSON.stringify(res))
+        // puts it in the timeRecord for convenience
+        timeRecord.value = res
 
-            emit('launch')
-            if (clockType == "timer") {
-                startTheClock("timer", datetime)
-            } else {
-                startTheClock("stopwatch", datetime)
-            }
-        })
-        .catch((e) => err.value = e)
+        emit('launch')
+        if (clockType == "timer") {
+            startTheClock("timer", datetime)
+        } else {
+            startTheClock("stopwatch", datetime)
+        }
+    } catch(e) {
+        (e) => err.value = e
+    }
 }
 
 
@@ -118,35 +132,19 @@ function skipBreak() {
 
 
 function startTheClock(type, beginningDatetime) {
-    if (!window.Worker) {
-        err.value = "Your browser doesn't support workers."
-        return;
-    }
-
     if (type === "timer") {
         timerRunning.value = true
     } else {
         stopwatchRunning.value = true
     }
 
-    worker = new Worker('src/worker/clock.js')
-    // duration is in seconds
-    worker.postMessage({type: type, duration: currentDuration.value, beginning: beginningDatetime})
-    worker.onmessage = (e) => {
-        currentDuration.value = e.data
-        if (type === "timer" && e.data === 0) {
-            stopTheClock()
-        }
-    }
+    invoke("start_clock", {t: type, duration: currentDuration.value, beginning: beginningDatetime.toISOString()})
 }
 
 
 function stopTheClock() {
-    if (worker) {
-        worker.terminate();
-        worker = null
-    }
     emit('stopped')
+    invoke('stop_clock')
     timerRunning.value = false
     stopwatchRunning.value = false
     if (!(skip.value || props.break)) {

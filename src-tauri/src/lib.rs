@@ -1,9 +1,33 @@
 mod main_sidecar;
-use std::sync::{Arc, Mutex};
+mod worker;
+use main_sidecar::toggle_fullscreen;
+use std::fmt;
+use worker::{start_clock, stop_clock};
 
 #[cfg(feature = "launch_binary")]
 use main_sidecar::*;
 use tauri::RunEvent;
+
+#[derive(Default)]
+struct AppState {
+    timer_runs: bool,
+}
+
+impl AppState {
+    fn new() -> Self {
+        AppState { timer_runs: false }
+    }
+}
+impl fmt::Display for AppState {
+    // This trait requires `fmt` with this exact signature.
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        // Write strictly the first element into the supplied output
+        // stream: `f`. Returns `fmt::Result` which indicates whether the
+        // operation succeeded or failed. Note that `write!` uses syntax which
+        // is very similar to `println!`.
+        write!(f, "{}", self.timer_runs)
+    }
+}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -32,6 +56,9 @@ pub fn run() {
         let app = _app;
         // Store the initial sidecar process in the app state
         app.manage(Arc::new(Mutex::new(None::<CommandChild>)));
+
+        app.manage(Mutex::new(AppState::new()));
+
         // Clone the app handle for use elsewhere
         let app_handle = app.handle().clone();
         // Spawn the Python sidecar on startup
@@ -55,7 +82,9 @@ pub fn run() {
         app.invoke_handler(tauri::generate_handler![
             start_sidecar,
             kill_sidecar,
-            toggle_fullscreen
+            toggle_fullscreen,
+            start_clock,
+            stop_clock
         ])
         .build(tauri::generate_context!())
         .expect("Error while running tauri application")
@@ -70,5 +99,24 @@ pub fn run() {
     });
 
     #[cfg(not(feature = "launch_binary"))]
-    app.run(tauri::generate_context!());
+    let app = {
+        use std::sync::Mutex;
+
+        app.manage(Mutex::new(AppState::new()))
+            .invoke_handler(tauri::generate_handler![
+                toggle_fullscreen,
+                start_clock,
+                stop_clock,
+            ])
+            .build(tauri::generate_context!())
+            .expect("Error while running tauri application")
+    };
+
+    #[cfg(not(feature = "launch_binary"))]
+    app.run(|app_handle, event| match event {
+        RunEvent::ExitRequested { .. } => {
+            log::info!("Exiting app.");
+        }
+        _ => {}
+    });
 }
