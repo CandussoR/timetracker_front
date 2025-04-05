@@ -21,8 +21,6 @@
                 <fieldset id="task__section">
                     <legend>Flow
                         <!-- Using click.stop to prevent propagation of closeModal -->
-                        <span class="material-symbols-outlined" v-if="!newTask"
-                            @click.stop="newTask = !newTask">add</span>
                     </legend>
                     <div class="flow-section-input">
                         <FlowSelect :inventory="flowStore.inventory.map(f => f.n)" 

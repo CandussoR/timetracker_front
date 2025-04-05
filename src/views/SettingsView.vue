@@ -1,26 +1,32 @@
 <template>
     <main>
-    <h1>Settings</h1>
-    <div v-if="database && ring" class="small bg-2">
-        <div class="entry">
-            <div class="button-row">
-                <span class="material-symbols-outlined icon-clear-gradient" @click="select('database')" title="Select another database">edit</span>
-                <span class="material-symbols-outlined icon-clear-gradient" @click="move" title="Move database in another file"> drive_file_move </span>
+        <h1>Settings</h1>
+        <div v-if="database" class="small bg-2">
+            <div class="entry">
+                <div class="button-row">
+                    <span class="material-symbols-outlined icon-clear-gradient" @click="select('database')"
+                        title="Select another database">edit</span>
+                    <span class="material-symbols-outlined icon-clear-gradient" @click="move"
+                        title="Move database in another file"> drive_file_move </span>
+                </div>
+                <dl class="label">Database :</dl>
+                <p>{{database}}</p>
+                <p class="error" v-if="databaseError">{{databaseError}}</p>
             </div>
-            <dl class="label">Database :</dl>
-            <p>{{database}}</p>
+            <div class="entry">
+                <div class="button-row">
+                    <span class="material-symbols-outlined icon-clear-gradient" @click="select('timer_ring')" title="Select another ring">edit</span>
+                    <span class="material-symbols-outlined" v-if="ring" @click="resetRing" title="reset to default ring"> restart_alt </span>
+                </div>
+                <dl class="label">Timer ring : </dl>
+                <p>{{ring ? ring : "Default app ring"}}</p>
+                <p class="error" v-if="audioError">{{audioError}}</p>
+            </div>
+            <div class="entry">
+                <dl class="label">Log file : </dl>
+                <p>{{log}}</p>
+            </div>
         </div>
-        <div class="entry">
-            <span class="material-symbols-outlined icon-clear-gradient" @click="select('timer_ring')" title="Select another ring">edit</span>
-            <dl class="label">Timer ring : </dl>
-            <p>{{ring}}</p>
-        </div>
-        <div class="entry">
-            <dl class="label">Log file : </dl>
-            <p>{{log}}</p>
-        </div>
-    </div>
-    <p class="error" v-if="error">{{error}}</p>
     </main>
 </template>
 
@@ -35,7 +41,8 @@ import { useTimeRecordStore } from "@/stores/timeRecord";
 const database = ref(null)
 const ring = ref(null)
 const log = ref(null)
-const error = ref(null)
+const databaseError = ref(null)
+const audioError = ref(null)
 
 onMounted(async () => {
     const res = await axios.get('/settings')
@@ -48,36 +55,61 @@ onMounted(async () => {
     }
 })
 
+async function resetRing() {
+    audioError.value = null
+    ring.value = ""
+    try {
+        const res = await axios.put('/settings', {"timer_ring" : ""})
+        ring.value = res.data.timer_ring;
+    } catch (e) {
+        audioError.value = "Couldn't reset ring"
+    }
+}
+
 async function select(settingsKey) {
-    const select = await open({multiple: false, directory: false})
-    const d = settingsKey == "database" ? {"database" : select} : {"timer_ring": select}
-    const res = await axios.put('/settings', d)
-    if (res.status == 200) {
-        if (settingsKey === 'database') {
-            database.value = res.data.database
-            const statStore = useStatStore();
-            const tagStore = useTagStore();
-            const taskStore = useTaskStore();
-            const timeRecordStore = useTimeRecordStore();
-            statStore.reset();
-            tagStore.reset();
-            taskStore.reset();
-            timeRecordStore.reset();
-        } else {
-            ring.value = res.data.timer_ring
+    databaseError.value = null
+    audioError.value = null
+    const select = await open({ multiple: false, directory: false })
+    const d = settingsKey == "database" ? { "database": select } : { "timer_ring": select }
+    try {
+        const res = await axios.put('/settings', d)
+        if (res.status == 200) {
+            if (settingsKey === 'database') {
+                database.value = res.data.database
+                const statStore = useStatStore();
+                const tagStore = useTagStore();
+                const taskStore = useTaskStore();
+                const timeRecordStore = useTimeRecordStore();
+                statStore.reset();
+                tagStore.reset();
+                taskStore.reset();
+                timeRecordStore.reset();
+            } else {
+                ring.value = res.data.timer_ring
+            }
         }
-    } else {
-        error.value = `A problem occured when trying to change ${settingsKey == "database" ? "database" : "ring"}.`
+    }
+    catch (e) {
+        if (e.status == 400) {
+            if (settingsKey == "database") {
+                databaseError.value = e.response.data
+            } else {
+                audioError.value = e.response.data
+            }
+        } else {
+            error.value = `A problem occured when trying to change ${settingsKey == "database" ? "database" : "ring"}.`
+        }
     }
 }
 
 async function move() {
+    databaseError.value = null
     const move = await open({ multiple:false, directory:true })
-    const res = await axios.put('/settings', {"database" : move})
-    if (res.status == 200) {
+    try {
+        const res = await axios.put('/settings', {"database" : move})
         database.value = res.data.database
-    } else {
-        error.value = "Couldn't move the database."
+    } catch(e) {
+        databaseError.value = "Couldn't move the database."
     }
 }
 </script>

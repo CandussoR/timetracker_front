@@ -40,6 +40,8 @@ import { ref, computed, watchEffect, onUnmounted, onMounted } from 'vue';
 import UpdateLastTimerButton from './UpdateLastTimerButton.vue';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
+import axios from '@/utils/apiRequester';
+import { error } from '@tauri-apps/plugin-log';
 
 const props = defineProps({break : Boolean, send : Boolean})
 const emit = defineEmits(['end', 'launch', 'stopped'])
@@ -142,19 +144,26 @@ function startTheClock(type, beginningDatetime) {
 }
 
 
-function stopTheClock() {
+async function stopTheClock() {
     emit('stopped')
     invoke('stop_clock')
+
     timerRunning.value = false
     stopwatchRunning.value = false
+
     if (!(skip.value || props.break)) {
         timeRecord.value["time_ending"] = getCurrentDateTime().currentTime
     }
     isDone.value = true
 
     if (!props.send && !skip.value) {
-        const audio = new Audio(import.meta.env.VITE_APP_RING)
+        try {
+        const res = await axios.get('/settings');
+        const audio = new Audio(res.data.timer_ring ? res.data.timer_ring : import.meta.env.VITE_APP_RING)
         audio.play()
+        } catch(e) {
+            error("COULDN'T FETCH SETTINGS", e)
+        }
     }
     if (props.break) {
         emit('end', null)
