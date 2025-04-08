@@ -21,7 +21,7 @@
         <Overlay v-if="warnBeforeLeave" />
         <div class="modal" v-if="warnBeforeLeave">
             <div>
-                <p v-if="isRunning">A timer is currently running : stop it before you leave.</p>
+                <p v-if="isRunning">A timer is currently running : leaving this page will stop it.</p>
                 <p v-else-if="flow">Quitting this page will stop the current flow.</p>
                 <div v-if="isRunning" class="button-row">
                     <button v-if="isRunning" class="button" @click="handleQuit('ok')">Ok</button>
@@ -73,29 +73,42 @@ onMounted(() => {
 
 // Navigation guard
 onBeforeRouteLeave((to, from) => {
-    // Authorize editing of task & tag in flow
-    if (!isRunning.value && flow && receivedEnd.value && ['/flow', '/flow/edit'].includes(to.path)) {
+    // Authorize editing of task & tag in flow : no need to warn.
+    if (flow && !isRunning.value && receivedEnd.value && ['/flow', '/flow/edit'].includes(to.path)) {
         return true
-    } else if (!isRunning.value && flow && receivedEnd.value && !['/flow', '/flow/edit'].includes(to.path)) {
+    } 
+    // If we are in a middle of a flow and have been warned, we can leave
+    else if (warnBeforeLeave.value && !isRunning.value && flow && receivedEnd.value && !['/flow', '/flow/edit'].includes(to.path)) {
         localStorage.clear()
         return true
     }
-    // Authorize leaving if nothing has been done
-    if (!isRunning.value && receivedEnd.value) {
+
+    // If a flow is sent but has not yet began, can leave, no warning needed
+    if (!isRunning.value && receivedEnd.value && (!flow || (flow.current.i == 0 && flow.current.type == 'timer'))) {
         localStorage.clear()
         return true
     }
-    // should I stay or should I go now ?
-    if (isRunning.value && !(warnBeforeLeave.value)) {
+
+    // If a flow has begun and use hasn't been warned, we do before leaving
+    if (!(warnBeforeLeave.value)
+        && (isRunning.value
+            || (!isRunning.value
+                && receivedEnd.value
+                && (flow.current.i != 0 || flow.current.type != 'timer')
+            )
+        )
+    ) {
         leaveTo.value = to.path;
         warnBeforeLeave.value = true;
         return false
     }
 
+    // If a timer is done and we ragequit for any reason without clicking send, still updates the end
     if (!isRunning.value && !receivedEnd.value) {
         sendTimerEnd.value = true
     }
 
+    // If we don't go to the flow page, we clear everything anyway.
     if (to.path != '/flow' || to.path != '/flow/edit') {
         localStorage.clear()
     }
@@ -160,7 +173,6 @@ function updateLocalStorage(is_flow) {
     }
 
     let tr =JSON.parse(localStorage.getItem('time_record'))
-    console.log("time_record retrieved", tr)
     tr.date = null
     tr.guid = null
     if (!("task_guid" in tr && "tag_guid" in tr)) {
@@ -202,7 +214,7 @@ function updateLocalStorage(is_flow) {
 
 function handleQuit(answer) {
     if (answer == 'leave') {
-        router.push(leaveTo)
+        router.push(leaveTo.value)
     } else {
         warnBeforeLeave.value = false
     }
