@@ -42,6 +42,8 @@ import { onBeforeRouteLeave, useRouter } from 'vue-router';
 import TimerComponent from '@/components/TimerComponent.vue';
 import { useStatStore } from '@/stores/stats.js';
 import Overlay from '@/components/Overlay.vue';
+import { useTaskStore } from '@/stores/task.js';
+import { useTagStore } from '@/stores/tag.js';
 
 const timeRecordStore = useTimeRecordStore()
 const statStore = useStatStore();
@@ -153,13 +155,41 @@ function updateLocalStorage(is_flow) {
         return
     }
 
+    if (flow.current.type == 'break' && flow.current.i == flow.infos.f.length - 1) {
+        router.push("/")
+    }
+
     let tr =JSON.parse(localStorage.getItem('time_record'))
+    console.log("time_record retrieved", tr)
     tr.date = null
     tr.guid = null
+    if (!("task_guid" in tr && "tag_guid" in tr)) {
+        // // Retransform task_name / subtask into task_guid, and tag_name into tag_guid : like in TimerView
+        const taskStore = useTaskStore();
+        const task_guid = taskStore.tasks.filter((task) => task.task_name == tr["task_name"] && task.subtask == tr["subtask"])
+                                        .map((task) => task.guid)[0]
+        if (!task_guid) {
+            console.error("Couldn't retrieve task_guid from local storage time_record", tr)
+            return
+        }
+        
+        let tag_guid = null
+        if ("tag" in tr && tr["tag"]) {
+            const tagStore = useTagStore()
+            tag_guid = tagStore.tags.filter((tag) => tag.tag == tr["tag"])
+                                    .map((tag) => tag.guid)[0]
+        }
+        tr = {
+                    "date": null,
+                    "task_guid": task_guid,
+                    "tag_guid": tag_guid,
+                    "time_beginning": null
+                }
+    }
     localStorage.setItem('time_record', JSON.stringify(tr))
 
     let wasTimer = flow.current.type == "timer"
-    flow.current = {"type" : flow.current.type == "timer" ? "break" : "timer", "i": flow.current.i+1}
+    flow.current = { "type": flow.current.type == "timer" ? "break" : "timer", "i": flow.current.type == "break" ? flow.current.i + 1 : flow.current.i }
     localStorage.setItem('flow', JSON.stringify(flow))
     displayInfo.value.title = wasTimer ? "Break" : "Timer"
 
