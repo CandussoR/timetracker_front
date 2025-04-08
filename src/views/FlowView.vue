@@ -55,7 +55,7 @@
 </template>
 
 <script setup>
-import { onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, watch, ref } from 'vue';
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router';
 import TaskSelect from '@/components/select/TaskSelect.vue';
 import SubtaskSelect from '@/components/select/SubtaskSelect.vue';
@@ -123,6 +123,26 @@ onBeforeRouteLeave((to, from) => {
         return false
     }
 })
+
+
+watch(
+    () => taskStore.isCreated, 
+    (newValue) => {
+        if (newValue === true) {
+            closeModal()
+    }
+    selectedTask.value = taskStore.createdTask;
+    selectedSubtask.value = taskStore.createdSubtask;
+});
+
+watch(
+    () => tagStore.isCreated, 
+    (newValue) => {
+        if (newValue === true) {
+            closeModal()
+   }
+   selectedTag.value = tagStore.createdTag;
+});
 
 
 function closeModal() {
