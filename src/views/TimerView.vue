@@ -73,10 +73,16 @@ onMounted(() => {
 
 // Navigation guard
 onBeforeRouteLeave((to, from) => {
+    // If flow is done, don't warn
+    if (flow && !isRunning.value && receivedEnd.value && flow.current.i >= flow.infos.f.length - 1) {
+        return true
+    }
+
     // Authorize editing of task & tag in flow : no need to warn.
     if (flow && !isRunning.value && receivedEnd.value && ['/flow', '/flow/edit'].includes(to.path)) {
         return true
-    } 
+    }
+    
     // If we are in a middle of a flow and have been warned, we can leave
     else if (warnBeforeLeave.value && !isRunning.value && flow && receivedEnd.value && !['/flow', '/flow/edit'].includes(to.path)) {
         localStorage.clear()
@@ -170,6 +176,7 @@ function updateLocalStorage(is_flow) {
 
     if (flow.current.type == 'break' && flow.current.i == flow.infos.f.length - 1) {
         router.push("/")
+        return
     }
 
     let tr =JSON.parse(localStorage.getItem('time_record'))
