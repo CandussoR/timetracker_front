@@ -1,7 +1,7 @@
 <template>
     <div id="timer-main">
 
-        <p id="duration" class="num">{{ formattedDuration }}</p>
+        <p id="duration" class="num" v-if="!isDone">{{ formattedDuration }}</p>
 
         <div id="error" class="error" v-if="err">
             <p>{{ err }}</p>
@@ -148,13 +148,12 @@ async function stopTheClock() {
     emit('stopped')
     invoke('stop_clock')
 
-    timerRunning.value = false
-    stopwatchRunning.value = false
-
     if (!(skip.value || props.break)) {
         timeRecord.value["time_ending"] = getCurrentDateTime().currentTime
     }
-    isDone.value = true
+
+    timerRunning.value = false
+    stopwatchRunning.value = false
 
     if (!props.send && !skip.value) {
         try {
@@ -165,6 +164,9 @@ async function stopTheClock() {
             error("COULDN'T FETCH SETTINGS", e)
         }
     }
+
+    isDone.value = true
+
     if (props.break) {
         emit('end', null)
     }
