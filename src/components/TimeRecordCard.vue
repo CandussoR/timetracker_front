@@ -64,7 +64,7 @@
                     <textarea id="log" name="log" v-model="formRecord.log" />
                 </fieldset>
                 <div class="button-row">
-                    <button class="icon-clear-gradient" @click="handleSubmit()"><span
+                    <button type="submit" class="icon-clear-gradient"><span
                             class="material-symbols-outlined">done</span></button>
                     <button class="icon-clear-gradient" @click="toggleEdit(false)"><span
                             class="material-symbols-outlined">cancel</span></button>
@@ -105,7 +105,7 @@ const editing = ref(false)
 const formRecord = ref({
     date: props.record.date,
     task_name: props.record.task_name,
-    subtask: props.record.subtask,
+    subtask: props.record.subtask | "None",
     tag: props.record.tag,
     // Format for the time picker
     time_beginning: props.record.time_beginning,
@@ -153,7 +153,7 @@ async function handleSubmit() {
             statStore.handleUpdated()
             emit("updated", res)
             editing.value = !editing.value
-        })
+        }).catch((e) => console.error(e));
 }
 
 /**
