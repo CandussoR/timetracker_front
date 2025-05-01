@@ -200,8 +200,16 @@ input, select, textarea {
   }
 }
 
+/* Reducing spacing to fit more element when small height */
 @media screen and (max-height : 500px) {
   h1, h2, h3 {
     margin : .5em auto;
+  }
+}
+
+/* Creating space for the sticky mobile menu button */
+@media screen and ((max-width : 764px) or (max-height : 630px)) {
+  main {
+    margin-top: 2.5rem;
   }
 }

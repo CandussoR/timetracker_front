@@ -1,6 +1,6 @@
 <template>
     <aside id="menu">
-        <button id="menu-button" type="button" class="menu-button" @click="toggleMobileMenu()">
+        <button v-if="!isToggled" id="menu-button" type="button" class="menu-button" @click="toggleMobileMenu()">
             <span class="material-symbols-outlined">menu</span>
             Menu
         </button>
@@ -143,9 +143,12 @@ function toggleMobileMenu() {
 
 .menu-button {
         appearance: none;
+        position: fixed;
+        top: 0;
+        z-index: 100;
         border: none;
         outline: none;
-        background: none;
+        background: var(--background);
         color: var(--text);
         display: flex;
         gap: 1rem;
@@ -154,7 +157,7 @@ function toggleMobileMenu() {
         font-size: 1.5rem;
         width: 100vw;
         padding: 1rem 0;
-        margin-bottom: .5rem;
+        margin-bottom: 1rem;
     }
 
 
