@@ -1,6 +1,6 @@
 <template>
-    <div v-if="props.task && subtaskCanBeNull">
-        <label v-if="subtaskCanBeNull" for="subtask">Subtask name (optional) : </label>
+    <div v-if="props.task && (subtaskCanBeNull || (props.view != 'timerForm'))">
+        <label v-if="subtaskCanBeNull || (props.view != 'timerFom')" for="subtask">Subtask name (optional) : </label>
         <select id="subtask-select" name="substask" v-model="selectedSubtask" @change="emit('selected', selectedSubtask)">
             <option v-if="props.view == 'timerForm'" value="" default>No subtask</option>
             <option v-else value="" default>All subtasks</option>
