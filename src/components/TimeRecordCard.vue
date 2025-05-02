@@ -28,8 +28,12 @@
                     <label class="bold" for="time-record-date">Date : </label>
                     <div class="datepicker">
                         <VueDatePicker id="time-record-date" name="time-record-date" v-model="formRecord.date"
-                            :maxDate="new Date()" locale="fr" :model-value="formRecord.date" model-type="yyyy-MM-dd"
-                            format='yyyy-MM-dd' auto-apply :enable-time-picker="false" placeholder="Select a date" />
+                            :minDate="minDate" :maxDate="maxDate" 
+                            :year-range="[minDate?.getFullYear(), maxDate.getFullYear()]" 
+                            :model-value="formRecord.date" 
+                            model-type="yyyy-MM-dd" format='yyyy-MM-dd' 
+                            auto-apply prevent-min-max-navigation
+                            :enable-time-picker="false" placeholder="Select a date" />
                     </div>
                     <div class="section-inputs">
                         <div class="datepicker">
@@ -76,7 +80,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { onBeforeMount, ref } from 'vue';
 import TaskSelect from './select/TaskSelect.vue';
 import SubtaskSelect from './select/SubtaskSelect.vue';
 import TagSelect from './select/TagSelect.vue';
@@ -87,6 +91,7 @@ import { useTaskStore } from '@/stores/task';
 import { useTagStore } from '@/stores/tag';
 import { useStatStore } from '@/stores/stats';
 import mdParse from '@/utils/markdownParser';
+import getMinDate from '@/utils/getMinDate';
 
 const props = defineProps({
     record: Object,
@@ -97,6 +102,8 @@ const recordStore = useTimeRecordStore()
 const taskStore = useTaskStore()
 const tagStore = useTagStore()
 const statStore = useStatStore()
+const minDate = ref(null)
+const maxDate = new Date()
 const originalRecord = props.record
 const showEdit = ref(false)
 const showDone = ref(false)
@@ -111,6 +118,10 @@ const formRecord = ref({
     time_beginning: props.record.time_beginning,
     time_ending: props.record.time_ending,
     log: props.record.log
+})
+
+onBeforeMount(async() => {
+    minDate.value = await getMinDate()
 })
 
 function toggleEdit(truth) {

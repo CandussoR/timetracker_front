@@ -35,30 +35,35 @@
                         <label for="month" name="month" v-if="selectedCriteria.includes('month')">Choose your month</label>
                         <label for="year" name="year" v-if="selectedCriteria.includes('year')">Choose your year</label>
                         <label for="range" name="range" v-if="selectedCriteria.includes('range')">Choose your range</label>
-                        <VueDatePicker v-if="selectedCriteria.includes('day')" id="day" v-model="day"
-                            :maxDate="new Date()" locale="fr" :model-value="day" model-type="yyyy-MM-dd"
-                            format='yyyy-MM-dd' auto-apply :enable-time-picker="false" placeholder="Select a date" />
-                        <VueDatePicker v-if="selectedCriteria.includes('week')" id="week" v-model="week"
-                            :maxDate="new Date()" model-type="yyyy-MM-dd" week-picker auto-apply placeholder="Select a week" />
-                        <VueDatePicker v-if="selectedCriteria.includes('month')" id="month" v-model="monthYear"
-                            :maxDate="new Date()" month-picker locale="fr" auto-apply model-type="yyyy-MM" format='yyyy-MM'
-                            placeholder="Select a month" />
+                        <VueDatePicker v-if="selectedCriteria.includes('day')" 
+                            id="day" v-model="day" :minDate="minDate" :maxDate="new Date()" 
+                            :model-value="day" model-type="yyyy-MM-dd" format='yyyy-MM-dd' 
+                            auto-apply :enable-time-picker="false" preventMinMaxNavigation
+                            :year-range="[minDate.getFullYear(), maxDate]" placeholder="Select a date" />
+                        <VueDatePicker v-if="selectedCriteria.includes('week')" 
+                            id="week" v-model="week" :minDate="minDate" :maxDate="new Date()" 
+                            model-type="yyyy-MM-dd" week-picker auto-apply preventMinMaxNavigation
+                            :year-range="[minDate.getFullYear(), maxDate]" placeholder="Select a week" />
+                        <VueDatePicker v-if="selectedCriteria.includes('month')" 
+                            id="month" v-model="monthYear" :minDate="minDate" :maxDate="new Date()" 
+                            month-picker auto-apply model-type="yyyy-MM" format='yyyy-MM'
+                            preventMinMaxNavigation :year-range="[minDate.getFullYear(), maxDate]" placeholder="Select a month" />
                         <VueDatePicker v-if="selectedCriteria.includes('year')" id="year" v-model="year"
-                            :year-range="[2019, maxDate]" year-picker auto-apply :prevent-min-max-navigation="true"
+                            :year-range="[minDate.getFullYear(), maxDate]" year-picker auto-apply preventMinMaxNavigation
                             placeholder="Select a year" />
                     </div>
                     <div class="section-inputs" v-if="selectedCriteria.includes('range')">
                         <div class="datetime">
                             <VueDatePicker v-if="selectedCriteria.includes('range')" id="rangeBeginning" v-model="rangeBeginning"
-                                :maxDate="new Date()" locale="fr" :model-value="rangeBeginning" model-type="yyyy-MM-dd"
+                                :maxDate="new Date()" :model-value="rangeBeginning" model-type="yyyy-MM-dd"
                                 format='yyyy-MM-dd' auto-apply :enable-time-picker="false"
-                                placeholder="Beginning of range" />
+                                :year-range="[minDate.getFullYear(), maxDate]" placeholder="Beginning of range" />
                         </div>
                         <div class="datetime">
                             <VueDatePicker v-if="selectedCriteria.includes('range')" id="rangeEnding" v-model="rangeEnding"
-                                :maxDate="new Date()" locale="fr" :model-value="rangeEnding" model-type="yyyy-MM-dd"
+                                :maxDate="new Date()" :model-value="rangeEnding" model-type="yyyy-MM-dd"
                                 format='yyyy-MM-dd' auto-apply :enable-time-picker="false"
-                                placeholder="End of range" />
+                                :year-range="[minDate.getFullYear(), maxDate]" placeholder="End of range" />
                         </div>
                     </div>
                 </div>
@@ -127,14 +132,18 @@ import SubtaskSelect from '@/components/select/SubtaskSelect.vue';
 import TagSelect from '@/components/select/TagSelect.vue';
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import cleanObject from '../utils/cleanObject.js'
 import PeriodSelect from '@/components/select/PeriodSelect.vue';
+import axios from '@/utils/apiRequester.js';
+import getMinDate from '@/utils/getMinDate.js';
+import { error } from '@tauri-apps/plugin-log';
 
 const props = defineProps({
     stats : Boolean
 })
 const errorMsg = ref("")
+const minDate = ref(null)
 const maxDate = new Date().getFullYear()
 const criteria = ref(null)
 const possibleCriteria = computed(() => {
@@ -183,6 +192,10 @@ const getLogsWithStats = ref(false)
 const emit = defineEmits(['submitted', 'change'])
 watch([day, week , monthYear , year], () => emit('change'))
 
+onMounted(async () => {
+    minDate.value = await getMinDate();
+    console.log(minDate.value.getFullYear());
+})
 /**
  * Swipe one temporal criteria with the new one if needed
  *

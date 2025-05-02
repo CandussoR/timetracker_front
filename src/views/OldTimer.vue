@@ -11,12 +11,14 @@
                     <VueDatePicker id="time-record-date" 
                         name="time-record-date"
                         v-model="date" 
-                        :maxDate="new Date()" 
-                        locale="fr" 
+                        :minDate="minDate"
+                        :maxDate="maxDate" 
+                        :year-range="[minDate?.getFullYear(), maxDate.getFullYear()]" 
                         :model-value="date" 
                         model-type="yyyy-MM-dd" 
                         format='yyyy-MM-dd' 
                         auto-apply 
+                        prevent-min-max-navigation
                         :enable-time-picker="false"
                         placeholder="Select a date"
                         required/>
@@ -109,7 +111,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue';
+import { computed, onBeforeMount, ref, watch } from 'vue';
 import ModalFrame from '@/components/modals/ModalFrame.vue';
 import Overlay from '@/components/Overlay.vue';
 import VueDatePicker from '@vuepic/vue-datepicker'
@@ -122,6 +124,7 @@ import { useTimeRecordStore } from '@/stores/timeRecord';
 import { useTaskStore } from '@/stores/task';
 import { useTagStore } from '@/stores/tag';
 import { useStatStore } from '@/stores/stats';
+import getMinDate from '@/utils/getMinDate';
 
 const newTag = ref(false)
 const newTask = ref(false)
@@ -133,6 +136,9 @@ const record = ref(null)
 const errorMsg = ref('')
 const success = ref(false)
 
+const minDate = ref()
+const maxDate = new Date()
+
 // Form fields
 const date = ref(null)
 const selectedTag = ref(null)
@@ -143,6 +149,10 @@ const timeEnding = ref("00:00:00")
 const log = ref(null)
 
 const isDisabled = computed(() => !(date.value && selectedTask.value && (timeBeginning.value != timeEnding.value)));
+
+onBeforeMount(async () => {
+    minDate.value = await getMinDate();
+})
 
 watch(
     () => taskStore.isCreated, 
@@ -160,7 +170,6 @@ watch(
         if (newValue === true) {
             closeModal()
     }
-    value.tag = tagStore.createdTag;
     selectedTag.value = tagStore.createdTag;
 });
 
