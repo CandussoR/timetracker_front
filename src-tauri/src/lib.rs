@@ -19,19 +19,16 @@ impl AppState {
     }
 }
 impl fmt::Display for AppState {
-    // This trait requires `fmt` with this exact signature.
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        // Write strictly the first element into the supplied output
-        // stream: `f`. Returns `fmt::Result` which indicates whether the
-        // operation succeeded or failed. Note that `write!` uses syntax which
-        // is very similar to `println!`.
         write!(f, "{}", self.timer_runs)
     }
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    let app = tauri::Builder::default().plugin(tauri_plugin_dialog::init());
+    let app = tauri::Builder::default()
+        .plugin(tauri_plugin_os::init())
+        .plugin(tauri_plugin_dialog::init());
 
     #[cfg(feature = "launch_binary")]
     let app = app.plugin(tauri_plugin_shell::init());
@@ -93,7 +90,7 @@ pub fn run() {
     app.run(|app_handle, event| match event {
         RunEvent::ExitRequested { .. } => {
             log::info!("User wants to exit app: killing sidecar.");
-            kill_sidecar(app_handle.clone()); // ✅ Fix: Clone the AppHandle
+            kill_sidecar(app_handle.clone()); 
         }
         _ => {}
     });

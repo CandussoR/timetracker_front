@@ -33,7 +33,8 @@
                             :model-value="formRecord.date" 
                             model-type="yyyy-MM-dd" format='yyyy-MM-dd' 
                             auto-apply prevent-min-max-navigation
-                            :enable-time-picker="false" placeholder="Select a date" />
+                            :enable-time-picker="false" placeholder="Select a date" 
+                            :locale="lang"/>
                     </div>
                     <div class="section-inputs">
                         <div class="datepicker">
@@ -92,11 +93,13 @@ import { useTagStore } from '@/stores/tag';
 import { useStatStore } from '@/stores/stats';
 import mdParse from '@/utils/markdownParser';
 import getMinDate from '@/utils/getMinDate';
+import { locale } from '@tauri-apps/plugin-os';
 
 const props = defineProps({
     record: Object,
     readOnly: Boolean
 })
+const lang = ref(localStorage.getItem('lang'))
 const emit = defineEmits(["updated"])
 const recordStore = useTimeRecordStore()
 const taskStore = useTaskStore()
@@ -122,6 +125,11 @@ const formRecord = ref({
 
 onBeforeMount(async() => {
     minDate.value = await getMinDate()
+    if (!lang.value) {
+        const lang = await locale();
+        localStorage.setItem('lang', lang)
+        lang.value = lang
+    }
 })
 
 function toggleEdit(truth) {

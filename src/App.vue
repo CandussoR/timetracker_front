@@ -20,7 +20,9 @@ const close = ref(false)
 const windowWidth = ref(window.innerWidth)
 const windowHeight = ref(window.innerHeight)
 
-onMounted(() => addEventListener('resize', handleResize))
+onMounted(async () => {
+    addEventListener('resize', handleResize)
+})
 
 function handleResize() {
     windowWidth.value = window.innerWidth

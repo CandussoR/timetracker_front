@@ -25,6 +25,7 @@ tauri = { version = "2.3.1", features = [] }
 tauri-plugin-log = "2"
 tauri-plugin-shell = "2"
 tauri-plugin-dialog = "2"
+tauri-plugin-os = "2"
 chrono = "0.4.40"
 
 [features]

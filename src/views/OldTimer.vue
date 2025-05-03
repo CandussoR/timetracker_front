@@ -19,6 +19,7 @@
                         prevent-min-max-navigation
                         :enable-time-picker="false"
                         placeholder="Select a date"
+                        :locale="lang"
                         required/>
                 </fieldset>
     
@@ -122,7 +123,9 @@ import { useTimeRecordStore } from '@/stores/timeRecord';
 import { useTaskStore } from '@/stores/task';
 import { useTagStore } from '@/stores/tag';
 import { useStatStore } from '@/stores/stats';
+import { locale } from '@tauri-apps/plugin-os';
 
+const lang = ref(localStorage.getItem('lang'))
 const newTag = ref(false)
 const newTask = ref(false)
 const recordStore = useTimeRecordStore()
@@ -145,6 +148,14 @@ const timeEnding = ref("00:00:00")
 const log = ref(null)
 
 const isDisabled = computed(() => !(date.value && selectedTask.value && (timeBeginning.value != timeEnding.value)));
+
+onMounted(async () => {
+    if (!lang.value) {
+        const loc = await locale();
+        localStorage.setItem('lang', loc)
+        lang.value = loc
+    }
+})
 
 watch(
     () => taskStore.isCreated, 
