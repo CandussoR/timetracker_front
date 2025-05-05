@@ -29,4 +29,5 @@ tauri-plugin-os = "2"
 chrono = "0.4.40"
 
 [features]
+default = ["launch_binary"]
 launch_binary = []
