@@ -139,4 +139,16 @@ div#stats-link p {
     }
 }
 
+/* Creating space for the sticky mobile menu button */
+@media screen and ((max-width : 764px) or (max-height : 630px)) {
+    .buttons {
+        margin-top: 1rem;
+    }
+
+    .data-card {
+        margin-top: 3.5rem;
+        width: fit-content;
+        height: fit-content;
+    }
+}
 </style>

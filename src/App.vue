@@ -44,7 +44,7 @@ function closeMenu() {
         justify-content: center;
         width: 100%;
     }
-    @media (max-width: 764px), (max-height: 630px) {
+    @media screen and ((max-width: 764px) or (max-height: 630px)) {
         .app {
             flex-direction: column;
         }

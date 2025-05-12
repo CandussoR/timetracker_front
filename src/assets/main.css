@@ -210,6 +210,6 @@ input, select, textarea {
 /* Creating space for the sticky mobile menu button */
 @media screen and ((max-width : 764px) or (max-height : 630px)) {
   main {
-    margin-top: 2.5rem;
+    margin-top: 3rem;
   }
 }

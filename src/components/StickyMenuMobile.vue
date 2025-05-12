@@ -157,7 +157,7 @@ function toggleMobileMenu() {
         font-size: 1.5rem;
         width: 100vw;
         padding: 1rem 0;
-        margin-bottom: 1rem;
+        /* margin-bottom: 1rem; */
     }
 
 
