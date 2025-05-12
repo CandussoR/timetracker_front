@@ -110,7 +110,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue';
+import { computed, ref, watch, onMounted } from 'vue';
 import ModalFrame from '@/components/modals/ModalFrame.vue';
 import Overlay from '@/components/Overlay.vue';
 import VueDatePicker from '@vuepic/vue-datepicker'
