@@ -15,7 +15,6 @@
         <CustomBar :data="taskRatio" />
 
         <TaskRatioList :data="taskRatio" />
-        {{resume}}
         <div id="details" class="details" v-if="!props.date && props.selected !== 'D' && !showDetails && resume && resume.count != 0" @click="loadMore()">
           More details !<span class="material-symbols-outlined">arrow_drop_down</span>
         </div>
