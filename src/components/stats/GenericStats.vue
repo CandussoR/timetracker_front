@@ -79,7 +79,6 @@ const taskRatio = ref(null)
 const showDetails = ref(false)
 
 onMounted(async () => {
-  console.log(resume)
   if (!props.date) {
     resume.value = current_resume.value
     await statStore.getTaskTimeRatio(props.selector)
