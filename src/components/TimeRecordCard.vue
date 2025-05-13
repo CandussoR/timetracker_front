@@ -115,7 +115,7 @@ const editing = ref(false)
 const formRecord = ref({
     date: props.record.date,
     task_name: props.record.task_name,
-    subtask: props.record.subtask | "None",
+    subtask: props.record.subtask,
     tag: props.record.tag,
     // Format for the time picker
     time_beginning: props.record.time_beginning,
