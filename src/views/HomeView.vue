@@ -14,9 +14,11 @@
                     <p class="data-card-data__count">{{ count }} {{ count === 1 ? "timer" : "timers" }}</p>
                     <TimeDisplay v-if="selectedKey && statStore[selectedKey].time" :time="statStore[selectedKey].time" :key="statStore[selectedKey].time"/>
                     <p v-else>--</p>
+                    <div id="stats-link"><p><a @click="router.push('/stats')">More stats</a></p></div>
                 </div>
-                <div id="stats-link"><p><a @click="router.push('/stats')">More stats</a></p></div>
-                <div v-if="loading"><span class="loader"></span></div>
+                <div  class="loader-container" v-else>
+                    <span class="loader"></span>
+                </div>
             </div>
         </div>
 
@@ -108,7 +110,6 @@ div#buttons:last-child {
     display: flex;
     flex-direction: column;
     text-align: center;
-    padding: 1rem 0;
 }
 
 .data-card-data__count {
@@ -126,6 +127,12 @@ div#stats-link p {
     text-align: right;
     font-size: .9em;
     padding-right: 1rem;
+}
+
+.loader-container {
+    display: flex;
+    place-content: center;
+    margin: .5rem 0;
 }
 
 @media screen and (max-width: 720px) {
