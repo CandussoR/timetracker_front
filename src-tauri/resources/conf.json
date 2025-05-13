@@ -1,0 +1,5 @@
+{
+    "database": "./timer_data.db",
+    "timer_sound_path": "",
+    "log_file": "./logs/logs.log"
+}
