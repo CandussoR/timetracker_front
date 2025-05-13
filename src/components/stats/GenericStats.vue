@@ -15,8 +15,8 @@
         <CustomBar :data="taskRatio" />
 
         <TaskRatioList :data="taskRatio" />
-
-        <div id="details" class="details" v-if="!props.date && props.selected !== 'D' && !showDetails" @click="loadMore()">
+        {{resume}}
+        <div id="details" class="details" v-if="!props.date && props.selected !== 'D' && !showDetails && resume && resume.count != 0" @click="loadMore()">
           More details !<span class="material-symbols-outlined">arrow_drop_down</span>
         </div>
 
@@ -59,7 +59,7 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from 'vue';
+import { computed, ref, onMounted, watch } from 'vue';
 import { useStatStore } from '@/stores/stats';
 import formatTime from '@/utils/formatTime';
 import CustomBar from '@/components/stats/CustomBar.vue';
@@ -79,6 +79,7 @@ const taskRatio = ref(null)
 const showDetails = ref(false)
 
 onMounted(async () => {
+  console.log(resume)
   if (!props.date) {
     resume.value = current_resume.value
     await statStore.getTaskTimeRatio(props.selector)
