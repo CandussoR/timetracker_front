@@ -30,7 +30,7 @@
                     <router-link to="/old">
                         <div class="menu-item" :class="{ active: route.path === '/old' }">
                             <span class="material-symbols-outlined">alarm_add</span>
-                            Add Record
+                            Add Old Timer
                         </div>
                     </router-link>
                 </li>

@@ -21,7 +21,7 @@
             <router-link to="/old">
                 <div class="menu-item" :class="{ active: route.path === '/old' }">
                     <span class="material-symbols-outlined svg">alarm_add</span>
-                    <p class="primary" v-show="isExpanded">Add Record</p>
+                    <p class="primary" v-show="isExpanded">Add Old Timer</p>
                 </div>
             </router-link>
             <router-link to="/time_records">
