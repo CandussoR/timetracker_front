@@ -1,10 +1,10 @@
 <template>
     <div>
-        <label for="taskName">Task Name : </label>
+        <label for="taskName" class="sr-only">Task Name : </label>
 
         <select id="taskNameSelect" name="taskName" v-model="selectedTask" @change="emit('selected', selectedTask)" required>
+            <option v-if="!props.task" value="" disabled :selected="props.task ? false : true">Select a task <sup aria-labelledby="Required" title="Required" class="error">*</sup></option>
             <option v-if="props.task" :value="props.task" selected>{{props.task}}</option>
-            <option v-else value="" disabled selected>Select a task</option>
             <option v-for="task in uniqueTasks" :key="task" :value="task">
                 {{ task }}
             </option>
@@ -30,6 +30,4 @@ watch(
 const uniqueTasks = computed(() => new Set(taskStore.tasks.filter(x => x.task_name != props.task).map(x => x.task_name)))
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

@@ -4,7 +4,9 @@
         <form ref="createTaskForm" @submit.prevent="handleSubmit">
             <Info v-if="displayInfo" msg="Task or subtask must not contain any space." />
             <div class="form-input">
-                <label for="newtaskname" hidden="hidden">Task Name</label>
+                <label for="newtaskname" hidden="hidden">Task Name 
+                    <sup aria-labelledby="Required" title="Required" class="error">*</sup>
+                </label>
                 <input id="newtaskname" type="text" placeholder="Task Name" :maxlength="30" v-model="taskname" required/>
             </div>
             <div class="form-input">

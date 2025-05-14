@@ -25,7 +25,9 @@
             <div class="time-record__card--edit" v-if="editing">
                 <fieldset>
                     <legend>Date & Time</legend>
-                    <label class="bold" for="time-record-date">Date : </label>
+                    <label class="bold" for="time-record-date">Date
+                        <sup aria-labelledby="Required" title="Required" class="error">*</sup> : 
+                    </label>
                     <div class="datepicker">
                         <VueDatePicker id="time-record-date" name="time-record-date" v-model="formRecord.date"
                             :minDate="minDate" :maxDate="maxDate" 
@@ -38,13 +40,17 @@
                     </div>
                     <div class="section-inputs">
                         <div class="datepicker">
-                            <label class="bold" for="time-record-beginning">Time Beginning : </label>
+                            <label class="bold" for="time-record-beginning">Beginning
+                                <sup aria-labelledby="Required" title="Required" class="error">*</sup> : 
+                            </label>
                             <VueDatePicker id="time-record-beginning" name="time-record-beginning"
                                 v-model="formRecord.time_beginning" :model-value="formRecord.time_beginning"
                                 model-type="HH:mm:ss" format="HH:mm:ss" time-picker text-input enable-seconds />
                         </div>
                         <div class="datepicker">
-                            <label class="bold" for="time-record-ending">Time Ending :</label>
+                            <label class="bold" for="time-record-ending">Ending
+                                <sup aria-labelledby="Required" title="Required" class="error">*</sup> :
+                            </label>
                             <VueDatePicker id="time-record-ending" name="time-record-ending"
                                 v-model="formRecord.time_ending" :model-value="formRecord.time_ending"
                                 model-type="HH:mm:ss" format="HH:mm:ss" time-picker enable-seconds />
@@ -52,7 +58,9 @@
                     </div>
                 </fieldset>
                 <fieldset id="task__section">
-                    <legend>Task</legend>
+                    <legend>Task 
+                        <sup aria-labelledby="Required" title="Required" class="error">*</sup>
+                    </legend>
                     <div class="section-inputs">
                         <TaskSelect :task="formRecord.task_name" @selected="formRecord.task_name = $event" />
                         <SubtaskSelect :task="formRecord.task_name" :subtask="formRecord.subtask" view="timerForm"
@@ -65,7 +73,7 @@
                 </fieldset>
                 <fieldset>
                     <legend>Log</legend>
-                    <label class="bold" for="log" style="display: none">Log :</label>
+                    <label class="sr-only" for="log">Log :</label>
                     <textarea id="log" name="log" v-model="formRecord.log" />
                 </fieldset>
                 <div class="button-row">

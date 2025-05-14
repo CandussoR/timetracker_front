@@ -6,8 +6,10 @@
             <div class="time-record-form">
     
                 <fieldset id="date__section">
-                    <legend>Date</legend>
-                    <label class="bold" for="time-record-date" hidden>Date : </label>
+                    <legend>Date 
+                        <sup aria-labelledby="Required" title="Required" class="error">*</sup>
+                    </legend>
+                    <label class="sr-only" for="time-record-date">Date : </label>
                     <VueDatePicker id="time-record-date" 
                         name="time-record-date"
                         v-model="date" 
@@ -24,7 +26,7 @@
                 </fieldset>
     
                 <fieldset id="task__section">
-                    <legend>Task
+                    <legend>Task <sup aria-labelledby="Required" title="Required" class="error">*</sup>
                         <!-- Using click.stop to prevent propagation of closeModal -->
                         <span id="add-task-button" class="material-symbols-outlined" v-if="!newTask" @click.stop="newTask = !newTask">add</span> 
                     </legend>
@@ -46,7 +48,9 @@
                     <legend>Time</legend>
                     <div class="section-inputs">
                         <div id="time-beginning">
-                            <label class="bold" for="time-record-beginning">Time Beginning : </label>
+                            <label class="bold" for="time-record-beginning">Beginning
+                                <sup aria-labelledby="Required" title="Required" class="error">*</sup> :
+                            </label>
                             <div class="datepicker">
                                 <VueDatePicker id="time-record-beginning" 
                                                 name="time-record-beginning"
@@ -62,7 +66,9 @@
                             </div>
                         </div>
                         <div id="time-ending">
-                            <label class="bold" for="time-record-ending">Time Ending :</label>
+                            <label class="bold" for="time-record-ending">Ending
+                                <sup aria-labelledby="Required" title="Required" class="error">*</sup> :
+                            </label>
                             <div class="datepicker">
                                 <VueDatePicker id="time-record-ending"
                                                 name="time-record-ending"
@@ -82,7 +88,7 @@
                 
                 <fieldset>
                     <legend>Log</legend>
-                    <label class="bold" for="log">Log :</label> 
+                    <label class="sr-only" for="log">Log :</label> 
                     <textarea id="log" name="log" v-model="log" rows="10" cols="70" placeholder="Write something, if you want."></textarea>
                 </fieldset>
             </div> 
@@ -239,5 +245,17 @@ function setDefaultForm() {
 #another {
     display: flex;
     margin:auto;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <label for="tagInput">Tag (optional) : </label>
+        <label for="tagInput" class="sr-only">Tag (optional) : </label>
         <input
             id="tagInput" name="tagInput" list="tagData" 
             v-model="selectedTag" 

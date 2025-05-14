@@ -38,7 +38,7 @@
             <form @submit.prevent="handleSubmit">
 
                 <fieldset id="task__section" v-if="type !== 'break'">
-                    <legend>Task
+                    <legend>Task <sup aria-labelledby="Required" title="Required" class="error">*</sup>
                         <!-- Using click.stop to prevent propagation of closeModal -->
                         <span id="add-task-button" class="material-symbols-outlined" v-if="!newTask"
                             @click.stop="newTask = !newTask">add</span>
@@ -71,8 +71,8 @@
                             @click.prevent="clock = 'Stopwatch'">Stopwatch</button>
                     </div>
                     <div v-if="clock == 'Timer' || type === 'break'">
-                        <label for="duration">Set your time (in minutes):</label>
-                        <input id="duration" name="duration" type="number" min="0" v-model="duration">
+                        <label for="duration">Set your time (in minutes) :</label>
+                        <input id="duration" name="duration" type="number" min="1" v-model="duration">
                     </div>
                 </fieldset>
 
