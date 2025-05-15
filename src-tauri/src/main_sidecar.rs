@@ -1,6 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use std::os::windows::process::CommandExt;
 use std::sync::{Arc, Mutex};
 use tauri::{Emitter, Manager};
 use tauri_plugin_shell::process::{CommandChild, CommandEvent};
@@ -91,8 +92,12 @@ pub fn kill_sidecar(app_handle: tauri::AppHandle) {
     // Ensure all instances of backend.exe are killed
     #[cfg(target_os = "windows")]
     {
+        // creation_flags : https://doc.rust-lang.org/std/os/windows/process/trait.CommandExt.html#tymethod.creation_flags
+        // CREATE_NO_WINDOW : https://learn.microsoft.com/en-us/windows/win32/procthread/process-creation-flags
+        const CREATE_NO_WINDOW : u32 = 0x08000000;
         let _ = Command::new("taskkill")
             .args(&["/F", "/IM", "timetracker-backend.exe", "/T"])
+            .creation_flags(CREATE_NO_WINDOW)
             .output();
         log::info!("[tauri] Forced all timetracker-backend.exe processes to close.");
     }
