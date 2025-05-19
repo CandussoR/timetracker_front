@@ -31,7 +31,7 @@ pub fn spawn_and_monitor_sidecar(app_handle: tauri::AppHandle) -> Result<(), Str
     // Spawn sidecar
     let sidecar_command = app_handle
         .shell()
-        .sidecar("timetracker-backend")
+        .sidecar(if tauri::is_dev() {"timetracker-backend-dev"} else { "timetracker-backend" })
         .map_err(|e| e.to_string())?;
     let (mut rx, child) = sidecar_command.spawn().map_err(|e| e.to_string())?;
     // Store the child process in the app state
@@ -96,7 +96,7 @@ pub fn kill_sidecar(app_handle: tauri::AppHandle) {
         // CREATE_NO_WINDOW : https://learn.microsoft.com/en-us/windows/win32/procthread/process-creation-flags
         const CREATE_NO_WINDOW : u32 = 0x08000000;
         let _ = Command::new("taskkill")
-            .args(&["/F", "/IM", "timetracker-backend.exe", "/T"])
+            .args(&["/F", "/IM", if tauri::is_dev() { "timetracker-backend-dev.exe" } else { "timetracker-backend.exe" }, "/T"])
             .creation_flags(CREATE_NO_WINDOW)
             .output();
         log::info!("[tauri] Forced all timetracker-backend.exe processes to close.");
@@ -106,7 +106,7 @@ pub fn kill_sidecar(app_handle: tauri::AppHandle) {
     {
         let _ = Command::new("pkill")
             .arg("-f")
-            .arg("timetracker-backend")
+            .arg(if tauri::is_dev() {"timetracker-backend-dev"} else {"timetracker-backend"})
             .output();
         log::info!("[tauri] Forced all timetracker-backend processes to close.");
     }
@@ -115,7 +115,7 @@ pub fn kill_sidecar(app_handle: tauri::AppHandle) {
     {
         let _ = Command::new("pkill")
             .arg("-f")
-            .arg("timetracker-backend")
+            .arg(if tauri::is_dev() {"timetracker-backend-dev"} else {"timetracker-backend"})
             .output();
         log::info!("[tauri] Forced all timetracker-backend processes to close.");
     }
