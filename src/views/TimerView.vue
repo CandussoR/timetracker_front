@@ -14,9 +14,9 @@
             </button>
         </div>
 
-        <TimerComponent @end="handleUpdateEnd($event)" @launch="handleLaunch" @stopped="isRunning = false"
+        <TimerComponent v-if="!success" @end="handleUpdateEnd($event)" @launch="handleLaunch" @stopped="isRunning = false"
             :send="sendTimerEnd" :break="displayInfo.title === 'Break'" :key="displayInfo.title" />
-        <p id="success" name="success" class="success">{{ success }}</p>
+        <p v-else id="success" name="success" class="success">{{ success }}</p>
 
         <Overlay v-if="warnBeforeLeave" />
         <div class="modal" v-if="warnBeforeLeave">
@@ -163,7 +163,7 @@ async function handleUpdateEnd(tr) {
         updateLocalStorage(true)
     } else if (!sendTimerEnd.value) {
         success.value = "Your timer has been saved. You will now be redirected."
-        setTimeout(function() { router.push({ path: '/'})}, 1500)
+        setTimeout(function() { router.push({ path: '/'})}, 775)
     }
 }
 
