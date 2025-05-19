@@ -12,7 +12,7 @@
     </div>
 
     <div v-else-if="props.task">
-        <label for="subtask">Subtask name : </label>
+        <label for="subtask" class="sr-only">Subtask name : </label>
         <select id="subtask-select" name="substask" v-model="selectedSubtask" @change="emit('selected', selectedSubtask)">
             <option value="" disabled>Select a subtask</option>
             <option v-for="subtask in subtasks" :key="subtask" :value="subtask">
