@@ -8,7 +8,7 @@
         <h2 v-if="requestDone">Search Results</h2>
         
         <div id="records-results" class="records-results" v-if="records.length !== 0">
-            <div id="record" v-for="(record, i) in records" :key="record">
+            <div v-for="(record, i) in records" :key="record">
                 <TimeRecordCard :record="record" @updated="handleRecordUpdate(i, $event)"/>
             </div>
             <div id="pagination">
@@ -106,9 +106,6 @@ function resetResults() {
         display: flex;
         flex-direction: column;
         margin: auto;
-    }
-    #record {
-        margin-bottom: 1em;
     }
 
     /* Pagination */

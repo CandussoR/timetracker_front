@@ -53,7 +53,7 @@
                             </label>
                             <VueDatePicker id="time-record-ending" name="time-record-ending"
                                 v-model="formRecord.time_ending" :model-value="formRecord.time_ending"
-                                model-type="HH:mm:ss" format="HH:mm:ss" time-picker enable-seconds />
+                                model-type="HH:mm:ss" format="HH:mm:ss" time-picker text-input enable-seconds />
                         </div>
                     </div>
                 </fieldset>
