@@ -219,4 +219,10 @@ button span {
         margin : 0 auto;
     }
 }
+
+@media screen and (min-height: 550px) and (max-height : 630px) {
+    p.num {
+        margin : 2rem auto;
+    }
+}
 </style>
