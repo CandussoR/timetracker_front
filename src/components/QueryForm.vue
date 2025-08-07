@@ -42,9 +42,9 @@
                             :year-range="[minDate.getFullYear(), maxDate]" placeholder="Select a date" 
                             :locale="lang"/>
                         <VueDatePicker v-if="selectedCriteria.includes('week')" 
-                            id="week" v-model="week" :minDate="minDate" :maxDate="new Date()" 
+                            id="week" v-model="week" :minDate="minDate" :maxDate="getWeekMaxDate()" 
                             model-type="yyyy-MM-dd" week-picker auto-apply preventMinMaxNavigation
-                            :year-range="[minDate.getFullYear(), maxDate]" placeholder="Select a week" 
+                            :year-range="[minDate.getFullYear(), new Date().getFullYear()]" placeholder="Select a week" 
                             :locale="lang" />
                         <VueDatePicker v-if="selectedCriteria.includes('month')" 
                             id="month" v-model="monthYear" :minDate="minDate" :maxDate="new Date()" 
@@ -298,6 +298,15 @@ function handleParams() {
     }
 
     emit('submitted', cleanedForm)
+}
+
+/**
+ * Allowing the selection of a week when in the middle of it.
+ */
+function getWeekMaxDate() {
+    const d = new Date();
+    d.setDate(d.getDate() + (7 - d.getDay() + 1))
+    return d;
 }
 </script>
 
