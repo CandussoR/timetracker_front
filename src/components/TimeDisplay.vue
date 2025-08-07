@@ -2,7 +2,7 @@
     <div id="data-card-row">
         <div id="data-card-data__time-card" class="unit-card" v-for="(num, i) in props.time" :key="num">
              <p id="num" :class="{'num-medium': font === 'medium', 'num': props.font !== 'medium'}">{{ num }}</p>
-            <p id="time" class="time">{{ timeUnits[i] }}</p>
+            <p id="time" class="time">{{ num > 1 ? timeUnits[i] :  timeUnits[i].slice(0, -1) }}</p>
         </div>
     </div>
 </template>
@@ -14,7 +14,7 @@ const props = defineProps(["time", "font"])
 
 const timeUnits = computed(() => {
         if (props.time.length === 4) {
-            return ["day", "hours", "mins", "secs"]
+            return ["days", "hours", "mins", "secs"]
         }
         return ["hours", "mins", "secs"]
     })
