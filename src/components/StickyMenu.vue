@@ -15,19 +15,19 @@
             <router-link to="/new">
                 <div class="menu-item" :class="{ active: route.path === '/new' }">
                     <span class="material-symbols-outlined svg">timer</span>
-                    <p class="primary" v-show="isExpanded">New clock</p>
+                    <p class="primary" v-show="isExpanded">New Clock</p>
                 </div>
             </router-link>
             <router-link to="/old">
                 <div class="menu-item" :class="{ active: route.path === '/old' }">
                     <span class="material-symbols-outlined svg">alarm_add</span>
-                    <p class="primary" v-show="isExpanded">Add Old Timer</p>
+                    <p class="primary" v-show="isExpanded">Catch Up</p>
                 </div>
             </router-link>
             <router-link to="/time_records">
                 <div class="menu-item" :class="{ active: route.path === '/time_records' }">
                     <span class="material-symbols-outlined svg">search</span>
-                    <p class="primary" v-show="isExpanded">New search</p>
+                    <p class="primary" v-show="isExpanded">Search</p>
                 </div>
             </router-link>
             <div id="edit-menu" class="composed">

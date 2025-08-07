@@ -1,6 +1,6 @@
 <template>
     <main id="old-time">
-        <h1>Add an Old Timer</h1>
+        <h1>Catch Up</h1>
         <div class="form-container">
             <form v-if="!record" @submit.prevent="handleSubmit">
             <div class="time-record-form">

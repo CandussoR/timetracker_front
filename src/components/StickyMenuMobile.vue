@@ -21,7 +21,7 @@
                     <router-link to="/new">
                         <div class="menu-item" :class="{ active: route.path === '/new' }">
                             <span class="material-symbols-outlined">alarm</span>
-                            New clock
+                            New Clock
                         </div>
                     </router-link>
                 </li>
@@ -30,7 +30,7 @@
                     <router-link to="/old">
                         <div class="menu-item" :class="{ active: route.path === '/old' }">
                             <span class="material-symbols-outlined">alarm_add</span>
-                            Add Old Timer
+                            Catch Up
                         </div>
                     </router-link>
                 </li>
@@ -39,7 +39,7 @@
                     <router-link to="/time_records">
                         <div class="menu-item" :class="{ active: route.path === '/time_records' }">
                             <span class="material-symbols-outlined">search</span>
-                            New search
+                            Search
                         </div>
                     </router-link>
                 </li>

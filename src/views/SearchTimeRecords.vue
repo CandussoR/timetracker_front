@@ -1,6 +1,6 @@
 <template>
     <main id="search">
-        <h1>Search time records</h1>
+        <h1>Search</h1>
     
         <QueryForm @submitted="handleSubmit($event)" @change="resetResults"/>
         <p v-if="errorMsg" class="error">{{ errorMsg }}</p>

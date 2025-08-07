@@ -1,6 +1,6 @@
 <template>
     <main id="new-clock">
-        <h1>New clock</h1>
+        <h1>New Clock</h1>
 
         <div class="individual-or-flow">
             <div class="box" :class="[{'selected': type == 'ind'}]" @click="type = 'ind'">
