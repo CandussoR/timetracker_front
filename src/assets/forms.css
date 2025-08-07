@@ -14,16 +14,15 @@ form {
 }
 
 fieldset {
-    margin-bottom: 2em; /* Add spacing between fieldsets */
+    margin-bottom: 1rem; /* Add spacing between fieldsets */
     border : 0;
     border-radius: 15px;
     background-color: var(--background-2);
-    padding: 1.5em;
 }
 
 legend {
     display: flex;
-    margin-bottom: 10px; /* Add spacing between legend and content */
+    /* margin-bottom: 10px; Add spacing between legend and content */
     font-weight: bold;
     align-items: center;
 }
