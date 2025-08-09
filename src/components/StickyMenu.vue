@@ -15,7 +15,7 @@
             <router-link to="/new">
                 <div class="menu-item" :class="{ active: route.path === '/new' }">
                     <span class="material-symbols-outlined svg">timer</span>
-                    <p class="primary" v-show="isExpanded">New Clock</p>
+                    <p class="primary" v-show="isExpanded">New</p>
                 </div>
             </router-link>
             <router-link to="/old">
@@ -31,12 +31,12 @@
                 </div>
             </router-link>
             <div id="edit-menu" class="composed">
-                <div id="edit-menu__header" class="menu-item" @click="toggleEditSubmenu"
+                <div id="menu__header" class="menu-item" @click="toggleEditSubmenu"
                     :class="{ active: route.path == '/tasks' || route.path === '/tags' }">
                     <span class="material-symbols-outlined svg">edit</span>
                     <p class="primary" v-show="isExpanded">Edit</p>
                 </div>
-                <div id="edit-menu__submenu" class="submenu" v-if="editSubmenu">
+                <div id="menu__submenu" class="submenu" v-if="editSubmenu">
                     <router-link to="/tasks">
                         <p class="primary submenu-item" :class="{ active: route.path === '/tasks' }">Tasks</p>
                     </router-link>
@@ -47,14 +47,14 @@
             </div>
 
         <div id="stats-menu" class="composed">
-            <div id="stats-menu__header" class="menu-item" @click="toggleStatSubmenu"
-                :class="{ active: route.path === '/stats' || route.path === '/stats/dive' }">
+            <div id="menu__header" class="menu-item" @click="toggleStatSubmenu"
+                :class="{ active: ['statsView', 'statsDive'].includes(route.name) }">
                 <span class="material-symbols-outlined svg">bar_chart</span>
                 <p class="primary" v-show="isExpanded">Stats</p>
             </div>
-            <div id="edit-menu__submenu" class="submenu" v-if="statSubmenu">
-                <router-link to="/stats">
-                    <p class="primary submenu-item" :class="{ active: route.path === '/stats' }">Resume</p>
+            <div id="menu__submenu" class="submenu" v-if="statSubmenu">
+                <router-link :to="{name : 'statsView', params : {period : 'D'}}">
+                    <p class="primary submenu-item" :class="{ active: route.name === 'statsView' }">Resume</p>
                 </router-link>
                 <router-link to="/stats/dive">
                     <p class="primary submenu-item" :class="{ active: route.path === '/stats/dive' }">Dive Into</p>
@@ -210,6 +210,14 @@ function toggleStatSubmenu() {
 .submenu-item.active {
     color: var(--text);
     background: var(--secondary);
+    cursor: default;
+}
+
+#menu__header.menu-item.active,
+#menu__header.menu-item.active p,
+#menu__header.menu-item.active .svg
+{
+    cursor: pointer;
 }
 
 /* Svg + p span style */

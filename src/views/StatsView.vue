@@ -24,11 +24,13 @@
 import { onMounted, ref } from 'vue';
 import { useStatStore } from '../stores/stats';
 import GenericStats from '@/components/stats/GenericStats.vue';
+import { useRoute } from 'vue-router';
 
+const route = useRoute();
 const statStore = useStatStore()
 const loading = ref(true)
 const showDetails = ref(false)
-const selected = ref("D")
+const selected = ref(route.params.period)
 const selector = {
     "D": "day",
     "W": "week",

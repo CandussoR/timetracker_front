@@ -35,7 +35,7 @@ const router = createRouter({
       component: () => import('../views/SearchTimeRecords.vue')
     },
     {
-      path: '/stats',
+      path: '/stats/:period',
       name: 'statsView',
       component: () => import('../views/StatsView.vue')
     },

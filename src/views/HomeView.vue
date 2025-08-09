@@ -14,7 +14,7 @@
                     <p class="data-card-data__count">{{ count }} {{ count === 1 ? "timer" : "timers" }}</p>
                     <TimeDisplay v-if="selectedKey && statStore[selectedKey].time" :time="statStore[selectedKey].time" :key="statStore[selectedKey].time"/>
                     <p v-else>--</p>
-                    <div id="stats-link"><p><a @click="router.push('/stats')">More stats</a></p></div>
+                    <div id="stats-link"><p><a @click="router.push({name : 'statsView', params : {period : selected}})">More stats</a></p></div>
                 </div>
                 <div  class="loader-container" v-else>
                     <span class="loader"></span>

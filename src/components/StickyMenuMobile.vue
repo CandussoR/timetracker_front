@@ -21,7 +21,7 @@
                     <router-link to="/new">
                         <div class="menu-item" :class="{ active: route.path === '/new' }">
                             <span class="material-symbols-outlined">alarm</span>
-                            New Clock
+                            New
                         </div>
                     </router-link>
                 </li>
@@ -69,14 +69,14 @@
                 <li id="stats-menu" class="submenu">
                     <details>
                         <summary id="stats-disclosure" class="menu-item"
-                            :class="{ active: route.path === '/stats' || route.path === '/stats/dive' }">
+                            :class="{ active: route.name === 'statsView' || route.name === 'statsDive' }">
                             <span class="material-symbols-outlined ">bar_chart</span>
                             Stats
                         </summary>
                         <ul id="stats-submenu">
                             <li>
-                                <router-link to="/stats">
-                                    <div class="menu-item" :class="{ active: route.path === '/stats' }">Resume</div>
+                                <router-link :to="{ name: 'statsView', params: { period: 'D' } }">
+                                    <div class="menu-item" :class="{ active: route.name === 'statsView' }">Resume</div>
                                 </router-link>
                             </li>
                             <li>
@@ -199,6 +199,7 @@ li {
 /* Hiding arrows */
 details > summary {
     list-style: none;
+    cursor: pointer
 }
 
 .menu-item {
@@ -207,9 +208,7 @@ details > summary {
     gap: .5rem;
     padding: .3rem 3rem .3rem 1rem;
     align-items: center;
-}
-.menu-item:not(#stats-disclosure, #edit-disclosure) {
-    cursor: pointer;
+    cursor:pointer
 }
 
 .menu-item:hover,.submenu-item:hover {
@@ -226,6 +225,19 @@ a {
   height: 2rem;
   padding: 3px;
   cursor: pointer;
+}
+
+.menu-item.active,
+.menu-item.active .svg,
+.menu-item.active:hover
+{
+    color: var(--text);
+    background: var(--secondary);
+    cursor: default;
+}
+
+summary.menu-item.active, summary.menu-item.active:hover {
+    cursor: pointer;
 }
 
 .submenu {
