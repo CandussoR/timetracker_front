@@ -66,6 +66,15 @@
                     </details>
                 </li>
 
+                <li>
+                    <router-link to="/edit">
+                        <div class="menu-item" :class="{ active: route.path === '/edit' }">
+                            <span class="material-symbols-outlined svg">edit</span>
+                            Edit2
+                        </div>
+                    </router-link>
+                </li>
+
                 <li id="stats-menu" class="submenu">
                     <details>
                         <summary id="stats-disclosure" class="menu-item"

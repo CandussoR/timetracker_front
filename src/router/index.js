@@ -63,6 +63,11 @@ const router = createRouter({
       path: '/flow/edit',
       name: 'FlowEditView',
       component: () => import('../views/FlowView.vue')
+    },
+    {
+      path: '/edit',
+      name: 'EditView',
+      component: () => import('../views/EditView.vue')
     }
   ]
 })

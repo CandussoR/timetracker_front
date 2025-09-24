@@ -45,6 +45,12 @@
                     </router-link>
                 </div>
             </div>
+            <router-link to="/edit">
+                <div class="menu-item" :class="{ active: route.path === '/edit' }">
+                    <span class="material-symbols-outlined svg">edit</span>
+                    <p class="primary" v-show="isExpanded">Edit2</p>
+                </div>
+            </router-link>
 
         <div id="stats-menu" class="composed">
             <div id="menu__header" class="menu-item" @click="toggleStatSubmenu"
