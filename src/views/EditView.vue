@@ -2,8 +2,12 @@
     <main>
         <h1>Edit</h1>
 
-        <form>
-            <select @change="handleSelected">
+        <form @change.prevent="handleForm">
+            <select name="tamere">
+                <option value='Modify' selected default>Modify</option>
+                <option value='Delete'>Delete</option>
+            </select>
+            <select name="tonpere" @change="handleSelected">
                 <option value="">--</option>
                 <option value="Task">Task</option>
                 <option value="Tags">Tags</option>
@@ -21,10 +25,24 @@
 
         <div class="row">
             <button @click="modify = !modify">Modify</button>
-            <button @click="confirmDelete = true">Delete</button>
+            <button @click="checkIfUsed" :disabled="!canDelete & editedField === 'Task'">Delete</button>
         </div>
 
-        <ConfirmDeleteModal v-if="confirmDelete"></ConfirmDeleteModal>
+        <div v-if="!canDelete">
+            <p>This item is used by some records. {{ editedField === 'Task' ? 'It cannot be deleted before setting another task for the records.' : '' }}</p>
+            <div v-if="editedField === 'Tags'">
+                <button v-if="editedField === 'Tags'" @click="handleDeleteChoice('confirm')">Delete</button>
+                <button v-else>Modify</button>
+            </div>
+        </div>
+
+        <ConfirmDeleteModal v-if="displayModal"></ConfirmDeleteModal>
+
+        <p class="success" v-if="success">{{fieldPh}} successfully deleted.</p>
+        <div v-else>
+            <p class="" v-if="editedField === 'Task'">The {{fieldPh}} is used.</p>
+        </div>
+        
     </main>
 </template>
 
@@ -35,20 +53,41 @@ import TagSelect from '@/components/select/TagSelect.vue';
 import ConfirmDeleteModal from '@/components/modals/ConfirmDeleteModal.vue';
 import { useTaskStore } from '@/stores/task';
 import { useTagStore } from '@/stores/tag';
-import { ref, provide } from 'vue';
+import { ref, provide, computed } from 'vue';
 
 const editedField = ref("");
 const task = ref(null);
 const subtask = ref(null);
-const confirmDelete = ref(false);
+const displayModal = ref(false);
 const modify = ref(false);
+const canDelete = ref(null);
 const taskStore = useTaskStore();
 const tagStore = useTagStore();
+const fieldPh = computed(() => { editedField.value === 'Tags' ? 'Tag' : 'Task'})
 
 function handleSelected(event) {
     if (event.target.value == editedField.value) return ;
 
     editedField.value = event.target.value;
+}
+
+function handleForm(event) {
+    console.log(event.elements);
+}
+
+function closeModal() {
+  displayModal.value = false
+}
+
+async function checkIfUsed() {
+    const isUsed = editedField === 'Tasks' ? taskStore.taskIsUsed() : tagStore.tagIsUsed();
+    if (!isUsed) {
+        canDelete.value = true;
+        displayModal.value = true;
+        return;
+    } else {
+        canDelete.value = false;
+    }
 }
 
 async function handleDeleteChoice(choice) {
@@ -66,6 +105,8 @@ async function handleDeleteChoice(choice) {
             .then((res) => console.log(res))
             .catch((error) => console.log(error))
     }
+
+    canDelete.value = null;
 }
 
 provide('confirmDelete', handleDeleteChoice)
