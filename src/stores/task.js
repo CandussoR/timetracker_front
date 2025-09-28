@@ -79,5 +79,20 @@ export const useTaskStore = defineStore('tasks', () => {
         }
     }
 
-    return {tasks, uniqueTasks, createdTask, createdSubtask, isCreated, index, createTask, deleteTask, reset}
+    /**
+     * 
+     * @param {string} guid
+     */
+    async function isTaskUsed(guid) {
+        const res = await axios.get(`/task/${guid}`);
+        if (res.status === 200) {
+            return 200, res.data.isUsed
+        } else if ([400, 404].includes(res.status)) {
+            return 400, res.data
+        } else {
+            return 500, "An error occured."
+        }
+    }
+
+    return {tasks, uniqueTasks, createdTask, createdSubtask, isCreated, index, createTask, deleteTask, reset, isTaskUsed}
 })

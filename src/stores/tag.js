@@ -60,5 +60,16 @@ export const useTagStore = defineStore('tags', () => {
         }
     }
 
-   return {tags, createdTag, isCreated, index, createTag, deleteTag, reset}
+    async function isTagUsed(guid) {
+        const res = await axios.get(`/tag/used/${guid}`);
+        if (res.status === 200) {
+            return 200, res.data.isUsed;
+        } else if ([400, 404].includes(res.status)) {
+            return 400, res.data;
+        } else {
+            return 500, "An error occured.";
+        }
+    }
+
+   return {tags, createdTag, isCreated, index, createTag, deleteTag, reset, isTagUsed}
 })

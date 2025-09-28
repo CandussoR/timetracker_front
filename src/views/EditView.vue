@@ -1,46 +1,38 @@
 <template>
     <main>
         <h1>Edit</h1>
+        <h2>Task & Tags</h2>
 
-        <form @change.prevent="handleForm">
-            <select name="tamere">
+        <form @change.prevent="handleSelected">
+            <select name="action">
                 <option value='Modify' selected default>Modify</option>
                 <option value='Delete'>Delete</option>
             </select>
-            <select name="tonpere" @change="handleSelected">
-                <option value="">--</option>
+            <select name="field">
+                <option value="" default disabled>--</option>
                 <option value="Task">Task</option>
                 <option value="Tags">Tags</option>
             </select>
         </form>
 
-        <div class="section-inputs" v-if="editedField === 'Task'">
+        <div class="section-inputs" v-if="formData.field === 'Task'">
             <TaskSelect :task="task" @selected="task = $event" />
             <SubtaskSelect :task="task" view="edit" @selected="subtask = $event" />
         </div>
-
-        <div class="section-inputs" v-if="editedField === 'Tags'">
-            <TagSelect></TagSelect>
-        </div>
-
-        <div class="row">
-            <button @click="modify = !modify">Modify</button>
-            <button @click="checkIfUsed" :disabled="!canDelete & editedField === 'Task'">Delete</button>
+        <div class="section-inputs" v-else>
+            <TagSelect :tag="tag"></TagSelect>
         </div>
 
         <div v-if="!canDelete">
-            <p>This item is used by some records. {{ editedField === 'Task' ? 'It cannot be deleted before setting another task for the records.' : '' }}</p>
-            <div v-if="editedField === 'Tags'">
-                <button v-if="editedField === 'Tags'" @click="handleDeleteChoice('confirm')">Delete</button>
-                <button v-else>Modify</button>
-            </div>
+            <p>This item is used by some records. {{ formData.field === 'Task' ? 'It cannot be deleted before setting another task for the records.' : '' }}</p>
         </div>
 
+        <button v-if="formData.old_guid && formData.new_guid" @click="send">Send</button>
         <ConfirmDeleteModal v-if="displayModal"></ConfirmDeleteModal>
 
         <p class="success" v-if="success">{{fieldPh}} successfully deleted.</p>
         <div v-else>
-            <p class="" v-if="editedField === 'Task'">The {{fieldPh}} is used.</p>
+            <p class="" v-if="formData.field === 'Task'">The {{fieldPh}} is used.</p>
         </div>
         
     </main>
@@ -55,53 +47,79 @@ import { useTaskStore } from '@/stores/task';
 import { useTagStore } from '@/stores/tag';
 import { ref, provide, computed } from 'vue';
 
-const editedField = ref("");
+const taskStore = useTaskStore();
+const tagStore = useTagStore();
+const tag = ref(null);
 const task = ref(null);
 const subtask = ref(null);
 const displayModal = ref(false);
-const modify = ref(false);
-const canDelete = ref(null);
-const taskStore = useTaskStore();
-const tagStore = useTagStore();
-const fieldPh = computed(() => { editedField.value === 'Tags' ? 'Tag' : 'Task'})
+const formData = ref({ action : 'Modify', field : null, old_guid : null, new_guid : null });
+const success = ref(null);
+const updateSuccess = ref(null);
+
+const fieldPh = computed(() => {
+    if (formData.value.field) return null;
+    return formData.value.field === 'Tags' ? 'Tag' : 'Task' 
+})
+const retrievedGuid = computed(() => {
+    if (formData.value.field === 'Tags') {
+        return tagStore.tags.filter((tag) => tag.name === tag.value) .map((task) => task.guid)[0] ;
+    }
+
+    if (!(task.value && subtask.value)) {
+        return taskStore.tasks.filter((task) => task.task_name == task.value && task.subtask == subtask.value)
+            .map((task) => task.guid)[0];
+    }
+
+    return null;
+})
+const isUsed = computed(() => retrievedGuid.value && formData.value.field === 'Tags' ? tagStore.isTagUsed(retrievedGuid.value) : taskStore.isTaskUsed(retrievedGuid.value));
+const canDelete = computed(() => isUsed.value ? false : true)
 
 function handleSelected(event) {
-    if (event.target.value == editedField.value) return ;
-
-    editedField.value = event.target.value;
-}
-
-function handleForm(event) {
-    console.log(event.elements);
+    if (event.target.name === "action" && !formData.value.field) {
+        return;
+    }
+    
+    event.target.name === 'action' ? formData.value.action = event.target.value : formData.value.field = event.target.value;
 }
 
 function closeModal() {
   displayModal.value = false
 }
 
-async function checkIfUsed() {
-    const isUsed = editedField === 'Tasks' ? taskStore.taskIsUsed() : tagStore.tagIsUsed();
-    if (!isUsed) {
-        canDelete.value = true;
-        displayModal.value = true;
-        return;
-    } else {
-        canDelete.value = false;
+async function handleUpdate() {
+    try {
+        let res = null;
+        if (formData.value.field === 'Tags') {
+            // TODO : create
+            res = await tagStore.updateAll(formData.value.old_guid, formData.value.new_guid);
+        } else {
+            // TODO : create
+            res = await taskStore.updateAll(formData.value.old_guid, formData.value.new_guid);
+        }
+
+        if (res.status === 200) {
+            updateSuccess.value = true;
+        }
+    } catch (err) {
+        updateSuccess.value = false;
+        console.error(err);
     }
 }
 
-async function handleDeleteChoice(choice) {
+async function handleDelete(choice) {
     if (choice === 'canceled') {
         closeModal()
         return;
     }
 
-    if (selectedField.value === 'Tags') {
-        tagStore.deleteTag(guidToDelete.value)
+    if (formData.value.field === 'Tags') {
+        tagStore.deleteTag(retrievedGuid.value)
             .then((res) => console.log(res))
             .catch((error) => console.log(error))
     } else {
-        taskStore.deleteTask(guidToDelete.value)
+        taskStore.deleteTask(retrievedGuid.value)
             .then((res) => console.log(res))
             .catch((error) => console.log(error))
     }
@@ -109,7 +127,17 @@ async function handleDeleteChoice(choice) {
     canDelete.value = null;
 }
 
-provide('confirmDelete', handleDeleteChoice)
+
+function send() {
+   if (formData.field.value === 'Delete' && canDelete.value) {
+    handleDelete('confirm');
+    return;
+   } 
+
+   handleUpdate();
+}
+
+provide('confirmDelete', handleDelete)
 </script>
 
 <style scoped>
