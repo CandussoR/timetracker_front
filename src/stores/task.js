@@ -94,5 +94,16 @@ export const useTaskStore = defineStore('tasks', () => {
         }
     }
 
-    return {tasks, uniqueTasks, createdTask, createdSubtask, isCreated, index, createTask, deleteTask, reset, isTaskUsed}
+    async function modify(guid, new_value) {
+        const res = await axios.put(`/task/${guid}`, {new_value : new_value});
+        if (res.status === 200) {
+            tags.value.find(t => t.guid === guid).name = new_value;
+        } else if ([400, 404].includes(res.status)) {
+            return 400, res.data;
+        } else {
+            return 500, "An error occured.";
+        }
+    }
+
+    return {tasks, uniqueTasks, createdTask, createdSubtask, isCreated, index, createTask, deleteTask, reset, isTaskUsed, modify}
 })

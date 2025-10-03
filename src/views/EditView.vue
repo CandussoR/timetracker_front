@@ -3,38 +3,60 @@
         <h1>Edit</h1>
         <h2>Task & Tags</h2>
 
-        <form @change.prevent="handleSelected">
-            <select name="action">
-                <option value='Modify' selected default>Modify</option>
-                <option value='Delete'>Delete</option>
-            </select>
+        <form @change.prevent="field = $event.target.value">
             <select name="field">
-                <option value="" default disabled>--</option>
+                <option value="" default selected disabled>--</option>
                 <option value="Task">Task</option>
-                <option value="Tags">Tags</option>
+                <option value="Tag">Tag</option>
             </select>
         </form>
 
-        <div class="section-inputs" v-if="formData.field === 'Task'">
-            <TaskSelect :task="task" @selected="task = $event" />
-            <SubtaskSelect :task="task" view="edit" @selected="subtask = $event" />
-        </div>
-        <div class="section-inputs" v-else>
-            <TagSelect :tag="tag"></TagSelect>
-        </div>
-
-        <div v-if="!canDelete">
-            <p>This item is used by some records. {{ formData.field === 'Task' ? 'It cannot be deleted before setting another task for the records.' : '' }}</p>
+        <div v-if="field && !action">
+            <div class="section-inputs" v-if="field === 'Task'">
+                <TaskSelect :task="task" @selected="task = $event" />
+                <SubtaskSelect :task="task" view="edit" @selected="subtask = $event" />
+            </div>
+            <div class="section-inputs" v-else>
+                <TagSelect :tag="tag"></TagSelect>
+            </div>
         </div>
 
-        <button v-if="formData.old_guid && formData.new_guid" @click="send">Send</button>
+        <div v-if="initGuid">
+            <button @click="action = 'Modify'">Modify</button>
+            <button @click="action = 'Repurpose'">Repurpose</button>
+            <button v-if="canDelete || tag">Delete</button>
+        </div>
+
+
+        <div v-if="initGuid && (!canDelete || action !== 'Delete')">
+            <div v-if="field === 'Task'">
+                <div v-if="action === 'Repurpose'">
+                    <TaskSelect :task="newTask" @selected="task = $event" />
+                    <SubtaskSelect :task="newTask" view="edit" @selected="subtask = $event" />
+                </div>
+                <div>
+                    <TaskSelect :task="newTask" @selected="newTask = $event" />
+                    <SubtaskSelect :task="newTask" view="edit" @selected="newSubtask = $event" />
+                </div>
+            </div>
+            <div v-else>
+                <div v-if="action === 'Repurpose'">
+                    <TagSelect :tag="tag"></TagSelect>
+                </div>
+                <div>
+                    <input type="text">
+                </div>
+            </div>
+        </div>
+
+        <button v-if="validateBeforeSend" @click="send">Send</button>
         <ConfirmDeleteModal v-if="displayModal"></ConfirmDeleteModal>
 
-        <p class="success" v-if="success">{{fieldPh}} successfully deleted.</p>
-        <div v-else>
-            <p class="" v-if="formData.field === 'Task'">The {{fieldPh}} is used.</p>
+        <div v-if="updateSuccess">
+            <p class="success" v-if="success">{{ fieldPh }} successfully deleted.</p>
+            <p class="error" v-else>An error occurred.</p>
         </div>
-        
+
     </main>
 </template>
 
@@ -52,51 +74,95 @@ const tagStore = useTagStore();
 const tag = ref(null);
 const task = ref(null);
 const subtask = ref(null);
+const newTag = ref(null);
+const newTask = ref(null);
+const newSubtask = ref(null);
 const displayModal = ref(false);
-const formData = ref({ action : 'Modify', field : null, old_guid : null, new_guid : null });
 const success = ref(null);
 const updateSuccess = ref(null);
+const field = ref(null);
+const action = ref(null);
+
 
 const fieldPh = computed(() => {
-    if (formData.value.field) return null;
-    return formData.value.field === 'Tags' ? 'Tag' : 'Task' 
-})
-const retrievedGuid = computed(() => {
-    if (formData.value.field === 'Tags') {
-        return tagStore.tags.filter((tag) => tag.name === tag.value) .map((task) => task.guid)[0] ;
+    if (field.value) return null;
+    return field.value === 'Tags' ? 'Tag' : 'Task' 
+});
+
+const isUsed = computed(() => {
+    if (!initGuid.value) return true;
+    return field.value === 'Tags' ? tagStore.isTagUsed(initGuid.value) : taskStore.isTaskUsed(initGuid.value)
+});
+
+const canDelete = computed(() => isUsed.value ? false : true);
+
+const initGuid = computed(() => {
+    if (action.value !== 'Repurpose') return;
+
+    if (action.value === 'Tags') {
+        return tagStore.tags.filter((tag) => tag.name === tag.value).map((tag) => tag.guid)[0];
     }
 
     if (!(task.value && subtask.value)) {
         return taskStore.tasks.filter((task) => task.task_name == task.value && task.subtask == subtask.value)
             .map((task) => task.guid)[0];
     }
+});
 
-    return null;
-})
-const isUsed = computed(() => retrievedGuid.value && formData.value.field === 'Tags' ? tagStore.isTagUsed(retrievedGuid.value) : taskStore.isTaskUsed(retrievedGuid.value));
-const canDelete = computed(() => isUsed.value ? false : true)
+const newGuid = computed(() => {
+    if (action.value !== 'Repurpose') return;
 
-function handleSelected(event) {
-    if (event.target.name === "action" && !formData.value.field) {
-        return;
+    if (field.value === 'Tags') {
+        return tagStore.tags.filter((tag) => tag.name === newTag.value).map((tag) => tag.guid)[0];
     }
-    
-    event.target.name === 'action' ? formData.value.action = event.target.value : formData.value.field = event.target.value;
-}
+
+    if (!(newTask.value && newSubtask.value)) {
+        return taskSotre.tasks.filter((newTask) => task.task_name == newTask.value && task.subtask == newSubtask.value)
+            .map((newTask) => newTask.guid)[0];
+    }
+})
+
+const newValue = computed(() => {
+    if (action.value !== 'Modify') return;
+    return field.value == 'Tag' ? newTag.value : {task : newTask.value, subtask : newSubtask.value};
+})
 
 function closeModal() {
   displayModal.value = false
 }
 
-async function handleUpdate() {
+function validateBeforeSend() {
+    if (action.value == 'Repurpose' && initGuid.value && newGuid.value) return true;
+    if (action.value == 'Modify' && newValue.value) return true;
+    return false;
+}
+
+function send() {
+   if (action.value === 'Delete' && canDelete.value) {
+    handleDelete('confirm');
+    return;
+   } 
+
+   if (action.value === 'Repurpose') {
+        handleRepurpose(initGuid.value, newGuid.value);
+        return;
+   }
+
+   handleModify(initGuid.value, newValue.value);
+}
+
+/**
+ * Used to modify the reference to a task-subtask or tag in a record
+ **/
+async function handleRepurpose(old_guid, new_guid) {
     try {
         let res = null;
-        if (formData.value.field === 'Tags') {
+        if (field.value === 'Tags') {
             // TODO : create
-            res = await tagStore.updateAll(formData.value.old_guid, formData.value.new_guid);
+            res = await tagStore.updateAll(old_guid, new_guid);
         } else {
             // TODO : create
-            res = await taskStore.updateAll(formData.value.old_guid, formData.value.new_guid);
+            res = await taskStore.updateAll(old_guid, new_guid);
         }
 
         if (res.status === 200) {
@@ -114,12 +180,12 @@ async function handleDelete(choice) {
         return;
     }
 
-    if (formData.value.field === 'Tags') {
-        tagStore.deleteTag(retrievedGuid.value)
+    if (field.value === 'Tags') {
+        tagStore.deleteTag(initGuid.value)
             .then((res) => console.log(res))
             .catch((error) => console.log(error))
     } else {
-        taskStore.deleteTask(retrievedGuid.value)
+        taskStore.deleteTask(initGuid.value)
             .then((res) => console.log(res))
             .catch((error) => console.log(error))
     }
@@ -127,14 +193,29 @@ async function handleDelete(choice) {
     canDelete.value = null;
 }
 
+/**
+ * Used when correcting or changing a tag or a task-subtask itself
+ * @param {string} old_guid 
+ * @param {string | Object} new_value 
+ **/
+async function handleModify(old_guid, new_value) {
+    try {
+        let res = null;
+        if (field.value === 'Tags') {
+            // TODO : create
+            res = await tagStore.modify(old_guid, new_value);
+        } else {
+            // TODO : create
+            res = await taskStore.modify(old_guid, new_value);
+        }
 
-function send() {
-   if (formData.field.value === 'Delete' && canDelete.value) {
-    handleDelete('confirm');
-    return;
-   } 
-
-   handleUpdate();
+        if (res.status === 200) {
+            updateSuccess.value = true;
+        }
+    } catch (err) {
+        updateSuccess.value = false;
+        console.error(err);
+    }
 }
 
 provide('confirmDelete', handleDelete)

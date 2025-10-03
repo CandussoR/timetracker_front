@@ -49,8 +49,8 @@ export const useTagStore = defineStore('tags', () => {
      * 
      * @param {string} guid 
      */
-    function deleteTag(guid) {
-        const res = axios.delete(`/tag/${guid}`)
+    async function deleteTag(guid) {
+        const res = await axios.delete(`/tag/${guid}`)
         if (res.status == 200) {
             tags.value = tags.value.filter((tag) => tag.guid != guid)
         } else if (res.status == 400) {
@@ -71,5 +71,16 @@ export const useTagStore = defineStore('tags', () => {
         }
     }
 
-   return {tags, createdTag, isCreated, index, createTag, deleteTag, reset, isTagUsed}
+    async function modify(guid, new_value) {
+        const res = await axios.put(`/tag/${guid}`, {new_value : new_value});
+        if (res.status === 200) {
+            tags.value.find(t => t.guid === guid).name = new_value;
+        } else if ([400, 404].includes(res.status)) {
+            return 400, res.data;
+        } else {
+            return 500, "An error occured.";
+        }
+    }
+
+   return {tags, createdTag, isCreated, index, createTag, deleteTag, reset, isTagUsed, modify}
 })
