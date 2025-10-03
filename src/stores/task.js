@@ -94,10 +94,11 @@ export const useTaskStore = defineStore('tasks', () => {
         }
     }
 
-    async function modify(guid, new_value) {
-        const res = await axios.put(`/task/${guid}`, {new_value : new_value});
+    async function update(task) {
+        const res = await axios.put(`/task`, task);
         if (res.status === 200) {
-            tags.value.find(t => t.guid === guid).name = new_value;
+            tasks.value = tasks.value.filter(t => t.guid != task.guid)
+            tasks.value.push(task);
         } else if ([400, 404].includes(res.status)) {
             return 400, res.data;
         } else {
@@ -105,5 +106,17 @@ export const useTaskStore = defineStore('tasks', () => {
         }
     }
 
-    return {tasks, uniqueTasks, createdTask, createdSubtask, isCreated, index, createTask, deleteTask, reset, isTaskUsed, modify}
+    return {
+        tasks,
+        uniqueTasks,
+        createdTask,
+        createdSubtask,
+        isCreated,
+        index,
+        createTask,
+        deleteTask,
+        reset,
+        isTaskUsed,
+        update,
+    };
 })

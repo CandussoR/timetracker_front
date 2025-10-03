@@ -203,10 +203,10 @@ async function handleModify(old_guid, new_value) {
         let res = null;
         if (field.value === 'Tags') {
             // TODO : create
-            res = await tagStore.modify(old_guid, new_value);
+            res = await tagStore.update({"guid" : old_guid, "tag" : new_value});
         } else {
             // TODO : create
-            res = await taskStore.modify(old_guid, new_value);
+            res = await taskStore.update({"guid" : old_guid, ...new_value});
         }
 
         if (res.status === 200) {

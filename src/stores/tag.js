@@ -71,8 +71,8 @@ export const useTagStore = defineStore('tags', () => {
         }
     }
 
-    async function modify(guid, new_value) {
-        const res = await axios.put(`/tag/${guid}`, {new_value : new_value});
+    async function update(tag) {
+        const res = await axios.put('/tag', tag);
         if (res.status === 200) {
             tags.value.find(t => t.guid === guid).name = new_value;
         } else if ([400, 404].includes(res.status)) {
@@ -82,5 +82,15 @@ export const useTagStore = defineStore('tags', () => {
         }
     }
 
-   return {tags, createdTag, isCreated, index, createTag, deleteTag, reset, isTagUsed, modify}
+   return {
+       tags,
+       createdTag,
+       isCreated,
+       index,
+       createTag,
+       deleteTag,
+       reset,
+       isTagUsed,
+       update,
+   };
 })
