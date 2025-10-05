@@ -28,13 +28,19 @@
         </div>
 
 
-        <div v-if="initGuid && (!canDelete || action !== 'Delete')">
+        <div v-if="initGuid && action && (!canDelete || action !== 'Delete')">
+            {{field}}
             <div v-if="field === 'Task'">
                 <div v-if="action === 'Repurpose'">
-                    <TaskSelect :task="newTask" @selected="task = $event" />
-                    <SubtaskSelect :task="newTask" view="edit" @selected="subtask = $event" />
+                    <div>
+                        <h3>Old Task</h3>
+                    <TaskSelect :task="task" @selected="task = $event" />
+                    <SubtaskSelect :task="newTask" :subtask="subtask" view="edit" @selected="subtask = $event" />
+                    </div>
+
                 </div>
                 <div>
+                    <h3>New Task</h3>
                     <TaskSelect :task="newTask" @selected="newTask = $event" />
                     <SubtaskSelect :task="newTask" view="edit" @selected="newSubtask = $event" />
                 </div>
@@ -68,6 +74,7 @@ import ConfirmDeleteModal from '@/components/modals/ConfirmDeleteModal.vue';
 import { useTaskStore } from '@/stores/task';
 import { useTagStore } from '@/stores/tag';
 import { ref, provide, computed } from 'vue';
+import { useTimeRecordStore } from '@/stores/timeRecord';
 
 const taskStore = useTaskStore();
 const tagStore = useTagStore();
@@ -97,14 +104,14 @@ const isUsed = computed(() => {
 const canDelete = computed(() => isUsed.value ? false : true);
 
 const initGuid = computed(() => {
-    if (action.value !== 'Repurpose') return;
+    // if (action.value !== 'Repurpose') return;
 
     if (action.value === 'Tags') {
         return tagStore.tags.filter((tag) => tag.name === tag.value).map((tag) => tag.guid)[0];
     }
 
     if (!(task.value && subtask.value)) {
-        return taskStore.tasks.filter((task) => task.task_name == task.value && task.subtask == subtask.value)
+        return taskStore.tasks.filter((t) => t.task_name == task.value && t.subtask == subtask.value)
             .map((task) => task.guid)[0];
     }
 });
@@ -156,14 +163,7 @@ function send() {
  **/
 async function handleRepurpose(old_guid, new_guid) {
     try {
-        let res = null;
-        if (field.value === 'Tags') {
-            // TODO : create
-            res = await tagStore.updateAll(old_guid, new_guid);
-        } else {
-            // TODO : create
-            res = await taskStore.updateAll(old_guid, new_guid);
-        }
+        res = await useTimeRecordStore().updateAll({"field": field.value == "Tags" ? "tag" : "task", "old_guid": old_guid, "new_guid" : new_guid});
 
         if (res.status === 200) {
             updateSuccess.value = true;

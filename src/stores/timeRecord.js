@@ -71,5 +71,16 @@ export const useTimeRecordStore = defineStore('timeRecord', () => {
         }
     }
 
-    return { timeRecords, displayOngoingInfos, createTimeRecord, updateTimeRecord, getTimeRecords, reset }
+
+    async function repurpose(obj) {
+        try {
+            const tr = {"type" : "repurpose", "data" : obj}
+            const res = await axios.put('/time_records', tr)
+            return res.data
+        } catch(e) {
+            throw new Error("An error occured")
+        }
+   }
+
+    return { timeRecords, displayOngoingInfos, createTimeRecord, updateTimeRecord, getTimeRecords, reset, repurpose }
 })
