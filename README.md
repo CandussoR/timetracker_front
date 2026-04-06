@@ -17,3 +17,7 @@ VITE_APP_IP_DEV = <your.server.adress:port>
 VITE_APP_RING = "./src/assets/timer_end.mp3"
 ```
 * Run your project with `npm run dev`.
+
+# To run the sidecar with tauri
+```npm run tauri dev --config src-tauri/tauri.dev.conf.json```
+- If for some reason this doesn't work, you should compile the binary from the timetracker back repo and create it in src-tauri/name-of-bin. You can then double click it to launch the side-car.
