@@ -45,29 +45,30 @@ const genericRequest = ref(null)
 
 async function handleSubmit(cleanedForm) {
     mountGeneric.value = false
-    if (!("stats" in cleanedForm)) {
+    // if (!("stats" in cleanedForm)) {
         genericRequest.value = null
         mountGeneric.value = true;
         genericRequest.value = getGenericRequestInfo(cleanedForm)
         queryCount.value++;
         return;
-    }
-    stats.value = null
-    logs.value = null
-    const res = await statStore.getQueriedStats(cleanedForm)
-    const keys = Object.keys(res.data)
-    console.log(keys)
-    if (keys.includes("stats")) {
-        stats.value = res.data["stats"]
-    }
-    if (keys.includes("logs")) {
-        logs.value = res.data["logs"]
-    }
-    queryCount.value++;
+    // }
+    // Dead code for now
+    // console.log(keys)
+    // stats.value = null
+    // logs.value = null
+    // const res = await statStore.getQueriedStats(cleanedForm)
+    // const keys = Object.keys(res.data)
+    // if (keys.includes("stats")) {
+    //     stats.value = res.data["stats"]
+    // }
+    // if (keys.includes("logs")) {
+    //     logs.value = res.data["logs"]
+    // }
+    // queryCount.value++;
 }
 
 function getGenericRequestInfo(form) {
-    if ("day" in form) {
+if ("day" in form) {
         return {'selector': 'day', 'selected' : 'D', 'date' : form['day']}
     } else if ("week" in form) {
         return {'selector': 'week', 'selected' : 'W', 'date' : form['week']}
@@ -75,6 +76,9 @@ function getGenericRequestInfo(form) {
         return {'selector': 'month', 'selected' : 'M', 'date' : form['month']}
     } else if ("year" in form) {
         return {'selector': 'year', 'selected' : 'Y', 'date' : String(form['year'])}
+    } else if ("rangeBeginning" in form) {
+        console.log("there's a range in the form")
+        return {'selector': 'range', 'selected' : 'r', 'date' : form['rangeBeginning']}
     }
 }
 
