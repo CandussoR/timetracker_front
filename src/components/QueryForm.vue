@@ -151,9 +151,9 @@ const minDate = ref(null)
 const maxDate = new Date().getFullYear()
 const criteria = ref(null)
 const possibleCriteria = computed(() => {
-    let ret = ['day', 'week', 'month', 'year', 'log includes']
+    let ret = ['day', 'week', 'month', 'year', 'range', 'task', 'log includes']
     if (!(props.stats)) {
-        ret.push('range', 'task', 'tag')
+        ret.push('task', 'tag')
     }
     return ret
 })
@@ -211,7 +211,7 @@ onMounted(async () => {
  */
 function handleCriteria(selected) {
     const timespans = ['day', 'week', 'month', 'year', 'range']
-    const vars = [day, week, monthYear, year]
+    const vars = [day, week, monthYear, year, rangeBeginning, rangeEnding]
     if (timespans.includes(selected)) {
         // filters out all the criterias that are not included in timespans
         selectedCriteria.value = selectedCriteria.value.filter((c) => !timespans.includes(c))
@@ -229,8 +229,8 @@ function handleCriteria(selected) {
  */
 function deleteSection(section) {
     if (section === "time") {
-        const timespans = ['day', 'week', 'month', 'year']
-        const vars = [day, week, monthYear, year]
+        const timespans = ['day', 'week', 'month', 'year', 'range']
+        const vars = [day, week, monthYear, year, rangeBeginning, rangeEnding]
         selectedCriteria.value = selectedCriteria.value.filter((c) => !timespans.includes(c))
         vars.forEach(element => {element.value = null})
     } else if (section === "task") {
@@ -288,14 +288,15 @@ function handleParams() {
     // Cleaning entries with null values
     const cleanedForm = cleanObject(form)
 
-    if (props.stats) {
-        if (rangeBeginning.value & statForm.value.length === 0) {
-            errorMsg.value = "You must specify the stat elements you want for a custom range."
-            return ;
-        }
-        if (statForm.value.length !== 0) cleanedForm["stats"] = statForm.value
-        if (getLogsWithStats.value) cleanedForm["logs"] = true
-    }
+    // Dead Code for now
+    // if (props.stats) {
+    //     if (rangeBeginning.value & statForm.value.length === 0) {
+    //         errorMsg.value = "You must specify the stat elements you want for a custom range."
+    //         return ;
+    //     }
+    //     if (statForm.value.length !== 0) cleanedForm["stats"] = statForm.value
+    //     if (getLogsWithStats.value) cleanedForm["logs"] = true
+    // }
 
     emit('submitted', cleanedForm)
 }

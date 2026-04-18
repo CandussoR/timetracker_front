@@ -15,7 +15,8 @@
                 </div>
             </div>
         </div>
-        <GenericStats v-if="mountGeneric" :selector="genericRequest.selector" :selected="genericRequest.selected" :date="genericRequest.date" />
+        <RangeStats v-if="mountGeneric && genericRequest.selector == 'range'" :selector="'range'" :selected="genericRequest.selected" :date="genericRequest.date"/>
+        <GenericStats v-else-if="mountGeneric" :selector="genericRequest.selector" :selected="genericRequest.selected" :date="genericRequest.date" />
         <div id="logs-section" v-if="logs">
             <div v-for="(log, i) in logs" :key="i">
                 <TimeRecordCard :record="log"/>
@@ -35,6 +36,7 @@ import TimerCountCard from '@/components/stats/TimerCountCard.vue';
 import { useStatStore } from '@/stores/stats';
 import GenericStats from '@/components/stats/GenericStats.vue';
 import { ref } from 'vue';
+import RangeStats from '@/components/stats/RangeStats.vue';
 
 const statStore = useStatStore()
 const queryCount = ref(0)
