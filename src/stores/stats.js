@@ -45,7 +45,12 @@ export const useStatStore = defineStore("stats", () => {
         }
     }
     
-
+    /**
+     * 
+     * @param {('day'|'week'|'month'|'year'|'range')} period - 
+     * @param {String|List[String]} aDate -- a date string or array of date strings for range
+     * @returns 
+     */
     async function getPastTaskTimeRatio(period, aDate=null) {
         try {
             const res = await axios.get('/stats/task_ratio', {
